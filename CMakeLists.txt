@@ -18,8 +18,8 @@ endif()
 FILE(GLOB SOURCE_FILES_DIR_DIR "src/*/*/*.c")
 FILE(GLOB SOURCE_FILES_DIR "src/*/*.c")
 FILE(GLOB SOURCE_FILES "src/*.c")
-add_library(Sakaar_Struct_lib ${SOURCE_FILES} ${SOURCE_FILES_DIR} ${SOURCE_FILES_DIR_DIR})
-target_include_directories(Sakaar_Struct_lib PUBLIC
+add_library(${PROJECT_NAME}_lib ${SOURCE_FILES} ${SOURCE_FILES_DIR} ${SOURCE_FILES_DIR_DIR})
+target_include_directories(${PROJECT_NAME}_lib PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
         PRIVATE src)
