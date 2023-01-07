@@ -22,6 +22,7 @@ void list_resize(struct list_st *res, size_t size);
 void list_append(struct list_st *res, struct object_st* obj);
 void list_add_new(struct list_st *res, struct object_type *type);
 void list_remove_last(struct list_st *res);
+struct object_st *list_last(struct list_st *res);
 
 void list_sort(struct list_st *);
 
