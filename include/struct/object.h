@@ -28,12 +28,16 @@ struct object_type{
     void (*_set_tlv)(void *, const struct string_st *);
 };
 
-
 // Object Class
 struct object_st {
     struct object_type *type;
     short counter;
     void *data;
+
+    struct string_st *name;
+    struct object_st *class;
+    struct list_st *dir;
+    void *function;
 };
 
 // Standard operations

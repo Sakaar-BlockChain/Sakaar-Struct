@@ -2,11 +2,19 @@
 
 struct object_type object_type = {OBJECT_OP, METHOD_GET_TLV &object_get_tlv, METHOD_SET_TLV &object_set_tlv};
 
+
+
+
 struct object_st *object_new() {
     struct object_st *res = skr_malloc(OBJECT_SIZE);
     res->type = NULL;
     res->data = NULL;
     res->counter = 1;
+
+    res->name = NULL;
+    res->dir = NULL;
+    res->class = NULL;
+    res->function = NULL;
     return res;
 }
 void object_set(struct object_st *res, const struct object_st *a) {
@@ -25,7 +33,9 @@ void object_free(struct object_st *res) {
             res->type->self._free(res->data);
         res->data = NULL;
     }
-    res->type = NULL;
+    if (res->class != NULL) object_free(res->class);
+    if (res->name != NULL) string_free(res->name);
+    if (res->dir != NULL) list_free(res->dir);
     skr_free(res);
 }
 int object_cmp(const struct object_st *obj1, const struct object_st *obj2) {
@@ -55,7 +65,14 @@ void object_set_type(struct object_st *res, struct object_type *type) {
             res->data = NULL;
         }
     }
+    if (res->class != NULL) object_free(res->class);
+    if (res->name != NULL) string_free(res->name);
+    if (res->dir != NULL) list_free(res->dir);
     res->type = type;
+    res->name = NULL;
+    res->dir = NULL;
+    res->class = NULL;
+    res->function = NULL;
     if (res->type != NULL && res->type->self._new != NULL) res->data = res->type->self._new();
 }
 void object_set_ptr(struct object_st *res, struct object_st *data) {
@@ -67,7 +84,14 @@ void object_set_ptr(struct object_st *res, struct object_st *data) {
             res->data = NULL;
         }
     }
+    if (res->class != NULL) object_free(res->class);
+    if (res->name != NULL) string_free(res->name);
+    if (res->dir != NULL) list_free(res->dir);
     res->type = OBJECT_TYPE;
+    res->name = NULL;
+    res->dir = NULL;
+    res->class = NULL;
+    res->function = NULL;
     res->data = object_copy(data);
 }
 
