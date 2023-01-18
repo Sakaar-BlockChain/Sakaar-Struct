@@ -1,7 +1,8 @@
 #include "struct.h"
 #include <sys/time.h>
 
-struct object_type integer_type = {INTEGER_OP, METHOD_GET_TLV &integer_get_tlv, METHOD_SET_TLV &integer_set_tlv};
+struct object_math_op integer_math = {METHOD_MATH &integer__mod, METHOD_MATH &integer__and, METHOD_MATH &integer__mul, METHOD_MATH &integer__add, METHOD_MATH &integer__sub, METHOD_MATH &integer__div, METHOD_MATH &integer__xor, METHOD_MATH &integer__or, METHOD_MATH &integer__ls, METHOD_MATH &integer__rs};
+struct object_type integer_type = {INTEGER_OP, METHOD_GET_TLV &integer_get_tlv, METHOD_SET_TLV &integer_set_tlv, &integer_math};
 
 struct integer_st *integer_new() {
     struct integer_st *res = skr_malloc(INTEGER_SIZE);
@@ -163,6 +164,7 @@ signed integer_get_si(const struct integer_st *res) {
 void _integer_set_str(struct integer_st *res, const char *str, size_t size) {
     if (str == NULL) integer_clear(res);
 #ifdef USE_GMP
+    if(str == NULL) return mpz_set_ui(res->mpz_int, 0);
     struct string_st *temp = string_new();
     string_set_str(temp, str, size);
     integer_set_str(res, temp);
@@ -190,7 +192,8 @@ void _integer_set_str(struct integer_st *res, const char *str, size_t size) {
 void integer_set_str(struct integer_st *res, const struct string_st *str) {
     if (string_is_null(str)) integer_clear(res);
 #ifdef USE_GMP
-    mpz_set_str(res->mpz_int, str->data, 16);
+    if(str->data != NULL) mpz_set_str(res->mpz_int, str->data, 16);
+    else mpz_set_ui(res->mpz_int, 0);
 #else
     char *data = str->data;
     size_t size = str->size;
@@ -480,4 +483,69 @@ void integer_get_tlv(const struct integer_st *res, struct string_st *tlv) {
     tlv_set_str(tlv, INTEGER_TLV, data, j);
     skr_free(data);
 #endif
+}
+
+void integer__mod(struct object_st *res, const struct integer_st *obj1, const struct object_st *obj2) {
+    while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
+    if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
+    object_set_type(res, INTEGER_TYPE);
+    integer_mod(res->data, obj1, obj2->data);
+}
+void integer__and(struct object_st *res, const struct integer_st *obj1, const struct object_st *obj2) {
+    while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
+    if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
+    object_set_type(res, INTEGER_TYPE);
+    integer_and(res->data, obj1, obj2->data);
+}
+void integer__mul(struct object_st *res, const struct integer_st *obj1, const struct object_st *obj2) {
+    while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
+    if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
+    object_set_type(res, INTEGER_TYPE);
+    integer_mul(res->data, obj1, obj2->data);
+}
+void integer__add(struct object_st *res, const struct integer_st *obj1, const struct object_st *obj2) {
+    while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
+    if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
+    object_set_type(res, INTEGER_TYPE);
+    integer_add(res->data, obj1, obj2->data);
+}
+void integer__sub(struct object_st *res, const struct integer_st *obj1, const struct object_st *obj2) {
+    while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
+    if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
+    object_set_type(res, INTEGER_TYPE);
+    integer_sub(res->data, obj1, obj2->data);
+}
+void integer__div(struct object_st *res, const struct integer_st *obj1, const struct object_st *obj2) {
+    while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
+    if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
+    object_set_type(res, INTEGER_TYPE);
+    integer_div(res->data, obj1, obj2->data);
+}
+void integer__xor(struct object_st *res, const struct integer_st *obj1, const struct object_st *obj2) {
+    while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
+    if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
+    object_set_type(res, INTEGER_TYPE);
+    integer_xor(res->data, obj1, obj2->data);
+}
+void integer__or(struct object_st *res, const struct integer_st *obj1, const struct object_st *obj2) {
+    while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
+    if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
+    object_set_type(res, INTEGER_TYPE);
+    integer_or(res->data, obj1, obj2->data);
+}
+void integer__ls(struct object_st *res, const struct integer_st *obj1, const struct object_st *obj2) {
+    while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
+    if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
+    object_set_type(res, INTEGER_TYPE);
+    int count = integer_get_si(obj2->data);
+    if (count >= 0) integer_ls(res->data, obj1, count);
+    else integer_rs(res->data, obj1, -count);
+}
+void integer__rs(struct object_st *res, const struct integer_st *obj1, const struct object_st *obj2) {
+    while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
+    if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
+    object_set_type(res, INTEGER_TYPE);
+    int count = integer_get_si(obj2->data);
+    if (count >= 0) integer_rs(res->data, obj1, count);
+    else integer_ls(res->data, obj1, -count);
 }

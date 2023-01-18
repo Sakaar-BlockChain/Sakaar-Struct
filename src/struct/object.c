@@ -1,9 +1,10 @@
 #include "struct.h"
 
+struct object_math_op object_math = {METHOD_MATH &object__mod, METHOD_MATH &object__and, METHOD_MATH &object__mul,
+                                     METHOD_MATH &object__add, METHOD_MATH &object__sub, METHOD_MATH &object__div,
+                                     METHOD_MATH &object__xor, METHOD_MATH &object__or, METHOD_MATH &object__ls,
+                                     METHOD_MATH &object__rs};
 struct object_type object_type = {OBJECT_OP, METHOD_GET_TLV &object_get_tlv, METHOD_SET_TLV &object_set_tlv};
-
-
-
 
 struct object_st *object_new() {
     struct object_st *res = skr_malloc(OBJECT_SIZE);
@@ -11,7 +12,6 @@ struct object_st *object_new() {
     res->data = NULL;
     res->counter = 1;
 
-    res->name = NULL;
     res->dir = NULL;
     res->class = NULL;
     res->function = NULL;
@@ -34,7 +34,6 @@ void object_free(struct object_st *res) {
         res->data = NULL;
     }
     if (res->class != NULL) object_free(res->class);
-    if (res->name != NULL) string_free(res->name);
     if (res->dir != NULL) list_free(res->dir);
     skr_free(res);
 }
@@ -66,10 +65,8 @@ void object_set_type(struct object_st *res, struct object_type *type) {
         }
     }
     if (res->class != NULL) object_free(res->class);
-    if (res->name != NULL) string_free(res->name);
     if (res->dir != NULL) list_free(res->dir);
     res->type = type;
-    res->name = NULL;
     res->dir = NULL;
     res->class = NULL;
     res->function = NULL;
@@ -85,30 +82,28 @@ void object_set_ptr(struct object_st *res, struct object_st *data) {
         }
     }
     if (res->class != NULL) object_free(res->class);
-    if (res->name != NULL) string_free(res->name);
     if (res->dir != NULL) list_free(res->dir);
     res->type = OBJECT_TYPE;
-    res->name = NULL;
     res->dir = NULL;
     res->class = NULL;
     res->function = NULL;
     res->data = object_copy(data);
 }
 
-// TLV methods
-void object_set_tlv(struct object_st *res, const struct string_st *tlv){
+// TLV method
+void object_set_tlv(struct object_st *res, const struct string_st *tlv) {
     object_set_type(res, TLV_TYPE);
     string_set(res->data, tlv);
 }
-void object_get_tlv(const struct object_st *res, struct string_st *tlv){
-    while(res != NULL && res->type == OBJECT_TYPE) res = res->data;
-    if(res == NULL) return;
+void object_get_tlv(const struct object_st *res, struct string_st *tlv) {
+    while (res != NULL && res->type == OBJECT_TYPE) res = res->data;
+    if (res == NULL) return;
     string_clear(tlv);
-    if(res == NULL) return;
+    if (res == NULL) return;
     if (res->type != NULL && res->type->_get_tlv != NULL) res->type->_get_tlv(res->data, tlv);
 }
-void object_set_tlv_self(struct object_st *res, struct object_type *type){
-    if(res->type != TLV_TYPE) return object_set_type(res, type);
+void object_set_tlv_self(struct object_st *res, struct object_type *type) {
+    if (res->type != TLV_TYPE) return object_set_type(res, type);
 
     struct string_st *tlv = string_new();
     string_set(tlv, res->data);
@@ -118,4 +113,83 @@ void object_set_tlv_self(struct object_st *res, struct object_type *type){
     string_free(tlv);
 }
 
-
+void object__mod(struct object_st *res, const struct object_st *obj1, const struct object_st *obj2) {
+    while (obj1 != NULL && obj1->type == OBJECT_TYPE) obj1 = res->data;
+    if (obj1 == NULL) return;
+    if (obj1->type->math != NULL && obj1->type->math->_mod != NULL) {
+        obj1->type->math->_mod(res, obj1->data, obj2);
+    }
+    // TODO find function __mod__
+}
+void object__and(struct object_st *res, const struct object_st *obj1, const struct object_st *obj2) {
+    while (obj1 != NULL && obj1->type == OBJECT_TYPE) obj1 = res->data;
+    if (obj1 == NULL) return;
+    if (obj1->type->math != NULL && obj1->type->math->_and != NULL) {
+        obj1->type->math->_and(res, obj1->data, obj2);
+    }
+    // TODO find function __and__
+}
+void object__mul(struct object_st *res, const struct object_st *obj1, const struct object_st *obj2) {
+    while (obj1 != NULL && obj1->type == OBJECT_TYPE) obj1 = res->data;
+    if (obj1 == NULL) return;
+    if (obj1->type->math != NULL && obj1->type->math->_mul != NULL) {
+        obj1->type->math->_mul(res, obj1->data, obj2);
+    }
+    // TODO find function __mul__
+}
+void object__add(struct object_st *res, const struct object_st *obj1, const struct object_st *obj2) {
+    while (obj1 != NULL && obj1->type == OBJECT_TYPE) obj1 = res->data;
+    if (obj1 == NULL) return;
+    if (obj1->type->math != NULL && obj1->type->math->_add != NULL) {
+        obj1->type->math->_add(res, obj1->data, obj2);
+    }
+    // TODO find function __add__
+}
+void object__sub(struct object_st *res, const struct object_st *obj1, const struct object_st *obj2) {
+    while (obj1 != NULL && obj1->type == OBJECT_TYPE) obj1 = res->data;
+    if (obj1 == NULL) return;
+    if (obj1->type->math != NULL && obj1->type->math->_sub != NULL) {
+        obj1->type->math->_sub(res, obj1->data, obj2);
+    }
+    // TODO find function __sub__
+}
+void object__div(struct object_st *res, const struct object_st *obj1, const struct object_st *obj2) {
+    while (obj1 != NULL && obj1->type == OBJECT_TYPE) obj1 = res->data;
+    if (obj1 == NULL) return;
+    if (obj1->type->math != NULL && obj1->type->math->_div != NULL) {
+        obj1->type->math->_div(res, obj1->data, obj2);
+    }
+    // TODO find function __div__
+}
+void object__xor(struct object_st *res, const struct object_st *obj1, const struct object_st *obj2) {
+    while (obj1 != NULL && obj1->type == OBJECT_TYPE) obj1 = res->data;
+    if (obj1 == NULL) return;
+    if (obj1->type->math != NULL && obj1->type->math->_xor != NULL) {
+        obj1->type->math->_xor(res, obj1->data, obj2);
+    }
+    // TODO find function __xor__
+}
+void object__or(struct object_st *res, const struct object_st *obj1, const struct object_st *obj2) {
+    while (obj1 != NULL && obj1->type == OBJECT_TYPE) obj1 = res->data;
+    if (obj1 == NULL) return;
+    if (obj1->type->math != NULL && obj1->type->math->_or != NULL) {
+        obj1->type->math->_or(res, obj1->data, obj2);
+    }
+    // TODO find function __or__
+}
+void object__ls(struct object_st *res, const struct object_st *obj1, const struct object_st *obj2) {
+    while (obj1 != NULL && obj1->type == OBJECT_TYPE) obj1 = res->data;
+    if (obj1 == NULL) return;
+    if (obj1->type->math != NULL && obj1->type->math->_ls != NULL) {
+        obj1->type->math->_ls(res, obj1->data, obj2);
+    }
+    // TODO find function __ls__
+}
+void object__rs(struct object_st *res, const struct object_st *obj1, const struct object_st *obj2) {
+    while (obj1 != NULL && obj1->type == OBJECT_TYPE) obj1 = res->data;
+    if (obj1 == NULL) return;
+    if (obj1->type->math != NULL && obj1->type->math->_rs != NULL) {
+        obj1->type->math->_rs(res, obj1->data, obj2);
+    }
+    // TODO find function __rs__
+}

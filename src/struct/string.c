@@ -1,5 +1,5 @@
 #include "struct.h"
-
+struct object_math_op string_math = {NULL, NULL, METHOD_MATH &string__mul, METHOD_MATH &string__add, NULL, NULL, NULL, NULL, NULL, NULL};
 struct object_type string_type = {STRING_OP, METHOD_GET_TLV &string_get_tlv, METHOD_SET_TLV &string_set_tlv};
 
 
@@ -76,4 +76,18 @@ void string_get_tlv(const struct string_st *res, struct string_st *tlv) {
     tlv_set_string(tlv, STRING_TLV, res);
 }
 
-
+void string__mul(struct object_st *res, const struct string_st *obj1, const struct object_st *obj2) {
+    while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
+    if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
+    object_set_type(res, INTEGER_TYPE);
+    unsigned int count = integer_get_ui(obj2->data);
+    for (unsigned int i = 0; i < count; i++)
+        string_concat(res->data, obj1);
+}
+void string__add(struct object_st *res, const struct string_st *obj1, const struct object_st *obj2) {
+    while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
+    if (obj2 == NULL || obj2->type != STRING_TYPE) return;
+    object_set_type(res, STRING_TYPE);
+    string_set(res->data, obj1);
+    string_concat(res->data, obj2->data);
+}

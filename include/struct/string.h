@@ -26,6 +26,8 @@ void string_concat(struct string_st *, const struct string_st *);
 void string_set_tlv(struct string_st *, const struct string_st *);
 void string_get_tlv(const struct string_st *, struct string_st *);
 
+void string__mul(struct object_st *, const struct string_st *, const struct object_st *);
+void string__add(struct object_st *, const struct string_st *, const struct object_st *);
 
 void print_str(const struct string_st *);
 

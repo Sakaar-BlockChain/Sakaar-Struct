@@ -10,6 +10,7 @@
 #include "struct/integer.h"
 #include "struct/list.h"
 #include "struct/stack.h"
+#include "struct/map.h"
 
 #define USE_GMP
 
@@ -19,6 +20,7 @@
 #define LIST_TLV           0xF0
 #define STACK_TLV          0xF2
 #define STRING_TLV         0xCC
+#define MAP_TLV            0xF3
 
 
 #define SUB_INTEGER_SIZE    sizeof(struct sub_integer)
@@ -29,6 +31,7 @@
 #define POINTER_SIZE        sizeof(struct object_st *)
 #define OBJECT_SIZE         sizeof(struct object_st)
 #define STRING_SIZE         sizeof(struct string_st)
+#define MAP_SIZE            sizeof(struct map_st)
 
 
 #define SUB_INTEGER_OP  (struct object_op) {METHOD_NEW &sub_integer_new, METHOD_SET &sub_integer_set, METHOD_CLEAR &sub_integer_clear, METHOD_FREE &sub_integer_free, METHOD_CMP &sub_integer_cmp}
@@ -38,7 +41,12 @@
 #define STACK_OP        (struct object_op) {METHOD_NEW &stack_new, METHOD_SET &stack_set, METHOD_CLEAR &stack_clear, METHOD_FREE &stack_free, METHOD_CMP &stack_cmp}
 #define OBJECT_OP       (struct object_op) {METHOD_NEW &object_new, METHOD_SET &object_set, METHOD_CLEAR &object_clear, METHOD_FREE &object_free, METHOD_CMP &object_cmp}
 #define STRING_OP       (struct object_op) {METHOD_NEW &string_new, METHOD_SET &string_set, METHOD_CLEAR &string_clear, METHOD_FREE &string_free, METHOD_CMP &string_cmp}
+#define MAP_OP          (struct object_op) {METHOD_NEW &map_new, METHOD_SET &map_set, METHOD_CLEAR &map_clear, METHOD_FREE &map_free, METHOD_CMP &map_cmp}
 #define TLV_OP          STRING_OP
+
+extern struct object_math_op integer_math;
+extern struct object_math_op string_math;
+extern struct object_math_op object_math;
 
 extern struct object_type sub_integer_type;
 extern struct object_type integer_type;
@@ -47,6 +55,7 @@ extern struct object_type list_type;
 extern struct object_type object_type;
 extern struct object_type stack_type;
 extern struct object_type string_type;
+extern struct object_type map_type;
 extern struct object_type tlv_type;
 
 
@@ -58,6 +67,7 @@ extern struct object_type tlv_type;
 #define OBJECT_TYPE         &object_type
 #define STACK_TYPE          &stack_type
 #define STRING_TYPE         &string_type
+#define MAP_TYPE            &map_type
 #define TLV_TYPE            &tlv_type
 
 
