@@ -52,7 +52,7 @@ struct object_st {
     void *data;
 
     struct object_st *class;
-    struct list_st *dir;
+    struct map_st *dir;
     void *function;
 };
 

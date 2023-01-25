@@ -12,7 +12,7 @@ struct object_st *object_new() {
     res->data = NULL;
     res->counter = 1;
 
-    res->dir = NULL;
+    res->dir = map_new();
     res->class = NULL;
     res->function = NULL;
     return res;
@@ -21,6 +21,7 @@ void object_set(struct object_st *res, const struct object_st *a) {
     if (res == NULL || a == NULL) return;
     object_set_type(res, a->type);
     if (res->type != NULL && res->type->self._set != NULL) res->type->self._set(res->data, (a)->data);
+    // TODO call function __set__
 }
 void object_clear(struct object_st *res) {
     if (res == NULL) return;
@@ -34,7 +35,7 @@ void object_free(struct object_st *res) {
         res->data = NULL;
     }
     if (res->class != NULL) object_free(res->class);
-    if (res->dir != NULL) list_free(res->dir);
+    if (res->dir != NULL) map_free(res->dir);
     skr_free(res);
 }
 int object_cmp(const struct object_st *obj1, const struct object_st *obj2) {
@@ -65,9 +66,8 @@ void object_set_type(struct object_st *res, struct object_type *type) {
         }
     }
     if (res->class != NULL) object_free(res->class);
-    if (res->dir != NULL) list_free(res->dir);
+    if (res->dir != NULL) map_clear(res->dir);
     res->type = type;
-    res->dir = NULL;
     res->class = NULL;
     res->function = NULL;
     if (res->type != NULL && res->type->self._new != NULL) res->data = res->type->self._new();
@@ -82,9 +82,8 @@ void object_set_ptr(struct object_st *res, struct object_st *data) {
         }
     }
     if (res->class != NULL) object_free(res->class);
-    if (res->dir != NULL) list_free(res->dir);
+    if (res->dir != NULL) map_clear(res->dir);
     res->type = OBJECT_TYPE;
-    res->dir = NULL;
     res->class = NULL;
     res->function = NULL;
     res->data = object_copy(data);
@@ -97,9 +96,8 @@ void object_set_tlv(struct object_st *res, const struct string_st *tlv) {
 }
 void object_get_tlv(const struct object_st *res, struct string_st *tlv) {
     while (res != NULL && res->type == OBJECT_TYPE) res = res->data;
-    if (res == NULL) return;
+    if (res == NULL || res->type == NULL) return;
     string_clear(tlv);
-    if (res == NULL) return;
     if (res->type != NULL && res->type->_get_tlv != NULL) res->type->_get_tlv(res->data, tlv);
 }
 void object_set_tlv_self(struct object_st *res, struct object_type *type) {
@@ -115,7 +113,7 @@ void object_set_tlv_self(struct object_st *res, struct object_type *type) {
 
 void object__mod(struct object_st *res, const struct object_st *obj1, const struct object_st *obj2) {
     while (obj1 != NULL && obj1->type == OBJECT_TYPE) obj1 = res->data;
-    if (obj1 == NULL) return;
+    if (obj1 == NULL || obj1->type == NULL) return;
     if (obj1->type->math != NULL && obj1->type->math->_mod != NULL) {
         obj1->type->math->_mod(res, obj1->data, obj2);
     }
@@ -123,7 +121,7 @@ void object__mod(struct object_st *res, const struct object_st *obj1, const stru
 }
 void object__and(struct object_st *res, const struct object_st *obj1, const struct object_st *obj2) {
     while (obj1 != NULL && obj1->type == OBJECT_TYPE) obj1 = res->data;
-    if (obj1 == NULL) return;
+    if (obj1 == NULL || obj1->type == NULL) return;
     if (obj1->type->math != NULL && obj1->type->math->_and != NULL) {
         obj1->type->math->_and(res, obj1->data, obj2);
     }
@@ -131,7 +129,7 @@ void object__and(struct object_st *res, const struct object_st *obj1, const stru
 }
 void object__mul(struct object_st *res, const struct object_st *obj1, const struct object_st *obj2) {
     while (obj1 != NULL && obj1->type == OBJECT_TYPE) obj1 = res->data;
-    if (obj1 == NULL) return;
+    if (obj1 == NULL || obj1->type == NULL) return;
     if (obj1->type->math != NULL && obj1->type->math->_mul != NULL) {
         obj1->type->math->_mul(res, obj1->data, obj2);
     }
@@ -139,7 +137,7 @@ void object__mul(struct object_st *res, const struct object_st *obj1, const stru
 }
 void object__add(struct object_st *res, const struct object_st *obj1, const struct object_st *obj2) {
     while (obj1 != NULL && obj1->type == OBJECT_TYPE) obj1 = res->data;
-    if (obj1 == NULL) return;
+    if (obj1 == NULL || obj1->type == NULL) return;
     if (obj1->type->math != NULL && obj1->type->math->_add != NULL) {
         obj1->type->math->_add(res, obj1->data, obj2);
     }
@@ -147,7 +145,7 @@ void object__add(struct object_st *res, const struct object_st *obj1, const stru
 }
 void object__sub(struct object_st *res, const struct object_st *obj1, const struct object_st *obj2) {
     while (obj1 != NULL && obj1->type == OBJECT_TYPE) obj1 = res->data;
-    if (obj1 == NULL) return;
+    if (obj1 == NULL || obj1->type == NULL) return;
     if (obj1->type->math != NULL && obj1->type->math->_sub != NULL) {
         obj1->type->math->_sub(res, obj1->data, obj2);
     }
@@ -155,7 +153,7 @@ void object__sub(struct object_st *res, const struct object_st *obj1, const stru
 }
 void object__div(struct object_st *res, const struct object_st *obj1, const struct object_st *obj2) {
     while (obj1 != NULL && obj1->type == OBJECT_TYPE) obj1 = res->data;
-    if (obj1 == NULL) return;
+    if (obj1 == NULL || obj1->type == NULL) return;
     if (obj1->type->math != NULL && obj1->type->math->_div != NULL) {
         obj1->type->math->_div(res, obj1->data, obj2);
     }
@@ -163,7 +161,7 @@ void object__div(struct object_st *res, const struct object_st *obj1, const stru
 }
 void object__xor(struct object_st *res, const struct object_st *obj1, const struct object_st *obj2) {
     while (obj1 != NULL && obj1->type == OBJECT_TYPE) obj1 = res->data;
-    if (obj1 == NULL) return;
+    if (obj1 == NULL || obj1->type == NULL) return;
     if (obj1->type->math != NULL && obj1->type->math->_xor != NULL) {
         obj1->type->math->_xor(res, obj1->data, obj2);
     }
@@ -171,7 +169,7 @@ void object__xor(struct object_st *res, const struct object_st *obj1, const stru
 }
 void object__or(struct object_st *res, const struct object_st *obj1, const struct object_st *obj2) {
     while (obj1 != NULL && obj1->type == OBJECT_TYPE) obj1 = res->data;
-    if (obj1 == NULL) return;
+    if (obj1 == NULL || obj1->type == NULL) return;
     if (obj1->type->math != NULL && obj1->type->math->_or != NULL) {
         obj1->type->math->_or(res, obj1->data, obj2);
     }
@@ -179,7 +177,7 @@ void object__or(struct object_st *res, const struct object_st *obj1, const struc
 }
 void object__ls(struct object_st *res, const struct object_st *obj1, const struct object_st *obj2) {
     while (obj1 != NULL && obj1->type == OBJECT_TYPE) obj1 = res->data;
-    if (obj1 == NULL) return;
+    if (obj1 == NULL || obj1->type == NULL) return;
     if (obj1->type->math != NULL && obj1->type->math->_ls != NULL) {
         obj1->type->math->_ls(res, obj1->data, obj2);
     }
@@ -187,7 +185,7 @@ void object__ls(struct object_st *res, const struct object_st *obj1, const struc
 }
 void object__rs(struct object_st *res, const struct object_st *obj1, const struct object_st *obj2) {
     while (obj1 != NULL && obj1->type == OBJECT_TYPE) obj1 = res->data;
-    if (obj1 == NULL) return;
+    if (obj1 == NULL || obj1->type == NULL) return;
     if (obj1->type->math != NULL && obj1->type->math->_rs != NULL) {
         obj1->type->math->_rs(res, obj1->data, obj2);
     }

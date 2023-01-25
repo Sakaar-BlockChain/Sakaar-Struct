@@ -28,5 +28,5 @@ MESSAGE(STATUS "Connected: Sakaar_Struct_lib")
 target_link_libraries(${PROJECT_NAME}_lib PUBLIC Sakaar_Memory_lib)
 target_link_libraries(${PROJECT_NAME}_lib PUBLIC gmp gmpxx)
 
-add_executable(${PROJECT_NAME} main.c include/struct/map.h src/struct/map.c src/struct/object_math_op/integer.c)
+add_executable(${PROJECT_NAME} main.c)
 target_link_libraries(${PROJECT_NAME} PUBLIC ${PROJECT_NAME}_lib)
