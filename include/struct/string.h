@@ -8,7 +8,6 @@ struct string_st {
     char *data;
     size_t mx_size, size;
 };
-
 // Standard operations
 struct string_st *string_new();
 void string_set(struct string_st *, const struct string_st *);
@@ -26,7 +25,17 @@ void string_concat(struct string_st *, const struct string_st *);
 void string_set_tlv(struct string_st *, const struct string_st *);
 void string_get_tlv(const struct string_st *, struct string_st *);
 
+// Math methods
+void string__mul(struct object_st *, const struct string_st *, const struct object_st *);
+void string__add(struct object_st *, const struct string_st *, const struct object_st *);
 
+// Convert methods
+void string__bool(struct object_st *, const struct string_st *);
+void string__int(struct object_st *, const struct string_st *);
+void string__float(struct object_st *, const struct string_st *);
+void string__str(struct object_st *, const struct string_st *);
+
+// Print
 void print_str(const struct string_st *);
 
 #endif //STRING_H
