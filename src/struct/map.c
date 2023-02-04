@@ -1,8 +1,7 @@
 #include "struct.h"
 
-struct object_type map_type = {MAP_OP, METHOD_GET_TLV &map_get_tlv, METHOD_SET_TLV &map_set_tlv};
-
-
+struct object_type map_type = {MAP_OP};
+// Standard operations
 struct map_st *map_new() {
     struct map_st *res = skr_malloc(MAP_SIZE);
 
@@ -48,6 +47,7 @@ int map_is_null(const struct map_st *res) {
     return (res == NULL);
 }
 
+// Class methods
 void map_set_name_(struct map_st *res, const char *name, size_t size) {
     if (res->name != NULL) skr_free(res->name);
     res->size = size;
@@ -140,55 +140,5 @@ struct object_st *map_get_elm(struct map_st *res, char *name, size_t size) {
         res = res->next[char_]->data;
         name = &name[temp_size + 1];
         size = size - temp_size - 1;
-    }
-}
-
-
-void map_set_tlv(struct map_st *res, const struct string_st *tlv){
-    if (res == NULL) return;
-    map_clear(res);
-    if (string_is_null(tlv) || tlv_get_tag(tlv->data) != MAP_TLV) return;
-
-    char *data = tlv_get_value(tlv->data);
-    char *end = data + tlv_get_size(tlv->data);
-
-    for (; data != end;) {
-        struct object_st *obj = object_new();
-        object_set_type(obj, TLV_TYPE);
-        data = tlv_get_next_tlv(data, obj->data);
-        object_set_tlv_self(obj, STRING_TYPE);
-
-        struct object_st *elm = map_get_elm(res, ((struct string_st *)obj->data)->data, ((struct string_st *)obj->data)->size);
-        object_set_type(elm, TLV_TYPE);
-        data = tlv_get_next_tlv(data, elm->data);
-
-        object_free(obj);
-        object_free(elm);
-    }
-}
-void map_get_tlv(const struct map_st *res, struct string_st *tlv){
-    // TODo
-}
-void map_set_tlv_self(struct map_st *res, const struct string_st *tlv, struct object_type *type){
-    if (res == NULL) return;
-    map_clear(res);
-    if (string_is_null(tlv) || tlv_get_tag(tlv->data) != MAP_TLV) return;
-
-    char *data = tlv_get_value(tlv->data);
-    char *end = data + tlv_get_size(tlv->data);
-
-    for (; data != end;) {
-        struct object_st *obj = object_new();
-        object_set_type(obj, TLV_TYPE);
-        data = tlv_get_next_tlv(data, obj->data);
-        object_set_tlv_self(obj, STRING_TYPE);
-
-        struct object_st *elm = map_get_elm(res, ((struct string_st *)obj->data)->data, ((struct string_st *)obj->data)->size);
-        object_set_type(elm, TLV_TYPE);
-        data = tlv_get_next_tlv(data, elm->data);
-        object_set_tlv_self(elm, type);
-
-        object_free(obj);
-        object_free(elm);
     }
 }

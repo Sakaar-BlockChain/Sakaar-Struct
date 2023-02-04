@@ -16,7 +16,6 @@ struct stack_st{
     struct stack_el *top;
     size_t size;
 };
-
 // Standard operations
 struct stack_st *stack_new();
 void stack_set(struct stack_st *, const struct stack_st *);
@@ -30,11 +29,7 @@ void stack_add(struct stack_st *res, struct object_st* obj);
 void stack_add_new(struct stack_st *res, struct object_type *type);
 void stack_pop(struct stack_st *res);
 
-// TLV methods
-void stack_set_tlv(struct stack_st *, const struct string_st *);
-void stack_get_tlv(const struct stack_st *, struct string_st *);
-void stack_set_tlv_self(struct stack_st *, const struct string_st *, struct object_type *);
-
+// Print
 void print_stack(const struct stack_st *, int tabs);
 
 #endif //STACK_H

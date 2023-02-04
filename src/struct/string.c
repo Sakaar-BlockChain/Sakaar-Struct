@@ -1,8 +1,10 @@
 #include "struct.h"
-struct object_math_op string_math = {NULL, NULL, METHOD_MATH &string__mul, METHOD_MATH &string__add, NULL, NULL, NULL, NULL, NULL, NULL};
-struct object_type string_type = {STRING_OP, METHOD_GET_TLV &string_get_tlv, METHOD_SET_TLV &string_set_tlv};
 
-
+struct object_tlv string_tlv = {METHOD_GET_TLV &string_get_tlv, METHOD_SET_TLV &string_set_tlv};
+struct object_math_op string_math = {NULL, NULL, METHOD_MATH &string__mul, METHOD_MATH &string__add};
+struct object_convert string_convert = {METHOD_CONVERT &string__bool, METHOD_CONVERT &string__int, METHOD_CONVERT &string__float, METHOD_CONVERT &string__str};
+struct object_type string_type = {STRING_OP, &string_tlv, &string_math,  &string_convert};
+// Standard operations
 struct string_st *string_new() {
     struct string_st *res = skr_malloc(STRING_SIZE);
     res->data = NULL;
@@ -30,7 +32,7 @@ int string_is_null(const struct string_st *res){
     return (res == NULL || res->size == 0);
 }
 
-
+// Class methods
 void string_resize(struct string_st *res, size_t size) {
     if (res->data == NULL && size != 0) {
         res->mx_size = size;
@@ -62,6 +64,7 @@ void string_concat(struct string_st *res, const struct string_st *a) {
     memcpy(res->data + _size, a->data, a->size);
 }
 
+// TLV methods
 void string_set_tlv(struct string_st *res, const struct string_st *tlv) {
     if(res == NULL) return;
     if(string_is_null(tlv)) return string_clear(res);
@@ -76,10 +79,11 @@ void string_get_tlv(const struct string_st *res, struct string_st *tlv) {
     tlv_set_string(tlv, STRING_TLV, res);
 }
 
+// Math methods
 void string__mul(struct object_st *res, const struct string_st *obj1, const struct object_st *obj2) {
     while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
     if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
-    object_set_type(res, INTEGER_TYPE);
+    object_set_type(res, STRING_TYPE);
     unsigned int count = integer_get_ui(obj2->data);
     for (unsigned int i = 0; i < count; i++)
         string_concat(res->data, obj1);
@@ -90,4 +94,21 @@ void string__add(struct object_st *res, const struct string_st *obj1, const stru
     object_set_type(res, STRING_TYPE);
     string_set(res->data, obj1);
     string_concat(res->data, obj2->data);
+}
+
+// Convert methods
+void string__bool(struct object_st *res, const struct string_st *obj){
+    object_set_type(res, INTEGER_TYPE);
+    if(obj->size == 0) integer_set_ui(res->data, 0);
+    else integer_set_ui(res->data, 1);
+}
+void string__int(struct object_st *res, const struct string_st *obj){
+    // TODO
+}
+void string__float(struct object_st *res, const struct string_st *obj){
+    // TODO
+}
+void string__str(struct object_st *res, const struct string_st *obj){
+    object_set_type(res, STRING_TYPE);
+    string_set(res->data, obj);
 }

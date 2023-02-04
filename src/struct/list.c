@@ -1,8 +1,10 @@
 #include "struct.h"
 
-struct object_type list_type = {LIST_OP, METHOD_GET_TLV &list_get_tlv, METHOD_SET_TLV &list_set_tlv};
-
-
+struct object_tlv list_tlv = {METHOD_GET_TLV &list_get_tlv, METHOD_SET_TLV &list_set_tlv};
+struct object_math_op list_math = {NULL, NULL, METHOD_MATH &list__mul, METHOD_MATH &list__add};
+struct object_convert list_convert = {NULL, NULL, NULL, METHOD_CONVERT &list__str};
+struct object_type list_type = {LIST_OP, &list_tlv, &list_math,  &list_convert};
+// Standard operations
 struct list_st *list_new() {
     struct list_st *res = skr_malloc(LIST_SIZE);
     res->data = NULL;
@@ -38,7 +40,7 @@ int list_is_null(const struct list_st *res) {
     return (res == NULL || res->size == 0);
 }
 
-
+// Class methods
 void list_resize(struct list_st *res, size_t size) {
     if (res->data == NULL && size != 0) {
         res->max_size = size;
@@ -62,6 +64,15 @@ void list_append(struct list_st *res, struct object_st *obj) {
 
     list_resize(res, res->size + 1);
     res->data[res->size - 1] = object_copy(obj);
+}
+void list_concat(struct list_st *res, const struct list_st *a) {
+    if (res == NULL || list_is_null(a)) return;
+
+    size_t _size = res->size;
+    list_resize(res, res->size + a->size);
+    for (size_t i = 0; i < a->size; i++) {
+        res->data[_size + i] = object_copy(a->data[i]);
+    }
 }
 void list_add_new(struct list_st *res, struct object_type *type) {
     if (res == NULL) return;
@@ -118,6 +129,7 @@ void list_sort(struct list_st *res) {
     list_free(temp);
 }
 
+// TLV methods
 void list_set_tlv(struct list_st *res, const struct string_st *tlv) {
     if (res == NULL) return;
     list_clear(res);
@@ -154,4 +166,26 @@ void list_set_tlv_self(struct list_st *res, const struct string_st *tlv, struct 
     list_set_tlv(res, tlv);
     for (size_t i = 0; i < res->size; i++)
         object_set_tlv_self(res->data[i], type);
+}
+
+// Math methods
+void list__mul(struct object_st *res, const struct list_st *obj1, const struct object_st *obj2) {
+    while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
+    if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
+    object_set_type(res, STRING_TYPE);
+    unsigned int count = integer_get_ui(obj2->data);
+    for (unsigned int i = 0; i < count; i++)
+        list_concat(res->data, obj1);
+}
+void list__add(struct object_st *res, const struct list_st *obj1, const struct object_st *obj2) {
+    while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
+    if (obj2 == NULL || obj2->type != LIST_TYPE) return;
+    object_set_type(res, LIST_TYPE);
+    list_set(res->data, obj1);
+    list_concat(res->data, obj2->data);
+}
+
+// Convert methods
+void list__str(struct object_st *res, const struct list_st *obj){
+    //TODO
 }

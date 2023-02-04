@@ -1,9 +1,11 @@
 #include "struct.h"
 #include <sys/time.h>
 
-struct object_math_op integer_math = {METHOD_MATH &integer__mod, METHOD_MATH &integer__and, METHOD_MATH &integer__mul, METHOD_MATH &integer__add, METHOD_MATH &integer__sub, METHOD_MATH &integer__div, METHOD_MATH &integer__xor, METHOD_MATH &integer__or, METHOD_MATH &integer__ls, METHOD_MATH &integer__rs};
-struct object_type integer_type = {INTEGER_OP, METHOD_GET_TLV &integer_get_tlv, METHOD_SET_TLV &integer_set_tlv, &integer_math};
-
+struct object_tlv integer_tlv = {METHOD_GET_TLV &integer_get_tlv, METHOD_SET_TLV &integer_set_tlv};
+struct object_math_op integer_math = {METHOD_MATH &integer__mod, METHOD_MATH &integer__and, METHOD_MATH &integer__mul, METHOD_MATH &integer__add, METHOD_MATH &integer__sub, METHOD_MATH &integer__div, METHOD_MATH &integer__xor, METHOD_MATH &integer__or, METHOD_MATH &integer__ls, METHOD_MATH &integer__rs, METHOD_CONVERT &integer__neg};
+struct object_convert integer_convert = {METHOD_CONVERT &integer__bool, METHOD_CONVERT &integer__int, METHOD_CONVERT &integer__float, METHOD_CONVERT &integer__str};
+struct object_type integer_type = {INTEGER_OP, &integer_tlv, &integer_math, &integer_convert};
+// Standard operations
 struct integer_st *integer_new() {
     struct integer_st *res = skr_malloc(INTEGER_SIZE);
 #ifdef USE_GMP
@@ -44,7 +46,7 @@ int integer_cmp(const struct integer_st *obj1, const struct integer_st *obj2) {
 #endif
 }
 
-
+// Class methods
 void integer_ls(struct integer_st *res, const struct integer_st *a, size_t num) {
 #ifdef USE_GMP
     mpz_mul_2exp(res->mpz_int, a->mpz_int, num);
@@ -130,20 +132,21 @@ void integer_powm(struct integer_st *res, const struct integer_st *a, const stru
     sub_integer_powm(res->data, a->data, b->data, mod->data);
 #endif
 }
+void integer_neg(struct integer_st *res, const struct integer_st *a) {
+#ifdef USE_GMP
+    mpz_neg(res->mpz_int, a->mpz_int);
+#else
+    sub_integer_set(res->data, a->data);
+    res->data->positive = 0;
+#endif
+}
 
-
+// Data init methods
 void integer_set_ui(struct integer_st *res, unsigned number) {
 #ifdef USE_GMP
     mpz_set_ui(res->mpz_int, number);
 #else
     sub_integer_set_ui(res->data, number);
-#endif
-}
-void integer_set_si(struct integer_st *res, signed number) {
-#ifdef USE_GMP
-    mpz_set_si(res->mpz_int, number);
-#else
-    sub_integer_set_si(res->data, number);
 #endif
 }
 unsigned integer_get_ui(const struct integer_st *res) {
@@ -161,13 +164,16 @@ signed integer_get_si(const struct integer_st *res) {
 #endif
 }
 
+// Hex methods
 void _integer_set_str(struct integer_st *res, const char *str, size_t size) {
     if (str == NULL) integer_clear(res);
 #ifdef USE_GMP
     if(str == NULL) return mpz_set_ui(res->mpz_int, 0);
     struct string_st *temp = string_new();
     string_set_str(temp, str, size);
-    integer_set_str(res, temp);
+    if (string_is_null(temp)) integer_clear(res);
+    if(temp->data != NULL) mpz_set_str(res->mpz_int, temp->data, 16);
+    else mpz_set_ui(res->mpz_int, 0);
     string_free(temp);
 #else
     size_t type_size = 4;
@@ -271,6 +277,66 @@ void integer_set_time(struct integer_st *res) {
 #endif
 }
 
+
+void _integer_set_str_dec(struct integer_st *res, const char *str, size_t size) {
+    if (str == NULL) integer_clear(res);
+#ifdef USE_GMP
+    if(str == NULL) return mpz_set_ui(res->mpz_int, 0);
+    struct string_st *temp = string_new();
+    string_set_str(temp, str, size);
+    if (string_is_null(temp)) integer_clear(res);
+    if(temp->data != NULL) mpz_set_str(res->mpz_int, temp->data, 10);
+    else mpz_set_ui(res->mpz_int, 0);
+    string_free(temp);
+#else
+    // TODO set_str_dec
+#endif
+}
+void _integer_set_str_oct(struct integer_st *res, const char *str, size_t size) {
+    if (str == NULL) integer_clear(res);
+#ifdef USE_GMP
+    if(str == NULL) return mpz_set_ui(res->mpz_int, 0);
+    struct string_st *temp = string_new();
+    string_set_str(temp, str, size);
+    if (string_is_null(temp)) integer_clear(res);
+    if(temp->data != NULL) mpz_set_str(res->mpz_int, temp->data, 8);
+    else mpz_set_ui(res->mpz_int, 0);
+    string_free(temp);
+#else
+    // TODO set_str_oct
+#endif
+}
+void _integer_set_str_bin(struct integer_st *res, const char *str, size_t size) {
+    if (str == NULL) integer_clear(res);
+#ifdef USE_GMP
+    if(str == NULL) return mpz_set_ui(res->mpz_int, 0);
+    struct string_st *temp = string_new();
+    string_set_str(temp, str, size);
+    if (string_is_null(temp)) integer_clear(res);
+    if(temp->data != NULL) mpz_set_str(res->mpz_int, temp->data, 2);
+    else mpz_set_ui(res->mpz_int, 0);
+    string_free(temp);
+#else
+    size_t type_size = 1;
+    size_t dif = (16 / type_size);
+    size_t j = 0;
+    if(size > 0 && str[0] == '-'){
+        size--;
+        j++;
+        res->data->positive = 0;
+    }
+    size_t _size = size / dif + (size_t) (size % dif != 0);
+    sub_integer_resize(res->data, _size);
+    for (size_t i = 0; i < _size; i++) res->data->data[i] = 0;
+    for (size_t i = size; i > 0; j++) {
+        i--;
+        res->data->data[i / dif] <<= type_size;
+        res->data->data[i / dif] |= set_char_16(str[j]);
+    }
+    sub_integer_fit(res->data);
+#endif
+}
+// Cmp methods
 int integer_is_null(const struct integer_st *res) {
     if (res == NULL) return 1;
 #ifdef USE_GMP
@@ -485,6 +551,7 @@ void integer_get_tlv(const struct integer_st *res, struct string_st *tlv) {
 #endif
 }
 
+// Math methods
 void integer__mod(struct object_st *res, const struct integer_st *obj1, const struct object_st *obj2) {
     while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
     if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
@@ -548,4 +615,25 @@ void integer__rs(struct object_st *res, const struct integer_st *obj1, const str
     int count = integer_get_si(obj2->data);
     if (count >= 0) integer_rs(res->data, obj1, count);
     else integer_ls(res->data, obj1, -count);
+}
+void integer__neg(struct object_st *res, const struct integer_st *obj1) {
+    object_set_type(res, INTEGER_TYPE);
+    integer_neg(res->data, obj1);
+}
+
+// Convert methods
+void integer__bool(struct object_st *res, struct integer_st *obj){
+    object_set_type(res, INTEGER_TYPE);
+    if(mpz_cmp_ui(obj->mpz_int, 0) == 0) integer_set_ui(res->data, 0);
+    else integer_set_ui(res->data, 1);
+}
+void integer__int(struct object_st *res, struct integer_st *obj){
+    object_set_type(res, INTEGER_TYPE);
+    integer_set(res->data, obj);
+}
+void integer__float(struct object_st *res, struct integer_st *obj){
+    // TODO
+}
+void integer__str(struct object_st *res, struct integer_st *obj){
+    // TODO
 }
