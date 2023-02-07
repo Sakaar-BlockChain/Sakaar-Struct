@@ -72,9 +72,6 @@ int stack_cmp(const struct stack_st *obj1, const struct stack_st *obj2) {
     }
     return 0;
 }
-int stack_is_null(const struct stack_st *res) {
-    return (res == NULL || res->size == 0);
-}
 
 // Class methods
 void stack_add(struct stack_st *res, struct object_st *obj) {

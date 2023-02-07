@@ -74,7 +74,6 @@ int object_cmp(const struct object_st *, const struct object_st *);
 // Pointer methods
 struct object_st *object_copy(struct object_st *);
 void object_set_type(struct object_st *, struct object_type *);
-void object_set_ptr(struct object_st *, struct object_st *);
 
 // TLV methods
 void object_set_tlv(struct object_st *, const struct string_st *);

@@ -43,9 +43,6 @@ int map_cmp(const struct map_st *obj1, const struct map_st *obj2) {
     if (obj1 == obj2) return 0;
     return 2;
 }
-int map_is_null(const struct map_st *res) {
-    return (res == NULL);
-}
 
 // Class methods
 void map_set_name_(struct map_st *res, const char *name, size_t size) {

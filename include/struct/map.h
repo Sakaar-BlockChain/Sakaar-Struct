@@ -17,7 +17,6 @@ void map_set(struct map_st *, const struct map_st *);
 void map_clear(struct map_st *);
 void map_free(struct map_st *);
 int map_cmp(const struct map_st *, const struct map_st *);
-int map_is_null(const struct map_st *);
 
 // Class methods
 struct object_st *map_set_elm(struct map_st *, char *, size_t);

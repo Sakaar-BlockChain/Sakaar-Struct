@@ -20,8 +20,6 @@ void list_resize(struct list_st *, size_t);
 void list_append(struct list_st *, struct object_st* );
 void list_concat(struct list_st *, const struct list_st *);
 void list_add_new(struct list_st *, struct object_type *);
-void list_remove_last(struct list_st *);
-struct object_st *list_last(struct list_st *);
 
 void list_sort(struct list_st *);
 

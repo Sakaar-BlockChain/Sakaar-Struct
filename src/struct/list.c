@@ -81,15 +81,6 @@ void list_add_new(struct list_st *res, struct object_type *type) {
     res->data[res->size - 1] = object_new();
     object_set_type(res->data[res->size - 1], type);
 }
-void list_remove_last(struct list_st *res) {
-    if (res == NULL) return;
-
-    list_resize(res, res->size - 1);
-}
-struct object_st *list_last(struct list_st *res) {
-    if (res == NULL || res->size == 0) return NULL;
-    return res->data[res->size - 1];
-}
 
 
 void list_sort_merge(size_t st1, size_t fn1, size_t st2, size_t fn2, struct object_st **data, struct object_st **temp) {

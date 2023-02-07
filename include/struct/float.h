@@ -26,6 +26,7 @@ void float_add(struct float_st *, const struct float_st *, const struct float_st
 void float_sub(struct float_st *, const struct float_st *, const struct float_st *);
 void float_mul(struct float_st *, const struct float_st *, const struct float_st *);
 void float_div(struct float_st *, const struct float_st *, const struct float_st *);
+void float_neg(struct float_st *, const struct float_st *);
 
 // Math methods
 void float__mul(struct object_st *, const struct float_st *, const struct object_st *);

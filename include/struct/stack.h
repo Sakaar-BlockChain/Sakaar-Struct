@@ -22,7 +22,6 @@ void stack_set(struct stack_st *, const struct stack_st *);
 void stack_clear(struct stack_st *);
 void stack_free(struct stack_st *);
 int stack_cmp(const struct stack_st *, const struct stack_st *);
-int stack_is_null(const struct stack_st *);
 
 // Class methods
 void stack_add(struct stack_st *res, struct object_st* obj);

@@ -63,18 +63,6 @@ void object_set_type(struct object_st *res, struct object_type *type) {
     res->type = type;
     if (res->type != NULL && res->type->self._new != NULL) res->data = res->type->self._new();
 }
-void object_set_ptr(struct object_st *res, struct object_st *data) {
-    if (res == NULL || data == NULL) return;
-    if (res->type != NULL) {
-        if (res->data != NULL) {
-            if (res->type != NULL && res->type->self._free != NULL)
-                res->type->self._free(res->data);
-            res->data = NULL;
-        }
-    }
-    res->type = OBJECT_TYPE;
-    res->data = object_copy(data);
-}
 
 // TLV method
 void object_set_tlv(struct object_st *res, const struct string_st *tlv) {
