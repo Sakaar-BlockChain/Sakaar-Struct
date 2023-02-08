@@ -21,7 +21,7 @@ void activated_accounts_free(struct activated_accounts *res) {
     skr_free(res);
 }
 
-// TLV methods
+// TLV Methods
 void activated_accounts_set_tlv(struct activated_accounts *res, const struct string_st *tlv) {
     if (res == NULL) return;
     activated_accounts_clear(res);

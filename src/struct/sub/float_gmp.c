@@ -27,7 +27,7 @@ int float_is_null(const struct float_st *res) {
     return (mpf_cmp_ui(res->mpz_int, 0) == 0);
 }
 
-// Class methods
+// Class Methods
 void float_ls(struct float_st *res, const struct float_st *a, size_t num) {
     mpf_mul_2exp(res->mpz_int, a->mpz_int, num);
 }

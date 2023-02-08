@@ -1,5 +1,5 @@
-#ifndef SMART_ACTIVATED_ACCOUNTS_H
-#define SMART_ACTIVATED_ACCOUNTS_H
+#ifndef STRUCT_ACTIVATED_ACCOUNTS_H
+#define STRUCT_ACTIVATED_ACCOUNTS_H
 
 #include "struct.h"
 
@@ -12,9 +12,9 @@ void activated_accounts_set(struct activated_accounts *, const struct activated_
 void activated_accounts_clear(struct activated_accounts *);
 void activated_accounts_free(struct activated_accounts *);
 
-// TLV methods
+// TLV Methods
 void activated_accounts_set_tlv(struct activated_accounts *, const struct string_st *);
 void activated_accounts_get_tlv(const struct activated_accounts *, struct string_st *);
 
 
-#endif //SMART_ACTIVATED_ACCOUNTS_H
+#endif //STRUCT_ACTIVATED_ACCOUNTS_H

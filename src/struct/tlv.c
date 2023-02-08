@@ -2,7 +2,7 @@
 
 struct object_tlv tlv_tlv = {METHOD_GET_TLV &tlv_get_tlv, METHOD_SET_TLV &tlv_set_tlv};
 struct object_type tlv_type = {TLV_OP, &tlv_tlv};
-// Class methods
+// Class Methods
 void tlv_set_str(struct string_st *res, unsigned tag, const char *data, size_t size) {
     string_clear(res);
     unsigned char *size_str = skr_malloc(256);
@@ -132,7 +132,7 @@ void tlv_beautify(const struct string_st *tlv, struct string_st *res) {
     }
 }
 
-// TLV methods
+// TLV Methods
 void tlv_set_tlv(struct string_st *res, const struct string_st *tlv) {
     string_set(res, tlv);
 }

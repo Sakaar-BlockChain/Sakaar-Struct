@@ -32,7 +32,7 @@ int string_is_null(const struct string_st *res){
     return (res == NULL || res->size == 0);
 }
 
-// Class methods
+// Class Methods
 void string_resize(struct string_st *res, size_t size) {
     if (res->data == NULL && size != 0) {
         res->mx_size = size;
@@ -64,7 +64,7 @@ void string_concat(struct string_st *res, const struct string_st *a) {
     memcpy(res->data + _size, a->data, a->size);
 }
 
-// TLV methods
+// TLV Methods
 void string_set_tlv(struct string_st *res, const struct string_st *tlv) {
     if(res == NULL) return;
     if(string_is_null(tlv)) return string_clear(res);
@@ -79,7 +79,7 @@ void string_get_tlv(const struct string_st *res, struct string_st *tlv) {
     tlv_set_string(tlv, STRING_TLV, res);
 }
 
-// Math methods
+// Math Methods
 void string__mul(struct object_st *res, const struct string_st *obj1, const struct object_st *obj2) {
     while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
     if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
@@ -96,7 +96,7 @@ void string__add(struct object_st *res, const struct string_st *obj1, const stru
     string_concat(res->data, obj2->data);
 }
 
-// Convert methods
+// Convert Methods
 void string__bool(struct object_st *res, const struct string_st *obj){
     object_set_type(res, INTEGER_TYPE);
     if(obj->size == 0) integer_set_ui(res->data, 0);

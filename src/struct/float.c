@@ -4,7 +4,7 @@ struct object_math_op float_math = {NULL, NULL, METHOD_MATH &float__mul, METHOD_
 struct object_convert float_convert = {METHOD_CONVERT &float__bool, METHOD_CONVERT &float__int, METHOD_CONVERT &float__float, METHOD_CONVERT &float__str};
 struct object_type float_type = {FLOAT_OP, NULL, &float_math, &float_convert};
 
-// Math methods
+// Math Methods
 void float__mul(struct object_st *res, const struct float_st *obj1, const struct object_st *obj2) {
     while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
     if (obj2 == NULL || obj2->type != FLOAT_TYPE) return;
@@ -50,7 +50,7 @@ void float__neg(struct object_st *res, const struct float_st *obj1){
     float_neg(res->data, obj1);
 }
 
-// Convert methods
+// Convert Methods
 void float__bool(struct object_st *res, struct float_st *obj){
     object_set_type(res, INTEGER_TYPE);
     if(float_is_null(obj)) integer_set_ui(res->data, 0);

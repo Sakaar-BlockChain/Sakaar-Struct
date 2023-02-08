@@ -54,7 +54,7 @@ void wallet_data_free(struct wallet_data *res) {
     skr_free(res);
 }
 
-// TLV methods
+// TLV Methods
 void wallet_data_set_tlv(struct wallet_data *res, const struct string_st *tlv) {
     if (res == NULL) return;
     wallet_data_clear(res);

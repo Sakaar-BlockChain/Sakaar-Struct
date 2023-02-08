@@ -1,5 +1,5 @@
-#ifndef SMART_TRANSACTION_H
-#define SMART_TRANSACTION_H
+#ifndef STRUCT_TRANSACTION_H
+#define STRUCT_TRANSACTION_H
 
 #include "struct.h"
 #include "pre_transaction.h"
@@ -23,8 +23,8 @@ void transaction_set(struct transaction_st *, const struct transaction_st *a);
 void transaction_clear(struct transaction_st *);
 void transaction_free(struct transaction_st *);
 
-// TLV methods
+// TLV Methods
 void transaction_set_tlv(struct transaction_st *, const struct string_st *);
 void transaction_get_tlv(const struct transaction_st *, struct string_st *);
 
-#endif //SMART_TRANSACTION_H
+#endif //STRUCT_TRANSACTION_H

@@ -18,7 +18,7 @@ void float_free(struct float_st *);
 int float_cmp(const struct float_st *obj1, const struct float_st *obj2);
 int float_is_null(const struct float_st *);
 
-// Class methods
+// Class Methods
 void float_ls(struct float_st *, const struct float_st *, size_t );
 void float_rs(struct float_st *, const struct float_st *, size_t );
 
@@ -28,7 +28,7 @@ void float_mul(struct float_st *, const struct float_st *, const struct float_st
 void float_div(struct float_st *, const struct float_st *, const struct float_st *);
 void float_neg(struct float_st *, const struct float_st *);
 
-// Math methods
+// Math Methods
 void float__mul(struct object_st *, const struct float_st *, const struct object_st *);
 void float__add(struct object_st *, const struct float_st *, const struct object_st *);
 void float__sub(struct object_st *, const struct float_st *, const struct object_st *);
@@ -37,7 +37,7 @@ void float__ls(struct object_st *, const struct float_st *, const struct object_
 void float__rs(struct object_st *, const struct float_st *, const struct object_st *);
 void float__neg(struct object_st *, const struct float_st *);
 
-// Convert methods
+// Convert Methods
 void float__bool(struct object_st *res, struct float_st *obj);
 void float__int(struct object_st *res, struct float_st *obj);
 void float__float(struct object_st *res, struct float_st *obj);

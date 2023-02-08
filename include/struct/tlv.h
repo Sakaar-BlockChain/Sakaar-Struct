@@ -2,7 +2,7 @@
 #define TLV_H
 
 #include "struct.h"
-// Class methods
+// Class Methods
 void tlv_set_str(struct string_st *, unsigned, const char *, size_t);
 void tlv_set_string(struct string_st *, unsigned, const struct string_st *);
 
@@ -15,7 +15,7 @@ char *   tlv_get_value(char *);
 char *tlv_get_next_tlv(char *, struct string_st *);
 void tlv_beautify(const struct string_st *, struct string_st *);
 
-// TLV methods
+// TLV Methods
 void tlv_set_tlv(struct string_st *, const struct string_st *);
 void tlv_get_tlv(const struct string_st *, struct string_st *);
 

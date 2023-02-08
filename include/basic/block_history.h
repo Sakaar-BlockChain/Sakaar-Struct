@@ -1,5 +1,5 @@
-#ifndef SMART_BLOCK_HISTORY_H
-#define SMART_BLOCK_HISTORY_H
+#ifndef STRUCT_BLOCK_HISTORY_H
+#define STRUCT_BLOCK_HISTORY_H
 
 #include "struct.h"
 
@@ -18,9 +18,9 @@ void block_history_set(struct block_history *, const struct block_history *);
 void block_history_clear(struct block_history *);
 void block_history_free(struct block_history *);
 
-// TLV methods
+// TLV Methods
 void block_history_set_tlv(struct block_history *, const struct string_st *);
 void block_history_get_tlv(const struct block_history *, struct string_st *);
 
 
-#endif //SMART_BLOCK_HISTORY_H
+#endif //STRUCT_BLOCK_HISTORY_H

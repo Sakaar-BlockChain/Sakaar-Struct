@@ -1,5 +1,5 @@
-#ifndef SMART_PRE_TRANSACTION_H
-#define SMART_PRE_TRANSACTION_H
+#ifndef STRUCT_PRE_TRANSACTION_H
+#define STRUCT_PRE_TRANSACTION_H
 
 #include "struct.h"
 
@@ -20,4 +20,4 @@ void pre_transaction_clear(struct pre_transaction *);
 void pre_transaction_free(struct pre_transaction *);
 
 
-#endif //SMART_PRE_TRANSACTION_H
+#endif //STRUCT_PRE_TRANSACTION_H

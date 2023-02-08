@@ -61,7 +61,7 @@ void transaction_free(struct transaction_st *res) {
     skr_free(res);
 }
 
-// TLV methods
+// TLV Methods
 void transaction_set_tlv(struct transaction_st *res, const struct string_st *tlv) {
     if (res == NULL) return;
     transaction_clear(res);

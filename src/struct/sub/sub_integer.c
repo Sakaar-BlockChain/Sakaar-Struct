@@ -484,7 +484,7 @@ signed   sub_integer_get_si(const struct sub_integer *res) {
 
 
 
-// TLV methods
+// TLV Methods
 void sub_integer_set_tlv(struct sub_integer *res, const struct string_st *tlv) {
     if(res == NULL) return;
     sub_integer_clear(res);

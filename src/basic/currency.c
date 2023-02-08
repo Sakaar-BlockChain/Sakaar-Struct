@@ -57,7 +57,7 @@ void currency_free(struct currency_st *res) {
     skr_free(res);
 }
 
-// TLV methods
+// TLV Methods
 void currency_set_tlv(struct currency_st *res, const struct string_st *tlv) {
     if (res == NULL) return;
     currency_clear(res);

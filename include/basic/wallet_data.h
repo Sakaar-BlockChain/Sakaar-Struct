@@ -1,5 +1,5 @@
-#ifndef SMART_WALLET_DATA_H
-#define SMART_WALLET_DATA_H
+#ifndef STRUCT_WALLET_DATA_H
+#define STRUCT_WALLET_DATA_H
 
 #include "struct.h"
 
@@ -20,9 +20,9 @@ void wallet_data_set(struct wallet_data *, const struct wallet_data *a);
 void wallet_data_clear(struct wallet_data *);
 void wallet_data_free(struct wallet_data *);
 
-// TLV methods
+// TLV Methods
 void wallet_data_set_tlv(struct wallet_data *, const struct string_st *);
 void wallet_data_get_tlv(const struct wallet_data *, struct string_st *);
 
 
-#endif //SMART_WALLET_DATA_H
+#endif //STRUCT_WALLET_DATA_H

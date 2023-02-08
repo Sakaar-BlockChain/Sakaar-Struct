@@ -1,5 +1,5 @@
-#ifndef SMART_SAKAAR_H
-#define SMART_SAKAAR_H
+#ifndef STRUCT_BASIC_H
+#define STRUCT_BASIC_H
 
 #include "struct.h"
 
@@ -86,4 +86,4 @@ extern struct object_type wallet_smart_type;
 #define WALLET_DATA_TYPE        &wallet_data_type
 #define WALLET_SMART_TYPE       &wallet_smart_type
 
-#endif //SMART_SAKAAR_H
+#endif //STRUCT_BASIC_H

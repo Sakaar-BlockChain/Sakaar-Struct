@@ -29,7 +29,7 @@ void account_connections_free(struct account_connections *res) {
     skr_free(res);
 }
 
-// TLV methods
+// TLV Methods
 void account_connections_set_tlv(struct account_connections *res, const struct string_st *tlv) {
     if (res == NULL) return;
     account_connections_clear(res);

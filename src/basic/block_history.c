@@ -45,7 +45,7 @@ void block_history_free(struct block_history *res) {
     skr_free(res);
 }
 
-// TLV methods
+// TLV Methods
 void block_history_set_tlv(struct block_history *res, const struct string_st *tlv) {
     if (res == NULL) return;
     block_history_clear(res);

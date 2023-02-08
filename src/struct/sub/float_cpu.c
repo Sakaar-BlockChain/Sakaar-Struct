@@ -49,7 +49,7 @@ int float_is_null(const struct float_st *res) {
 #endif
 }
 
-// Class methods
+// Class Methods
 void float_ls(struct float_st *res, const struct float_st *a, size_t num) {
 #ifdef USE_GMP
     mpf_mul_2exp(res->mpz_int, a->mpz_int, num);

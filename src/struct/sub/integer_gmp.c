@@ -27,7 +27,7 @@ int integer_cmp(const struct integer_st *obj1, const struct integer_st *obj2) {
 
 }
 
-// Class methods
+// Class Methods
 void integer_ls(struct integer_st *res, const struct integer_st *a, size_t num) {
     mpz_mul_2exp(res->mpz_int, a->mpz_int, num);
 
@@ -81,7 +81,7 @@ void integer_neg(struct integer_st *res, const struct integer_st *a) {
     mpz_neg(res->mpz_int, a->mpz_int);
 }
 
-// Data init methods
+// Data init Methods
 void integer_set_ui(struct integer_st *res, unsigned number) {
     mpz_set_ui(res->mpz_int, number);
 
@@ -95,7 +95,7 @@ signed integer_get_si(const struct integer_st *res) {
 
 }
 
-// Hex methods
+// Hex Methods
 void _integer_set_str(struct integer_st *res, const char *str, size_t size) {
     if (str == NULL) integer_clear(res);
     if(str == NULL) return mpz_set_ui(res->mpz_int, 0);
@@ -163,7 +163,7 @@ void _integer_set_str_bin(struct integer_st *res, const char *str, size_t size) 
     else mpz_set_ui(res->mpz_int, 0);
     string_free(temp);
 }
-// Cmp methods
+// Cmp Methods
 int integer_is_null(const struct integer_st *res) {
     if (res == NULL) return 1;
     return (mpz_cmp_ui(res->mpz_int, 0) == 0);
@@ -187,7 +187,7 @@ void integer_random(struct integer_st *res, const struct integer_st *a) {
 
 }
 
-// TLV methods
+// TLV Methods
 void _integer_set_tlv(struct integer_st *res, const struct string_st *tlv) {
     if (res == NULL) return;
     integer_clear(res);

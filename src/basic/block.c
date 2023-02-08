@@ -60,7 +60,7 @@ int block_is_null(const struct block_st *res) {
     return (res == NULL || string_is_null(res->hash));
 }
 
-// TLV methods
+// TLV Methods
 void block_set_tlv(struct block_st *res, const struct string_st *tlv) {
     if (res == NULL) return;
     block_clear(res);

@@ -56,7 +56,7 @@ int account_is_null(const struct account_st *a) {
     return (a == NULL || string_is_null(a->address));
 }
 
-// TLV methods
+// TLV Methods
 void account_set_tlv(struct account_st *res, const struct string_st *tlv) {
     if (res == NULL) return;
     account_clear(res);

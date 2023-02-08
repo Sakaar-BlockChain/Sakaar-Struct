@@ -40,7 +40,7 @@ int list_is_null(const struct list_st *res) {
     return (res == NULL || res->size == 0);
 }
 
-// Class methods
+// Class Methods
 void list_resize(struct list_st *res, size_t size) {
     if (res->data == NULL && size != 0) {
         res->max_size = size;
@@ -120,7 +120,7 @@ void list_sort(struct list_st *res) {
     list_free(temp);
 }
 
-// TLV methods
+// TLV Methods
 void list_set_tlv(struct list_st *res, const struct string_st *tlv) {
     if (res == NULL) return;
     list_clear(res);
@@ -159,7 +159,7 @@ void list_set_tlv_self(struct list_st *res, const struct string_st *tlv, struct 
         object_set_tlv_self(res->data[i], type);
 }
 
-// Math methods
+// Math Methods
 void list__mul(struct object_st *res, const struct list_st *obj1, const struct object_st *obj2) {
     while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
     if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
@@ -176,7 +176,7 @@ void list__add(struct object_st *res, const struct list_st *obj1, const struct o
     list_concat(res->data, obj2->data);
 }
 
-// Convert methods
+// Convert Methods
 void list__str(struct object_st *res, const struct list_st *obj){
     //TODO
 }

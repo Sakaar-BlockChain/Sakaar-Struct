@@ -5,7 +5,7 @@ struct object_math_op integer_math = {METHOD_MATH &integer__mod, METHOD_MATH &in
 struct object_convert integer_convert = {METHOD_CONVERT &integer__bool, METHOD_CONVERT &integer__int, METHOD_CONVERT &integer__float, METHOD_CONVERT &integer__str};
 struct object_type integer_type = {INTEGER_OP, &integer_tlv, &integer_math, &integer_convert};
 
-// Math methods
+// Math Methods
 void integer__mod(struct object_st *res, const struct integer_st *obj1, const struct object_st *obj2) {
     while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
     if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
@@ -75,7 +75,7 @@ void integer__neg(struct object_st *res, const struct integer_st *obj1) {
     integer_neg(res->data, obj1);
 }
 
-// Convert methods
+// Convert Methods
 void integer__bool(struct object_st *res, struct integer_st *obj){
     object_set_type(res, INTEGER_TYPE);
     if(integer_is_null(obj)) integer_set_ui(res->data, 0);

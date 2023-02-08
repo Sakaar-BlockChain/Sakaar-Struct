@@ -71,16 +71,16 @@ void object_clear(struct object_st *);
 void object_free(struct object_st *);
 int object_cmp(const struct object_st *, const struct object_st *);
 
-// Pointer methods
+// Pointer Methods
 struct object_st *object_copy(struct object_st *);
 void object_set_type(struct object_st *, struct object_type *);
 
-// TLV methods
+// TLV Methods
 void object_set_tlv(struct object_st *, const struct string_st *);
 void object_get_tlv(const struct object_st *, struct string_st *);
 void object_set_tlv_self(struct object_st *, struct object_type *);
 
-// Math methods
+// Math Methods
 void object__mod(struct object_st *, const struct object_st *, const struct object_st *);
 void object__and(struct object_st *, const struct object_st *, const struct object_st *);
 void object__mul(struct object_st *, const struct object_st *, const struct object_st *);
@@ -93,7 +93,7 @@ void object__ls(struct object_st *, const struct object_st *, const struct objec
 void object__rs(struct object_st *, const struct object_st *, const struct object_st *);
 void object__neg(struct object_st *, const struct object_st *);
 
-// Convert methods
+// Convert Methods
 void object__bool(struct object_st *, const struct object_st *);
 void object__int(struct object_st *, const struct object_st *);
 void object__float(struct object_st *, const struct object_st *);

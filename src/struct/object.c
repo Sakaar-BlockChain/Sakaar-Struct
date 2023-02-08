@@ -44,7 +44,7 @@ int object_cmp(const struct object_st *obj1, const struct object_st *obj2) {
     return 0;
 }
 
-// Class methods
+// Class Methods
 struct object_st *object_copy(struct object_st *res) {
     if (res == NULL) return NULL;
     res->counter++;
@@ -86,7 +86,7 @@ void object_set_tlv_self(struct object_st *res, struct object_type *type) {
     string_free(tlv);
 }
 
-// Math methods
+// Math Methods
 void object__mod(struct object_st *res, const struct object_st *obj1, const struct object_st *obj2) {
     while (obj1 != NULL && obj1->type == OBJECT_TYPE) obj1 = res->data;
     if (obj1 == NULL || obj1->type == NULL) return;
@@ -165,7 +165,7 @@ void object__neg(struct object_st *res, const struct object_st *obj1){
     }
 }
 
-// Convert methods
+// Convert Methods
 void object__bool(struct object_st *res, const struct object_st *obj) {
     while (obj != NULL && obj->type == OBJECT_TYPE) obj = res->data;
     if (obj == NULL || obj->type == NULL) {

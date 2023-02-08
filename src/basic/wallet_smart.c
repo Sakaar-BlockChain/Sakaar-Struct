@@ -53,7 +53,7 @@ void wallet_smart_free(struct wallet_smart *res) {
     skr_free(res);
 }
 
-// TLV methods
+// TLV Methods
 void wallet_smart_set_tlv(struct wallet_smart *res, const struct string_st *tlv) {
     if (res == NULL) return;
     wallet_smart_clear(res);

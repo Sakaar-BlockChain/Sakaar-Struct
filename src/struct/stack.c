@@ -73,7 +73,7 @@ int stack_cmp(const struct stack_st *obj1, const struct stack_st *obj2) {
     return 0;
 }
 
-// Class methods
+// Class Methods
 void stack_add(struct stack_st *res, struct object_st *obj) {
     if (res == NULL || obj == NULL) return;
     struct stack_el *elm = stack_el_new();

@@ -1,5 +1,5 @@
-#ifndef SMART_CURRENCY_H
-#define SMART_CURRENCY_H
+#ifndef STRUCT_CURRENCY_H
+#define STRUCT_CURRENCY_H
 
 #include "struct.h"
 
@@ -21,9 +21,9 @@ void currency_set(struct currency_st *, const struct currency_st *);
 void currency_clear(struct currency_st *);
 void currency_free(struct currency_st *);
 
-// TLV methods
+// TLV Methods
 void currency_set_tlv(struct currency_st *, const struct string_st *);
 void currency_get_tlv(const struct currency_st *, struct string_st *);
 
 
-#endif //SMART_CURRENCY_H
+#endif //STRUCT_CURRENCY_H

@@ -45,7 +45,7 @@ void sub_integer_set_si(struct sub_integer *, signed);
 unsigned sub_integer_get_ui(const struct sub_integer *);
 signed   sub_integer_get_si(const struct sub_integer *);
 
-// TLV methods
+// TLV Methods
 void sub_integer_set_tlv(struct sub_integer *, const struct string_st *);
 void sub_integer_get_tlv(const struct sub_integer *, struct string_st *);
 

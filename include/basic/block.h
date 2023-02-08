@@ -1,5 +1,5 @@
-#ifndef SMART_BLOCK_H
-#define SMART_BLOCK_H
+#ifndef STRUCT_BLOCK_H
+#define STRUCT_BLOCK_H
 
 #include "struct.h"
 #include "time.h"
@@ -24,9 +24,9 @@ void block_clear(struct block_st *);
 void block_free(struct block_st *);
 int block_is_null(const struct block_st *);
 
-// TLV methods
+// TLV Methods
 void block_set_tlv(struct block_st *, const struct string_st *);
 void block_get_tlv(const struct block_st *, struct string_st *);
 
 
-#endif //SMART_BLOCK_H
+#endif //STRUCT_BLOCK_H

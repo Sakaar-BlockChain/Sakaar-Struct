@@ -31,7 +31,7 @@ void generation_free(struct generation *res) {
     skr_free(res);
 }
 
-// TLV methods
+// TLV Methods
 void generation_set_tlv(struct generation *res, const struct string_st *tlv) {
     if (res == NULL) return;
     generation_clear(res);

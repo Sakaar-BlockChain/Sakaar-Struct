@@ -17,7 +17,7 @@ void integer_clear(struct integer_st *);
 void integer_free(struct integer_st *);
 int integer_cmp(const struct integer_st *obj1, const struct integer_st *obj2);
 
-// Class methods
+// Class Methods
 void integer_ls(struct integer_st *, const struct integer_st *, size_t );
 void integer_rs(struct integer_st *, const struct integer_st *, size_t );
 void integer_and(struct integer_st *, const struct integer_st *, const struct integer_st *);
@@ -33,12 +33,12 @@ void integer_inv(struct integer_st *, const struct integer_st *, const struct in
 void integer_powm(struct integer_st *, const struct integer_st *, const struct integer_st *, const struct integer_st *);
 void integer_neg(struct integer_st *, const struct integer_st *);
 
-// Data init methods
+// Data init Methods
 void integer_set_ui(struct integer_st *, unsigned);
 unsigned integer_get_ui(const struct integer_st *);
 signed integer_get_si(const struct integer_st *);
 
-// Hex methods
+// Hex Methods
 void _integer_set_str(struct integer_st *, const char *, size_t);
 void integer_set_str(struct integer_st *, const struct string_st *);
 void integer_get_str(const struct integer_st *, struct string_st *);
@@ -47,18 +47,18 @@ void integer_set_time(struct integer_st *);
 void _integer_set_str_dec(struct integer_st *, const char *, size_t);
 void _integer_set_str_oct(struct integer_st *, const char *, size_t);
 void _integer_set_str_bin(struct integer_st *, const char *, size_t);
-// Cmp methods
+// Cmp Methods
 int integer_is_null(const struct integer_st *);
 int integer_is_neg(const struct integer_st *);
 void integer_random(struct integer_st *, const struct integer_st *);
 
-// TLV methods
+// TLV Methods
 void _integer_set_tlv(struct integer_st *, const struct string_st *);
 void _integer_get_tlv(const struct integer_st *, struct string_st *, unsigned);
 void integer_set_tlv(struct integer_st *, const struct string_st *);
 void integer_get_tlv(const struct integer_st *, struct string_st *);
 
-// Math methods
+// Math Methods
 void integer__mod(struct object_st *, const struct integer_st *, const struct object_st *);
 void integer__and(struct object_st *, const struct integer_st *, const struct object_st *);
 void integer__mul(struct object_st *, const struct integer_st *, const struct object_st *);
@@ -71,7 +71,7 @@ void integer__ls(struct object_st *, const struct integer_st *, const struct obj
 void integer__rs(struct object_st *, const struct integer_st *, const struct object_st *);
 void integer__neg(struct object_st *, const struct integer_st *);
 
-// Convert methods
+// Convert Methods
 void integer__bool(struct object_st *res, struct integer_st *obj);
 void integer__int(struct object_st *res, struct integer_st *obj);
 void integer__float(struct object_st *res, struct integer_st *obj);

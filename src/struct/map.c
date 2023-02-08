@@ -44,7 +44,7 @@ int map_cmp(const struct map_st *obj1, const struct map_st *obj2) {
     return 2;
 }
 
-// Class methods
+// Class Methods
 void map_set_name_(struct map_st *res, const char *name, size_t size) {
     if (res->name != NULL) skr_free(res->name);
     res->size = size;

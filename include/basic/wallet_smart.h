@@ -1,5 +1,5 @@
-#ifndef SMART_WALLET_SMART_H
-#define SMART_WALLET_SMART_H
+#ifndef STRUCT_WALLET_SMART_H
+#define STRUCT_WALLET_SMART_H
 
 #include "struct.h"
 #include "currency.h"
@@ -21,9 +21,9 @@ void wallet_smart_set(struct wallet_smart *, const struct wallet_smart *);
 void wallet_smart_clear(struct wallet_smart *);
 void wallet_smart_free(struct wallet_smart *);
 
-// TLV methods
+// TLV Methods
 void wallet_smart_set_tlv(struct wallet_smart *, const struct string_st *);
 void wallet_smart_get_tlv(const struct wallet_smart *, struct string_st *);
 
 
-#endif //SMART_WALLET_SMART_H
+#endif //STRUCT_WALLET_SMART_H
