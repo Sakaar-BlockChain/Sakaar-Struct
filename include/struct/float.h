@@ -15,8 +15,15 @@ struct float_st *float_new();
 void float_set(struct float_st *, const struct float_st *);
 void float_clear(struct float_st *);
 void float_free(struct float_st *);
+
+void float_data_init(struct float_st *);
+void float_data_free(struct float_st *);
+
 int float_cmp(const struct float_st *obj1, const struct float_st *obj2);
 int float_is_null(const struct float_st *);
+
+void float_set_str(struct float_st *, const struct string_st *);
+void float_get_str(const struct float_st *, struct string_st *);
 
 // Class Methods
 void float_ls(struct float_st *, const struct float_st *, size_t );
@@ -29,19 +36,19 @@ void float_div(struct float_st *, const struct float_st *, const struct float_st
 void float_neg(struct float_st *, const struct float_st *);
 
 // Math Methods
-void float__mul(struct object_st *, const struct float_st *, const struct object_st *);
-void float__add(struct object_st *, const struct float_st *, const struct object_st *);
-void float__sub(struct object_st *, const struct float_st *, const struct object_st *);
-void float__div(struct object_st *, const struct float_st *, const struct object_st *);
-void float__ls(struct object_st *, const struct float_st *, const struct object_st *);
-void float__rs(struct object_st *, const struct float_st *, const struct object_st *);
-void float__neg(struct object_st *, const struct float_st *);
+void float__mul(struct object_st *, struct object_st *, const struct float_st *, const struct object_st *);
+void float__add(struct object_st *, struct object_st *, const struct float_st *, const struct object_st *);
+void float__sub(struct object_st *, struct object_st *, const struct float_st *, const struct object_st *);
+void float__div(struct object_st *, struct object_st *, const struct float_st *, const struct object_st *);
+void float__ls(struct object_st *, struct object_st *, const struct float_st *, const struct object_st *);
+void float__rs(struct object_st *, struct object_st *, const struct float_st *, const struct object_st *);
+void float__neg(struct object_st *, struct object_st *, const struct float_st *);
 
 // Convert Methods
-void float__bool(struct object_st *res, struct float_st *obj);
-void float__int(struct object_st *res, struct float_st *obj);
-void float__float(struct object_st *res, struct float_st *obj);
-void float__str(struct object_st *res, struct float_st *obj);
+void float__bool(struct object_st *, struct object_st *, struct float_st *);
+void float__int(struct object_st *, struct object_st *, struct float_st *);
+void float__float(struct object_st *, struct object_st *, struct float_st *);
+void float__str(struct object_st *, struct object_st *, struct float_st *);
 
 // Print
 void print_float(const struct float_st *);

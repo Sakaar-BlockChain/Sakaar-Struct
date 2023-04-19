@@ -12,6 +12,10 @@ struct list_st *list_new();
 void list_set(struct list_st *, const struct list_st *);
 void list_clear(struct list_st *);
 void list_free(struct list_st *);
+
+void list_data_init(struct list_st *);
+void list_data_free(struct list_st *);
+
 int list_cmp(const struct list_st *, const struct list_st *);
 int list_is_null(const struct list_st *);
 
@@ -20,6 +24,7 @@ void list_resize(struct list_st *, size_t);
 void list_append(struct list_st *, struct object_st* );
 void list_concat(struct list_st *, const struct list_st *);
 void list_add_new(struct list_st *, struct object_type *);
+struct object_st *list_pop(struct list_st *);
 
 void list_sort(struct list_st *);
 
@@ -28,11 +33,11 @@ void list_set_tlv(struct list_st *, const struct string_st *);
 void list_get_tlv(const struct list_st *, struct string_st *);
 void list_set_tlv_self(struct list_st *, const struct string_st *, struct object_type *);
 
-void list__mul(struct object_st *, const struct list_st *, const struct object_st *);
-void list__add(struct object_st *, const struct list_st *, const struct object_st *);
+void list__mul(struct object_st *, struct object_st *, const struct list_st *, const struct object_st *);
+void list__add(struct object_st *, struct object_st *, const struct list_st *, const struct object_st *);
 
 // Convert Methods
-void list__str(struct object_st *, const struct list_st *);
+void list__str(struct object_st *, struct object_st *, const struct list_st *);
 
 // Print
 void print_list(const struct list_st *, int);

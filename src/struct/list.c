@@ -25,6 +25,16 @@ void list_free(struct list_st *res) {
     if (res->data != NULL) skr_free(res->data);
     skr_free(res);
 }
+
+void list_data_init(struct list_st *res) {
+    res->data = NULL;
+    res->max_size = res->size = 0;
+}
+void list_data_free(struct list_st *res) {
+    list_resize(res, 0);
+    if (res->data != NULL) skr_free(res->data);
+}
+
 int list_cmp(const struct list_st *obj1, const struct list_st *obj2) {
     if (obj1->size > obj2->size) return 1;
     if (obj1->size < obj2->size) return -1;
@@ -80,6 +90,13 @@ void list_add_new(struct list_st *res, struct object_type *type) {
     list_resize(res, res->size + 1);
     res->data[res->size - 1] = object_new();
     object_set_type(res->data[res->size - 1], type);
+}
+struct object_st *list_pop(struct list_st *res) {
+    if(res == NULL || res->size == 0) return NULL;
+
+    struct object_st *ret = res->data[--res->size];
+    res->data[res->size] = NULL;
+    return ret;
 }
 
 
@@ -160,23 +177,35 @@ void list_set_tlv_self(struct list_st *res, const struct string_st *tlv, struct 
 }
 
 // Math Methods
-void list__mul(struct object_st *res, const struct list_st *obj1, const struct object_st *obj2) {
+void list__mul(struct object_st *res, struct object_st *err, const struct list_st *obj1, const struct object_st *obj2) {
     while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
-    if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
+    struct object_st *temp = object_new();
+    object__int(temp, err, obj2);
+    if(err->type != NONE_TYPE) {
+        object_free(temp);
+        return;
+    }
     object_set_type(res, STRING_TYPE);
-    unsigned int count = integer_get_ui(obj2->data);
+    unsigned int count = integer_get_ui(temp->data);
     for (unsigned int i = 0; i < count; i++)
         list_concat(res->data, obj1);
+    object_free(temp);
 }
-void list__add(struct object_st *res, const struct list_st *obj1, const struct object_st *obj2) {
+void list__add(struct object_st *res, struct object_st *err, const struct list_st *obj1, const struct object_st *obj2) {
     while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
-    if (obj2 == NULL || obj2->type != LIST_TYPE) return;
+    if (obj2 == NULL || obj2->type != LIST_TYPE) {
+        object_set_type(err, STRING_TYPE);
+        string_set_str(err->data, "list dont have operation add with non list type", 47);
+        return;
+    }
     object_set_type(res, LIST_TYPE);
     list_set(res->data, obj1);
     list_concat(res->data, obj2->data);
 }
 
 // Convert Methods
-void list__str(struct object_st *res, const struct list_st *obj){
+void list__str(struct object_st *res, struct object_st *err, const struct list_st *obj){
+    object_set_type(err, STRING_TYPE);
+    string_set_str(err->data, "Not Done", 8);
     //TODO
 }

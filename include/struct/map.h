@@ -16,6 +16,10 @@ struct map_st *map_new();
 void map_set(struct map_st *, const struct map_st *);
 void map_clear(struct map_st *);
 void map_free(struct map_st *);
+
+void map_data_init(struct map_st *);
+void map_data_free(struct map_st *);
+
 int map_cmp(const struct map_st *, const struct map_st *);
 
 // Class Methods

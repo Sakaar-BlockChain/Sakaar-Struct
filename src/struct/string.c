@@ -23,6 +23,15 @@ void string_free(struct string_st *res) {
     if (res->data != NULL) skr_free(res->data);
     skr_free(res);
 }
+
+void string_data_init(struct string_st *res) {
+    res->data = NULL;
+    res->mx_size = res->size = 0;
+}
+void string_data_free(struct string_st *res) {
+    if(res->data != NULL) skr_free(res->data);
+}
+
 int string_cmp(const struct string_st *obj1, const struct string_st *obj2) {
     if (obj1->size > obj2->size) return 1;
     if (obj1->size < obj2->size) return -1;
@@ -80,35 +89,49 @@ void string_get_tlv(const struct string_st *res, struct string_st *tlv) {
 }
 
 // Math Methods
-void string__mul(struct object_st *res, const struct string_st *obj1, const struct object_st *obj2) {
+void string__mul(struct object_st *res, struct object_st *err, const struct string_st *obj1, const struct object_st *obj2) {
     while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
-    if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
+    struct object_st *temp = object_new();
+    object__int(temp, err, obj2);
+    if(err->type != NONE_TYPE) {
+        object_free(temp);
+        return;
+    }
     object_set_type(res, STRING_TYPE);
-    unsigned int count = integer_get_ui(obj2->data);
+    unsigned int count = integer_get_ui(temp->data);
     for (unsigned int i = 0; i < count; i++)
         string_concat(res->data, obj1);
+    object_free(temp);
 }
-void string__add(struct object_st *res, const struct string_st *obj1, const struct object_st *obj2) {
+void string__add(struct object_st *res, struct object_st *err, const struct string_st *obj1, const struct object_st *obj2) {
     while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
-    if (obj2 == NULL || obj2->type != STRING_TYPE) return;
+    struct object_st *temp = object_new();
+    object__str(temp, err, obj2);
+    if(err->type != NONE_TYPE) {
+        object_free(temp);
+        return;
+    }
     object_set_type(res, STRING_TYPE);
     string_set(res->data, obj1);
-    string_concat(res->data, obj2->data);
+    string_concat(res->data, temp->data);
+    object_free(temp);
 }
 
 // Convert Methods
-void string__bool(struct object_st *res, const struct string_st *obj){
+void string__bool(struct object_st *res, struct object_st *err, const struct string_st *obj){
     object_set_type(res, INTEGER_TYPE);
     if(obj->size == 0) integer_set_ui(res->data, 0);
     else integer_set_ui(res->data, 1);
 }
-void string__int(struct object_st *res, const struct string_st *obj){
-    // TODO
+void string__int(struct object_st *res, struct object_st *err, const struct string_st *obj){
+    object_set_type(res, INTEGER_TYPE);
+    integer_set_dec(res->data, obj);
 }
-void string__float(struct object_st *res, const struct string_st *obj){
-    // TODO
+void string__float(struct object_st *res, struct object_st *err, const struct string_st *obj){
+    object_set_type(res, FLOAT_TYPE);
+    float_set_str(res->data, obj);
 }
-void string__str(struct object_st *res, const struct string_st *obj){
+void string__str(struct object_st *res, struct object_st *err, const struct string_st *obj){
     object_set_type(res, STRING_TYPE);
     string_set(res->data, obj);
 }

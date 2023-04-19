@@ -15,7 +15,14 @@ struct integer_st *integer_new();
 void integer_set(struct integer_st *, const struct integer_st *);
 void integer_clear(struct integer_st *);
 void integer_free(struct integer_st *);
+
+void integer_data_init(struct integer_st *);
+void integer_data_free(struct integer_st *);
+
 int integer_cmp(const struct integer_st *obj1, const struct integer_st *obj2);
+int integer_is_null(const struct integer_st *);
+int integer_is_neg(const struct integer_st *);
+void integer_random(struct integer_st *, const struct integer_st *);
 
 // Class Methods
 void integer_ls(struct integer_st *, const struct integer_st *, size_t );
@@ -47,10 +54,9 @@ void integer_set_time(struct integer_st *);
 void _integer_set_str_dec(struct integer_st *, const char *, size_t);
 void _integer_set_str_oct(struct integer_st *, const char *, size_t);
 void _integer_set_str_bin(struct integer_st *, const char *, size_t);
-// Cmp Methods
-int integer_is_null(const struct integer_st *);
-int integer_is_neg(const struct integer_st *);
-void integer_random(struct integer_st *, const struct integer_st *);
+
+void integer_set_dec(struct integer_st *, const struct string_st *);
+void integer_get_dec(const struct integer_st *, struct string_st *);
 
 // TLV Methods
 void _integer_set_tlv(struct integer_st *, const struct string_st *);
@@ -59,25 +65,28 @@ void integer_set_tlv(struct integer_st *, const struct string_st *);
 void integer_get_tlv(const struct integer_st *, struct string_st *);
 
 // Math Methods
-void integer__mod(struct object_st *, const struct integer_st *, const struct object_st *);
-void integer__and(struct object_st *, const struct integer_st *, const struct object_st *);
-void integer__mul(struct object_st *, const struct integer_st *, const struct object_st *);
-void integer__add(struct object_st *, const struct integer_st *, const struct object_st *);
-void integer__sub(struct object_st *, const struct integer_st *, const struct object_st *);
-void integer__div(struct object_st *, const struct integer_st *, const struct object_st *);
-void integer__xor(struct object_st *, const struct integer_st *, const struct object_st *);
-void integer__or(struct object_st *, const struct integer_st *, const struct object_st *);
-void integer__ls(struct object_st *, const struct integer_st *, const struct object_st *);
-void integer__rs(struct object_st *, const struct integer_st *, const struct object_st *);
-void integer__neg(struct object_st *, const struct integer_st *);
+void integer__mod(struct object_st *, struct object_st *, const struct integer_st *, const struct object_st *);
+void integer__and(struct object_st *, struct object_st *, const struct integer_st *, const struct object_st *);
+void integer__mul(struct object_st *, struct object_st *, const struct integer_st *, const struct object_st *);
+void integer__add(struct object_st *, struct object_st *, const struct integer_st *, const struct object_st *);
+void integer__sub(struct object_st *, struct object_st *, const struct integer_st *, const struct object_st *);
+void integer__div(struct object_st *, struct object_st *, const struct integer_st *, const struct object_st *);
+void integer__xor(struct object_st *, struct object_st *, const struct integer_st *, const struct object_st *);
+void integer__or(struct object_st *, struct object_st *, const struct integer_st *, const struct object_st *);
+void integer__ls(struct object_st *, struct object_st *, const struct integer_st *, const struct object_st *);
+void integer__rs(struct object_st *, struct object_st *, const struct integer_st *, const struct object_st *);
+void integer__neg(struct object_st *, struct object_st *, const struct integer_st *);
 
 // Convert Methods
-void integer__bool(struct object_st *res, struct integer_st *obj);
-void integer__int(struct object_st *res, struct integer_st *obj);
-void integer__float(struct object_st *res, struct integer_st *obj);
-void integer__str(struct object_st *res, struct integer_st *obj);
+void integer__bool(struct object_st *, struct object_st *res, struct integer_st *obj);
+void integer__int(struct object_st *, struct object_st *res, struct integer_st *obj);
+void integer__float(struct object_st *, struct object_st *res, struct integer_st *obj);
+void integer__str(struct object_st *, struct object_st *res, struct integer_st *obj);
 
 // Print
 void print_int(const struct integer_st *);
+
+char get_char_16(unsigned);
+unsigned short set_char_16(char );
 
 #endif //INTEGER_H

@@ -133,18 +133,15 @@ void integer_set_time(struct integer_st *res) {
 
 void _integer_set_str_dec(struct integer_st *res, const char *str, size_t size) {
     if (str == NULL) integer_clear(res);
-    if(str == NULL) return mpz_set_ui(res->mpz_int, 0);
     struct string_st *temp = string_new();
     string_set_str(temp, str, size);
     if (string_is_null(temp)) integer_clear(res);
     if(temp->data != NULL) mpz_set_str(res->mpz_int, temp->data, 10);
     else mpz_set_ui(res->mpz_int, 0);
     string_free(temp);
-
 }
 void _integer_set_str_oct(struct integer_st *res, const char *str, size_t size) {
     if (str == NULL) integer_clear(res);
-    if(str == NULL) return mpz_set_ui(res->mpz_int, 0);
     struct string_st *temp = string_new();
     string_set_str(temp, str, size);
     if (string_is_null(temp)) integer_clear(res);
@@ -155,13 +152,26 @@ void _integer_set_str_oct(struct integer_st *res, const char *str, size_t size) 
 }
 void _integer_set_str_bin(struct integer_st *res, const char *str, size_t size) {
     if (str == NULL) integer_clear(res);
-    if(str == NULL) return mpz_set_ui(res->mpz_int, 0);
     struct string_st *temp = string_new();
     string_set_str(temp, str, size);
     if (string_is_null(temp)) integer_clear(res);
     if(temp->data != NULL) mpz_set_str(res->mpz_int, temp->data, 2);
     else mpz_set_ui(res->mpz_int, 0);
     string_free(temp);
+}
+
+void integer_set_dec(struct integer_st *res, const struct string_st *str) {
+    if (str == NULL) integer_clear(res);
+    if(str->data != NULL) mpz_set_str(res->mpz_int, str->data, 10);
+    else mpz_set_ui(res->mpz_int, 0);
+}
+void integer_get_dec(const struct integer_st *res, struct string_st *str) {
+    if(str == NULL) return;
+    size_t str_len = mpz_sizeinbase(res->mpz_int, 10);
+    size_t is_neg = (mpz_sgn(res->mpz_int) < 0);
+
+    string_resize(str, str_len + is_neg);
+    mpz_get_str(str->data, 10, res->mpz_int);
 }
 // Cmp Methods
 int integer_is_null(const struct integer_st *res) {

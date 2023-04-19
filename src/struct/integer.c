@@ -6,88 +6,183 @@ struct object_convert integer_convert = {METHOD_CONVERT &integer__bool, METHOD_C
 struct object_type integer_type = {INTEGER_OP, &integer_tlv, &integer_math, &integer_convert};
 
 // Math Methods
-void integer__mod(struct object_st *res, const struct integer_st *obj1, const struct object_st *obj2) {
+void integer__mod(struct object_st *res, struct object_st *err, const struct integer_st *obj1, const struct object_st *obj2) {
     while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
-    if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
+    struct object_st *temp = object_new();
+    object__int(temp, err, obj2);
+    if(err->type != NONE_TYPE) {
+        object_free(temp);
+        return;
+    }
+    if(integer_is_null(temp->data)) {
+        object_set_type(err, STRING_TYPE);
+        string_set_str(err->data, "Division by zero", 16);
+        object_free(temp);
+        return;
+    }
     object_set_type(res, INTEGER_TYPE);
-    integer_mod(res->data, obj1, obj2->data);
+    integer_mod(res->data, obj1, temp->data);
+    object_free(temp);
 }
-void integer__and(struct object_st *res, const struct integer_st *obj1, const struct object_st *obj2) {
+void integer__and(struct object_st *res, struct object_st *err, const struct integer_st *obj1, const struct object_st *obj2) {
     while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
-    if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
+    struct object_st *temp = object_new();
+    object__int(temp, err, obj2);
+    if(err->type != NONE_TYPE) {
+        object_free(temp);
+        return;
+    }
     object_set_type(res, INTEGER_TYPE);
-    integer_and(res->data, obj1, obj2->data);
+    integer_and(res->data, obj1, temp->data);
+    object_free(temp);
 }
-void integer__mul(struct object_st *res, const struct integer_st *obj1, const struct object_st *obj2) {
+void integer__mul(struct object_st *res, struct object_st *err, const struct integer_st *obj1, const struct object_st *obj2) {
     while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
-    if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
+    struct object_st *temp = object_new();
+    object__int(temp, err, obj2);
+    if(err->type != NONE_TYPE) {
+        object_free(temp);
+        return;
+    }
     object_set_type(res, INTEGER_TYPE);
-    integer_mul(res->data, obj1, obj2->data);
+    integer_mul(res->data, obj1, temp->data);
+    object_free(temp);
 }
-void integer__add(struct object_st *res, const struct integer_st *obj1, const struct object_st *obj2) {
+void integer__add(struct object_st *res, struct object_st *err, const struct integer_st *obj1, const struct object_st *obj2) {
     while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
-    if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
+    struct object_st *temp = object_new();
+    object__int(temp, err, obj2);
+    if(err->type != NONE_TYPE) {
+        object_free(temp);
+        return;
+    }
     object_set_type(res, INTEGER_TYPE);
-    integer_add(res->data, obj1, obj2->data);
+    integer_add(res->data, obj1, temp->data);
+    object_free(temp);
 }
-void integer__sub(struct object_st *res, const struct integer_st *obj1, const struct object_st *obj2) {
+void integer__sub(struct object_st *res, struct object_st *err, const struct integer_st *obj1, const struct object_st *obj2) {
     while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
-    if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
+    struct object_st *temp = object_new();
+    object__int(temp, err, obj2);
+    if(err->type != NONE_TYPE) {
+        object_free(temp);
+        return;
+    }
     object_set_type(res, INTEGER_TYPE);
-    integer_sub(res->data, obj1, obj2->data);
+    integer_sub(res->data, obj1, temp->data);
+    object_free(temp);
 }
-void integer__div(struct object_st *res, const struct integer_st *obj1, const struct object_st *obj2) {
+void integer__div(struct object_st *res, struct object_st *err, const struct integer_st *obj1, const struct object_st *obj2) {
     while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
-    if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
+    struct object_st *temp = object_new();
+    object__int(temp, err, obj2);
+    if(err->type != NONE_TYPE) {
+        object_free(temp);
+        return;
+    }
+    if(integer_is_null(temp->data)) {
+        object_set_type(err, STRING_TYPE);
+        string_set_str(err->data, "Division by zero", 16);
+        object_free(temp);
+        return;
+    }
     object_set_type(res, INTEGER_TYPE);
-    integer_div(res->data, obj1, obj2->data);
+    integer_div(res->data, obj1, temp->data);
+    object_free(temp);
 }
-void integer__xor(struct object_st *res, const struct integer_st *obj1, const struct object_st *obj2) {
+void integer__xor(struct object_st *res, struct object_st *err, const struct integer_st *obj1, const struct object_st *obj2) {
     while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
-    if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
+    struct object_st *temp = object_new();
+    object__int(temp, err, obj2);
+    if(err->type != NONE_TYPE) {
+        object_free(temp);
+        return;
+    }
     object_set_type(res, INTEGER_TYPE);
-    integer_xor(res->data, obj1, obj2->data);
+    integer_xor(res->data, obj1, temp->data);
+    object_free(temp);
 }
-void integer__or(struct object_st *res, const struct integer_st *obj1, const struct object_st *obj2) {
+void integer__or(struct object_st *res, struct object_st *err, const struct integer_st *obj1, const struct object_st *obj2) {
     while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
-    if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
+    struct object_st *temp = object_new();
+    object__int(temp, err, obj2);
+    if(err->type != NONE_TYPE) {
+        object_free(temp);
+        return;
+    }
     object_set_type(res, INTEGER_TYPE);
-    integer_or(res->data, obj1, obj2->data);
+    integer_or(res->data, obj1, temp->data);
+    object_free(temp);
 }
-void integer__ls(struct object_st *res, const struct integer_st *obj1, const struct object_st *obj2) {
+void integer__ls(struct object_st *res, struct object_st *err, const struct integer_st *obj1, const struct object_st *obj2) {
     while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
-    if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
+    struct object_st *temp = object_new();
+    object__int(temp, err, obj2);
+    if(err->type != NONE_TYPE) {
+        object_free(temp);
+        return;
+    }
     object_set_type(res, INTEGER_TYPE);
-    int count = integer_get_si(obj2->data);
+    int count = integer_get_si(temp->data);
     if (count >= 0) integer_ls(res->data, obj1, count);
     else integer_rs(res->data, obj1, -count);
+    object_free(temp);
 }
-void integer__rs(struct object_st *res, const struct integer_st *obj1, const struct object_st *obj2) {
+void integer__rs(struct object_st *res, struct object_st *err, const struct integer_st *obj1, const struct object_st *obj2) {
     while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = res->data;
-    if (obj2 == NULL || obj2->type != INTEGER_TYPE) return;
+    struct object_st *temp = object_new();
+    object__int(temp, err, obj2);
+    if(err->type != NONE_TYPE) {
+        object_free(temp);
+        return;
+    }
     object_set_type(res, INTEGER_TYPE);
-    int count = integer_get_si(obj2->data);
+    int count = integer_get_si(temp->data);
     if (count >= 0) integer_rs(res->data, obj1, count);
     else integer_ls(res->data, obj1, -count);
+    object_free(temp);
 }
-void integer__neg(struct object_st *res, const struct integer_st *obj1) {
+void integer__neg(struct object_st *res, struct object_st *err, const struct integer_st *obj1) {
     object_set_type(res, INTEGER_TYPE);
     integer_neg(res->data, obj1);
 }
 
 // Convert Methods
-void integer__bool(struct object_st *res, struct integer_st *obj){
+void integer__bool(struct object_st *res, struct object_st *err, struct integer_st *obj){
     object_set_type(res, INTEGER_TYPE);
     if(integer_is_null(obj)) integer_set_ui(res->data, 0);
     else integer_set_ui(res->data, 1);
 }
-void integer__int(struct object_st *res, struct integer_st *obj){
+void integer__int(struct object_st *res, struct object_st *err, struct integer_st *obj){
     object_set_type(res, INTEGER_TYPE);
     integer_set(res->data, obj);
 }
-void integer__float(struct object_st *res, struct integer_st *obj){
+void integer__float(struct object_st *res, struct object_st *err, struct integer_st *obj){
+    object_set_type(err, STRING_TYPE);
+    string_set_str(err->data, "Not Done", 8);
     // TODO
 }
-void integer__str(struct object_st *res, struct integer_st *obj){
-    // TODO
+void integer__str(struct object_st *res, struct object_st *err, struct integer_st *obj){
+    object_set_type(res, STRING_TYPE);
+    integer_get_dec(obj, res->data);
+}
+
+
+char get_char_16(unsigned code) {
+    if (code <= 9) {
+        return (char) (code + '0');
+    }
+    return (char) (code - 10 + 'a');
+}
+unsigned short set_char_16(char x) {
+    if (x >= '0' && x <= '9') {
+        return (unsigned short) (x - '0');
+    }
+    if (x >= 'a' && x <= 'f') {
+        return (unsigned short) (x - 'a' + 10);
+    }
+    if (x >= 'A' && x <= 'F') {
+        return (unsigned short) (x - 'A' + 10);
+    }
+    return (unsigned short) 0;
 }
