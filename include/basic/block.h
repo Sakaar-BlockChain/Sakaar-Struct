@@ -19,14 +19,23 @@ struct block_st {
 };
 // Standard operations
 struct block_st *block_new();
-void block_set(struct block_st *, const struct block_st *);
-void block_clear(struct block_st *);
 void block_free(struct block_st *);
+
+void block_set(struct block_st *, const struct block_st *);
+void block_copy(struct block_st *, const struct block_st *);
+
+void block_clear(struct block_st *);
+int block_cmp(const struct block_st *, const struct block_st *);
+
+// Cmp Methods
 int block_is_null(const struct block_st *);
 
 // TLV Methods
 void block_set_tlv(struct block_st *, const struct string_st *);
 void block_get_tlv(const struct block_st *, struct string_st *);
+
+// Attrib Methods
+struct object_st *block_attrib(struct object_st *, const struct block_st *, const struct string_st *);
 
 
 #endif //STRUCT_BLOCK_H

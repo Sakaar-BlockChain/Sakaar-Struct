@@ -12,18 +12,16 @@ struct float_st{
 };
 // Standard operations
 struct float_st *float_new();
-void float_set(struct float_st *, const struct float_st *);
-void float_clear(struct float_st *);
 void float_free(struct float_st *);
 
-void float_data_init(struct float_st *);
-void float_data_free(struct float_st *);
+void float_set(struct float_st *, const struct float_st *);
+void float_copy(struct float_st *, const struct float_st *);
 
-int float_cmp(const struct float_st *obj1, const struct float_st *obj2);
+void float_clear(struct float_st *);
+int float_cmp(const struct float_st *, const struct float_st *);
+
+// Cmp Methods
 int float_is_null(const struct float_st *);
-
-void float_set_str(struct float_st *, const struct string_st *);
-void float_get_str(const struct float_st *, struct string_st *);
 
 // Class Methods
 void float_ls(struct float_st *, const struct float_st *, size_t );
@@ -34,6 +32,10 @@ void float_sub(struct float_st *, const struct float_st *, const struct float_st
 void float_mul(struct float_st *, const struct float_st *, const struct float_st *);
 void float_div(struct float_st *, const struct float_st *, const struct float_st *);
 void float_neg(struct float_st *, const struct float_st *);
+
+// String Methods
+void float_set_str(struct float_st *, const struct string_st *);
+void float_get_str(const struct float_st *, struct string_st *);
 
 // Math Methods
 void float__mul(struct object_st *, struct object_st *, const struct float_st *, const struct object_st *);

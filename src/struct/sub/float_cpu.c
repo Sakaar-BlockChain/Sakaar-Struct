@@ -2,7 +2,7 @@
 #ifndef USE_GMP
 // Standard operations
 struct float_st *float_new() {
-    struct float_st *res = skr_malloc(FLOAT_SIZE);
+    struct float_st *res = skr_malloc(sizeof(struct float_st));
 #ifdef USE_GMP
     mpf_init(res->mpz_int);
 #else

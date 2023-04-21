@@ -3,28 +3,56 @@
 #ifdef USE_GMP
 // Standard operations
 struct integer_st *integer_new() {
-    struct integer_st *res = skr_malloc(INTEGER_SIZE);
+    struct integer_st *res = skr_malloc(sizeof(struct integer_st));
     mpz_init(res->mpz_int);
-
     return res;
 }
+void integer_free(struct integer_st *res) {
+    if (res == NULL) return;
+    mpz_clear(res->mpz_int);
+    skr_free(res);
+}
+
 void integer_set(struct integer_st *res, const struct integer_st *a) {
-    if (integer_is_null(a)) return integer_clear(res);
+    if (res == NULL) return;
+    if (a == NULL) return integer_clear(res);
     mpz_set(res->mpz_int, a->mpz_int);
 
 }
-void integer_clear(struct integer_st *res) {
-    mpz_set_ui(res->mpz_int, 0);
-
+void integer_copy(struct integer_st *res, const struct integer_st *a) {
+    if (res == NULL) return;
+    if (a == NULL) return integer_clear(res);
+    mpz_set(res->mpz_int, a->mpz_int);
 }
-void integer_free(struct integer_st *res) {
-    mpz_clear(res->mpz_int);
 
-    skr_free(res);
+void integer_clear(struct integer_st *res) {
+    if (res == NULL) return;
+    mpz_set_ui(res->mpz_int, 0);
 }
 int integer_cmp(const struct integer_st *obj1, const struct integer_st *obj2) {
+    if (obj1 == NULL || obj2 == NULL) return 2;
     return mpz_cmp(obj1->mpz_int, obj2->mpz_int);
+}
 
+// Cmp Methods
+int integer_is_null(const struct integer_st *res) {
+    if (res == NULL) return 1;
+    return (mpz_cmp_ui(res->mpz_int, 0) == 0);
+}
+int integer_is_neg(const struct integer_st *res) {
+    if (res == NULL) return 1;
+    return (mpz_cmp_ui(res->mpz_int, 0) < 0);
+}
+void integer_random(struct integer_st *res, const struct integer_st *a) {
+    if (res == NULL) return;
+    if (integer_is_null(a)) return integer_clear(res);
+    struct timeval te;
+    gettimeofday(&te, NULL);
+    long long seed = te.tv_sec * 1000LL + te.tv_usec / 1000;
+    gmp_randstate_t state;
+    gmp_randinit_mt(state);
+    gmp_randseed_ui(state, seed);
+    mpz_urandomm(res->mpz_int, state, a->mpz_int);
 }
 
 // Class Methods
@@ -95,7 +123,7 @@ signed integer_get_si(const struct integer_st *res) {
 
 }
 
-// Hex Methods
+// String Methods
 void _integer_set_str(struct integer_st *res, const char *str, size_t size) {
     if (str == NULL) integer_clear(res);
     if(str == NULL) return mpz_set_ui(res->mpz_int, 0);
@@ -129,7 +157,6 @@ void integer_set_time(struct integer_st *res) {
     mpz_mul_2exp(res->mpz_int, res->mpz_int, 32);             /* n <<= 32 */
     mpz_add_ui(res->mpz_int, res->mpz_int, (unsigned int)seconds);
 }
-
 
 void _integer_set_str_dec(struct integer_st *res, const char *str, size_t size) {
     if (str == NULL) integer_clear(res);
@@ -172,29 +199,6 @@ void integer_get_dec(const struct integer_st *res, struct string_st *str) {
 
     string_resize(str, str_len + is_neg);
     mpz_get_str(str->data, 10, res->mpz_int);
-}
-// Cmp Methods
-int integer_is_null(const struct integer_st *res) {
-    if (res == NULL) return 1;
-    return (mpz_cmp_ui(res->mpz_int, 0) == 0);
-
-}
-int integer_is_neg(const struct integer_st *res) {
-    if (res == NULL) return 1;
-    return (mpz_cmp_ui(res->mpz_int, 0) < 0);
-
-}
-void integer_random(struct integer_st *res, const struct integer_st *a) {
-    if (res == NULL) return;
-    if (integer_is_null(a)) return integer_clear(res);
-    struct timeval te;
-    gettimeofday(&te, NULL);
-    long long seed = te.tv_sec * 1000LL + te.tv_usec / 1000;
-    gmp_randstate_t state;
-    gmp_randinit_mt(state);
-    gmp_randseed_ui(state, seed);
-    mpz_urandomm(res->mpz_int, state, a->mpz_int);
-
 }
 
 // TLV Methods

@@ -2,37 +2,40 @@
 #ifdef USE_GMP
 // Standard operations
 struct float_st *float_new() {
-    struct float_st *res = skr_malloc(FLOAT_SIZE);
+    struct float_st *res = skr_malloc(sizeof(struct float_st));
     mpf_init(res->mpz_int);
     return res;
 }
-void float_set(struct float_st *res, const struct float_st *a) {
-    if (float_is_null(a)) return float_clear(res);
-    mpf_set(res->mpz_int, a->mpz_int);
-}
-void float_clear(struct float_st *res) {
-    mpf_set_ui(res->mpz_int, 0);
-
-}
 void float_free(struct float_st *res) {
+    if (res == NULL) return;
     mpf_clear(res->mpz_int);
     skr_free(res);
 }
-int float_cmp(const struct float_st *obj1, const struct float_st *obj2) {
-    return mpf_cmp(obj1->mpz_int, obj2->mpz_int);
 
+void float_set(struct float_st *res, const struct float_st *a) {
+    if (res == NULL) return;
+    if (a == NULL) return float_clear(res);
+    mpf_set(res->mpz_int, a->mpz_int);
 }
+void float_copy(struct float_st *res, const struct float_st *a) {
+    if (res == NULL) return;
+    if (a == NULL) return float_clear(res);
+    mpf_set(res->mpz_int, a->mpz_int);
+}
+
+void float_clear(struct float_st *res) {
+    if (res == NULL) return;
+    mpf_set_ui(res->mpz_int, 0);
+}
+int float_cmp(const struct float_st *obj1, const struct float_st *obj2) {
+    if (obj1 == NULL || obj2 == NULL) return 2;
+    return mpf_cmp(obj1->mpz_int, obj2->mpz_int);
+}
+
+// Cmp Methods
 int float_is_null(const struct float_st *res) {
     if (res == NULL) return 1;
     return (mpf_cmp_ui(res->mpz_int, 0) == 0);
-}
-
-
-void float_set_str(struct float_st *res, const struct string_st *str) {
-    //TODO
-}
-void float_get_str(const struct float_st *res, struct string_st *str) {
-    //TODO
 }
 
 // Class Methods
@@ -57,5 +60,13 @@ void float_div(struct float_st *res, const struct float_st *a, const struct floa
 }
 void float_neg(struct float_st *res, const struct float_st *a) {
     mpf_neg(res->mpz_int, a->mpz_int);
+}
+
+// String Methods
+void float_set_str(struct float_st *res, const struct string_st *str) {
+    //TODO
+}
+void float_get_str(const struct float_st *res, struct string_st *str) {
+    //TODO
 }
 #endif

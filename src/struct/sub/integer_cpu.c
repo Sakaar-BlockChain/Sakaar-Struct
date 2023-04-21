@@ -3,7 +3,7 @@
 #ifndef USE_GMP
 // Standard operations
 struct integer_st *integer_new() {
-    struct integer_st *res = skr_malloc(INTEGER_SIZE);
+    struct integer_st *res = skr_malloc(sizeof(struct integer_st));
 #ifdef USE_GMP
     mpz_init(res->mpz_int);
 #else

@@ -12,14 +12,15 @@ struct integer_st{
 };
 // Standard operations
 struct integer_st *integer_new();
-void integer_set(struct integer_st *, const struct integer_st *);
-void integer_clear(struct integer_st *);
 void integer_free(struct integer_st *);
 
-void integer_data_init(struct integer_st *);
-void integer_data_free(struct integer_st *);
+void integer_set(struct integer_st *, const struct integer_st *);
+void integer_copy(struct integer_st *, const struct integer_st *);
 
-int integer_cmp(const struct integer_st *obj1, const struct integer_st *obj2);
+void integer_clear(struct integer_st *);
+int integer_cmp(const struct integer_st *, const struct integer_st *);
+
+// Cmp Methods
 int integer_is_null(const struct integer_st *);
 int integer_is_neg(const struct integer_st *);
 void integer_random(struct integer_st *, const struct integer_st *);
@@ -45,7 +46,7 @@ void integer_set_ui(struct integer_st *, unsigned);
 unsigned integer_get_ui(const struct integer_st *);
 signed integer_get_si(const struct integer_st *);
 
-// Hex Methods
+// String Methods
 void _integer_set_str(struct integer_st *, const char *, size_t);
 void integer_set_str(struct integer_st *, const struct string_st *);
 void integer_get_str(const struct integer_st *, struct string_st *);

@@ -10,15 +10,20 @@ struct string_st {
 };
 // Standard operations
 struct string_st *string_new();
-void string_set(struct string_st *, const struct string_st *);
-void string_clear(struct string_st *);
 void string_free(struct string_st *);
 
+void string_set(struct string_st *, const struct string_st *);
+void string_copy(struct string_st *, const struct string_st *);
+
+void string_clear(struct string_st *);
+int string_cmp(const struct string_st *, const struct string_st *);
+
+// Cmp Methods
+int string_is_null(const struct string_st *);
+
+// Data Methods
 void string_data_init(struct string_st *);
 void string_data_free(struct string_st *);
-
-int string_cmp(const struct string_st *, const struct string_st *);
-int string_is_null(const struct string_st *);
 
 // Class Methods
 void string_resize(struct string_st *, size_t);
@@ -28,6 +33,10 @@ void string_concat(struct string_st *, const struct string_st *);
 // TLV Methods
 void string_set_tlv(struct string_st *, const struct string_st *);
 void string_get_tlv(const struct string_st *, struct string_st *);
+
+// Convert Methods
+struct object_st *string_subscript(struct object_st *, struct string_st *, const struct object_st *);
+void string_get_subscript(struct object_st *, struct object_st *, const struct string_st *, const struct object_st *);
 
 // Math Methods
 void string__mul(struct object_st *, struct object_st *, const struct string_st *, const struct object_st *);

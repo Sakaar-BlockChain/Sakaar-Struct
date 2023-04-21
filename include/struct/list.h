@@ -9,15 +9,20 @@ struct list_st{
 };
 // Standard operations
 struct list_st *list_new();
-void list_set(struct list_st *, const struct list_st *);
-void list_clear(struct list_st *);
 void list_free(struct list_st *);
 
+void list_set(struct list_st *, const struct list_st *);
+void list_copy(struct list_st *, const struct list_st *);
+
+void list_clear(struct list_st *);
+int list_cmp(const struct list_st *, const struct list_st *);
+
+// Cmp Methods
+int list_is_null(const struct list_st *);
+
+// Data Methods
 void list_data_init(struct list_st *);
 void list_data_free(struct list_st *);
-
-int list_cmp(const struct list_st *, const struct list_st *);
-int list_is_null(const struct list_st *);
 
 // Class Methods
 void list_resize(struct list_st *, size_t);
@@ -38,6 +43,9 @@ void list__add(struct object_st *, struct object_st *, const struct list_st *, c
 
 // Convert Methods
 void list__str(struct object_st *, struct object_st *, const struct list_st *);
+
+// Convert Methods
+struct object_st *list_subscript(struct object_st *, struct list_st *, const struct object_st *);
 
 // Print
 void print_list(const struct list_st *, int);

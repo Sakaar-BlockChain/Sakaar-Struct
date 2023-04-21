@@ -1,10 +1,12 @@
 #include "basic.h"
 
+struct object_sub block_history_sub = {NULL, METHOD_ATTRIB &block_history_attrib};
 struct object_tlv block_history_tlv = {METHOD_GET_TLV &block_history_get_tlv, METHOD_SET_TLV &block_history_set_tlv};
-struct object_type block_history_type = {BLOCK_HISTORY_OP, &block_history_tlv};
+struct object_type block_history_type = {BLOCK_HISTORY_OP, &block_history_tlv, &block_history_sub};
+
 // Standard operations
 struct block_history *block_history_new() {
-    struct block_history *res = skr_malloc(BLOCK_HISTORY_SIZE);
+    struct block_history *res = skr_malloc(sizeof(struct block_history));
     res->transactions = list_new();
     res->address_outside = string_new();
     res->hash = string_new();
@@ -14,6 +16,18 @@ struct block_history *block_history_new() {
     res->result = integer_new();
     return res;
 }
+void block_history_free(struct block_history *res) {
+    if (res == NULL) return;
+    list_free(res->transactions);
+    string_free(res->address_outside);
+    string_free(res->hash);
+    string_free(res->smart_contract);
+    integer_free(res->benefit);
+    integer_free(res->time);
+    integer_free(res->result);
+    skr_free(res);
+}
+
 void block_history_set(struct block_history *res, const struct block_history *a) {
     if (a == NULL) return block_history_clear(res);
 
@@ -25,7 +39,21 @@ void block_history_set(struct block_history *res, const struct block_history *a)
     integer_set(res->time, a->time);
     integer_set(res->result, a->result);
 }
+void block_history_copy(struct block_history *res, const struct block_history *a) {
+    if (res == NULL) return;
+    if (a == NULL) return block_history_clear(res);
+
+    list_copy(res->transactions, a->transactions);
+    string_copy(res->address_outside, a->address_outside);
+    string_copy(res->hash, a->hash);
+    string_copy(res->smart_contract, a->smart_contract);
+    integer_copy(res->benefit, a->benefit);
+    integer_copy(res->time, a->time);
+    integer_copy(res->result, a->result);
+}
+
 void block_history_clear(struct block_history *res) {
+    if (res == NULL) return;
     list_clear(res->transactions);
     string_clear(res->address_outside);
     string_clear(res->hash);
@@ -34,15 +62,9 @@ void block_history_clear(struct block_history *res) {
     integer_clear(res->time);
     integer_clear(res->result);
 }
-void block_history_free(struct block_history *res) {
-    list_free(res->transactions);
-    string_free(res->address_outside);
-    string_free(res->hash);
-    string_free(res->smart_contract);
-    integer_free(res->benefit);
-    integer_free(res->time);
-    integer_free(res->result);
-    skr_free(res);
+int block_history_cmp(const struct block_history *obj1, const struct block_history *obj2) {
+    if (obj1 == NULL || obj2 == NULL || string_cmp(obj1->hash, obj2->hash) != 0 || integer_cmp(obj1->time, obj2->time) != 0) return 2;
+    return 0;
 }
 
 // TLV Methods
@@ -116,3 +138,43 @@ void block_history_get_tlv(const struct block_history *block, struct string_st *
     string_free(tlv);
 }
 
+// Attrib Methods
+struct object_st *block_history_attrib
+(struct object_st *err, const struct block_history *block, const struct string_st *str) {
+    struct object_st *res = object_new();
+    if (str->size == 12 && memcmp(str->data, "transactions", 12) == 0) {
+        object_set_type(res, LIST_TYPE);
+        list_set(res->data, block->transactions);
+    }
+    else if (str->size == 7 && memcmp(str->data, "benefit", 7) == 0) {
+        object_set_type(res, INTEGER_TYPE);
+        integer_set(res->data, block->benefit);
+    }
+    else if (str->size == 4 && memcmp(str->data, "time", 4) == 0) {
+        object_set_type(res, INTEGER_TYPE);
+        integer_set(res->data, block->time);
+    }
+    else if (str->size == 15 && memcmp(str->data, "address_outside", 15) == 0) {
+        object_set_type(res, STRING_TYPE);
+        string_set(res->data, block->address_outside);
+    }
+    else if (str->size == 4 && memcmp(str->data, "hash", 4) == 0) {
+        object_set_type(res, STRING_TYPE);
+        string_set(res->data, block->hash);
+    }
+    else if (str->size == 14 && memcmp(str->data, "smart_contract", 14) == 0) {
+        object_set_type(res, STRING_TYPE);
+        string_set(res->data, block->smart_contract);
+    }
+    else if (str->size == 6 && memcmp(str->data, "result", 6) == 0) {
+        object_set_type(res, INTEGER_TYPE);
+        integer_set(res->data, block->result);
+    }
+    else {
+        object_free(res);
+        object_set_type(err, STRING_TYPE);
+        string_set_str(err->data, "This Attribute does not exist", 29);
+        return NULL;
+    }
+    return res;
+}

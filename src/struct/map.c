@@ -1,9 +1,11 @@
 #include "struct.h"
 
-struct object_type map_type = {MAP_OP};
+struct object_sub map_sub = {METHOD_SUBSCRIPT &map_subscript};
+struct object_type map_type = {MAP_OP, NULL, &map_sub};
+
 // Standard operations
 struct map_st *map_new() {
-    struct map_st *res = skr_malloc(MAP_SIZE);
+    struct map_st *res = skr_malloc(sizeof(struct map_st));
 
     res->data = NULL;
     res->name = NULL;
@@ -11,17 +13,47 @@ struct map_st *map_new() {
     for (int i = 0; i < 16; i++) res->next[i] = NULL;
     return res;
 }
+void map_free(struct map_st *res) {
+    if (res == NULL) return;
+    if (res->data != NULL) object_free(res->data);
+    if (res->name != NULL) skr_free(res->name);
+    for (int i = 0; i < 16; i++) {
+        if (res->next[i] != NULL) object_free(res->next[i]);
+    }
+    skr_free(res);
+}
+
 void map_set(struct map_st *res, const struct map_st *a) {
+    if (res == NULL) return;
     map_clear(res);
+    if (a == NULL) return;
     res->size = a->size;
     res->name = skr_malloc(a->size);
     memcpy(res->name, a->name, a->size);
-    res->data = object_copy(a->data);
+    res->data = object_copy_obj(a->data);
     for (int i = 0; i < 16; i++) {
-        if (a->next[i] != NULL) res->next[i] = object_copy(a->next[i]);
+        if (a->next[i] != NULL) res->next[i] = object_copy_obj(a->next[i]);
     }
 }
+void map_copy(struct map_st *res, const struct map_st *a) {
+    if (res == NULL) return;
+    map_clear(res);
+    if (a == NULL) return;
+    res->size = a->size;
+    res->name = skr_malloc(a->size);
+    memcpy(res->name, a->name, a->size);
+    res->data = object_new();
+    object_copy(res->data, a->data);
+    for (int i = 0; i < 16; i++) {
+        if (a->next[i] != NULL) {
+            res->next[i] = object_new();
+            object_copy(res->next[i], a->next[i]);
+        }
+    }
+}
+
 void map_clear(struct map_st *res) {
+    if (res == NULL) return;
     if (res->name != NULL) skr_free(res->name);
     res->name = NULL;
     if (res->data != NULL) object_free(res->data);
@@ -31,15 +63,8 @@ void map_clear(struct map_st *res) {
         res->next[i] = NULL;
     }
 }
-void map_free(struct map_st *res) {
-    if (res->data != NULL) object_free(res->data);
-    if (res->name != NULL) skr_free(res->name);
-    for (int i = 0; i < 16; i++) {
-        if (res->next[i] != NULL) object_free(res->next[i]);
-    }
-    skr_free(res);
-}
 int map_cmp(const struct map_st *obj1, const struct map_st *obj2) {
+    if (obj1 == NULL || obj2 == NULL) return 2;
     if (obj1 == obj2) return 0;
     return 2;
 }
@@ -103,11 +128,11 @@ struct object_st *map_set_elm(struct map_st *res, char *name, size_t size) {
 
                 ((struct map_st *)res->next[set_char_16(name[i])]->data)->data = obj;
             }
-            return object_copy(obj);
+            return object_copy_obj(obj);
         }
         if (size == res->size) {
             if (res->data == NULL) res->data = object_new();
-            return object_copy(res->data);
+            return object_copy_obj(res->data);
         }
         int char_ = set_char_16(name[res->size]);
         if (res->next[char_] == NULL) {
@@ -117,7 +142,7 @@ struct object_st *map_set_elm(struct map_st *res, char *name, size_t size) {
 
             map_set_name_(temp_tree, &name[res->size + 1], size - res->size - 1);
             temp_tree->data = object_new();
-            return object_copy(temp_tree->data);
+            return object_copy_obj(temp_tree->data);
         }
         size_t temp_size = res->size;
         res = res->next[char_]->data;
@@ -125,12 +150,12 @@ struct object_st *map_set_elm(struct map_st *res, char *name, size_t size) {
         size = size - temp_size - 1;
     }
 }
-struct object_st *map_get_elm(struct map_st *res, char *name, size_t size) {
+struct object_st *map_get_elm(const struct map_st *res, char *name, size_t size) {
     while (1) {
         if (size < res->size || memcmp(name, res->name, res->size) != 0) {
             return NULL;
         }
-        if (size == res->size) return object_copy(res->data);
+        if (size == res->size) return object_copy_obj(res->data);
         int char_ = set_char_16(name[res->size]);
         if (res->next[char_] == NULL) return NULL;
         size_t temp_size = res->size;
@@ -138,4 +163,23 @@ struct object_st *map_get_elm(struct map_st *res, char *name, size_t size) {
         name = &name[temp_size + 1];
         size = size - temp_size - 1;
     }
+}
+
+// Sub method
+struct object_st *map_subscript(struct object_st *err, struct map_st *map, const struct object_st *obj) {
+    while (obj != NULL && obj->type == OBJECT_TYPE) obj = obj->data;
+    struct object_st *temp = object_new();
+    object__str(temp, err, obj);
+    if(err->type != NONE_TYPE) {
+        object_free(temp);
+        return NULL;
+    }
+    struct object_st *res = NULL;
+    res = map_set_elm(map, ((struct string_st *)obj->data)->data, ((struct string_st *)obj->data)->size);
+    object_free(temp);
+    if (res == NONE_TYPE) {
+        object_set_type(err, STRING_TYPE);
+        string_set_str(err->data, "Wrong key", 9);
+    }
+    return res;
 }

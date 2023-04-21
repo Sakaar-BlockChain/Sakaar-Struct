@@ -1,10 +1,12 @@
 #include "basic.h"
 
+struct object_sub block_sub = {NULL, METHOD_ATTRIB &block_attrib};
 struct object_tlv block_tlv = {METHOD_GET_TLV &block_get_tlv, METHOD_SET_TLV &block_set_tlv};
-struct object_type block_type = {BLOCK_OP, &block_tlv};
+struct object_type block_type = {BLOCK_OP, &block_tlv, &block_sub};
+
 // Standard operations
 struct block_st *block_new() {
-    struct block_st *res = skr_malloc(BLOCK_SIZE);
+    struct block_st *res = skr_malloc(sizeof(struct block_st));
     res->transactions = list_new();
     res->nodes_done = list_new();
     res->address_outside = string_new();
@@ -17,7 +19,23 @@ struct block_st *block_new() {
     res->voted = integer_new();
     return res;
 }
+void block_free(struct block_st *res) {
+    if (res == NULL) return;
+    list_free(res->transactions);
+    list_free(res->nodes_done);
+    string_free(res->address_outside);
+    string_free(res->hash);
+    string_free(res->smart_contract);
+    integer_free(res->benefit);
+    integer_free(res->time);
+    integer_free(res->result_pros);
+    integer_free(res->result_cons);
+    integer_free(res->voted);
+    skr_free(res);
+}
+
 void block_set(struct block_st *res, const struct block_st *a) {
+    if (res == NULL) return;
     if (a == NULL) return block_clear(res);
 
     list_set(res->transactions, a->transactions);
@@ -31,7 +49,24 @@ void block_set(struct block_st *res, const struct block_st *a) {
     integer_set(res->result_cons, a->result_cons);
     integer_set(res->voted, a->voted);
 }
+void block_copy(struct block_st *res, const struct block_st *a) {
+    if (res == NULL) return;
+    if (a == NULL) return block_clear(res);
+
+    list_copy(res->transactions, a->transactions);
+    list_copy(res->nodes_done, a->nodes_done);
+    string_copy(res->address_outside, a->address_outside);
+    string_copy(res->hash, a->hash);
+    string_copy(res->smart_contract, a->smart_contract);
+    integer_copy(res->benefit, a->benefit);
+    integer_copy(res->time, a->time);
+    integer_copy(res->result_pros, a->result_pros);
+    integer_copy(res->result_cons, a->result_cons);
+    integer_copy(res->voted, a->voted);
+}
+
 void block_clear(struct block_st *res) {
+    if (res == NULL) return;
     list_clear(res->transactions);
     list_clear(res->nodes_done);
     string_clear(res->address_outside);
@@ -43,19 +78,12 @@ void block_clear(struct block_st *res) {
     integer_clear(res->result_cons);
     integer_clear(res->voted);
 }
-void block_free(struct block_st *res) {
-    list_free(res->transactions);
-    list_free(res->nodes_done);
-    string_free(res->address_outside);
-    string_free(res->hash);
-    string_free(res->smart_contract);
-    integer_free(res->benefit);
-    integer_free(res->time);
-    integer_free(res->result_pros);
-    integer_free(res->result_cons);
-    integer_free(res->voted);
-    skr_free(res);
+int block_cmp(const struct block_st *obj1, const struct block_st *obj2) {
+    if (obj1 == NULL || obj2 == NULL || string_cmp(obj1->hash, obj2->hash) != 0 || integer_cmp(obj1->time, obj2->time) != 0) return 2;
+    return 0;
 }
+
+// Cmp Methods
 int block_is_null(const struct block_st *res) {
     return (res == NULL || string_is_null(res->hash));
 }
@@ -148,4 +176,53 @@ void block_get_tlv(const struct block_st *block, struct string_st *res) {
 
     tlv_set_string(res, TLV_BLOCK, res);
     string_free(tlv);
+}
+
+// Attrib Methods
+struct object_st *block_attrib
+(struct object_st *err, const struct block_st *block, const struct string_st *str) {
+    struct object_st *res = object_new();
+    if (str->size == 12 && memcmp(str->data, "transactions", 12) == 0) {
+        object_set_type(res, LIST_TYPE);
+        list_set(res->data, block->transactions);
+    }
+    else if (str->size == 7 && memcmp(str->data, "benefit", 7) == 0) {
+        object_set_type(res, INTEGER_TYPE);
+        integer_set(res->data, block->benefit);
+    }
+    else if (str->size == 4 && memcmp(str->data, "time", 4) == 0) {
+        object_set_type(res, INTEGER_TYPE);
+        integer_set(res->data, block->time);
+    }
+    else if (str->size == 15 && memcmp(str->data, "address_outside", 15) == 0) {
+        object_set_type(res, STRING_TYPE);
+        string_set(res->data, block->address_outside);
+    }
+    else if (str->size == 4 && memcmp(str->data, "hash", 4) == 0) {
+        object_set_type(res, STRING_TYPE);
+        string_set(res->data, block->hash);
+    }
+    else if (str->size == 14 && memcmp(str->data, "smart_contract", 14) == 0) {
+        object_set_type(res, STRING_TYPE);
+        string_set(res->data, block->smart_contract);
+    }
+    else if (str->size == 10 && memcmp(str->data, "nodes_done", 10) == 0) {
+        object_set_type(res, LIST_TYPE);
+        list_set(res->data, block->nodes_done);
+    }
+    else if (str->size == 11 && memcmp(str->data, "result_pros", 11) == 0) {
+        object_set_type(res, INTEGER_TYPE);
+        integer_set(res->data, block->result_pros);
+    }
+    else if (str->size == 11 && memcmp(str->data, "result_cons", 11) == 0) {
+        object_set_type(res, INTEGER_TYPE);
+        integer_set(res->data, block->result_cons);
+    }
+    else {
+        object_free(res);
+        object_set_type(err, STRING_TYPE);
+        string_set_str(err->data, "This Attribute does not exist", 29);
+        return NULL;
+    }
+    return res;
 }
