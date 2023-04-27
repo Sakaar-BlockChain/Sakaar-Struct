@@ -2,7 +2,7 @@
 
 struct object_sub object_sub = {METHOD_SUBSCRIPT &object_subscript, METHOD_ATTRIB &object_attrib};
 struct object_tlv object_tlv = {METHOD_GET_TLV &object_get_tlv, METHOD_SET_TLV &object_set_tlv};
-struct object_math_op object_math = {METHOD_MATH &object__mod, METHOD_MATH &object__and, METHOD_MATH &object__mul, METHOD_MATH &object__add, METHOD_MATH &object__sub, METHOD_MATH &object__div, METHOD_MATH &object__xor, METHOD_MATH &object__or, METHOD_MATH &object__ls, METHOD_MATH &object__rs};
+struct object_math_op object_math = {METHOD_MATH &object__mod, METHOD_MATH &object__and, METHOD_MATH &object__mul, METHOD_MATH &object__add, METHOD_MATH &object__sub, METHOD_MATH &object__div, METHOD_MATH &object__xor, METHOD_MATH &object__or, METHOD_MATH &object__ls, METHOD_MATH &object__rs, METHOD_CONVERT &object__neg};
 struct object_convert object_convert = {METHOD_CONVERT &object__bool, METHOD_CONVERT &object__int, METHOD_CONVERT &object__float, METHOD_CONVERT &object__str};
 struct object_type object_type = {OBJECT_OP, &object_tlv, &object_sub, &object_convert, &object_math};
 
@@ -240,7 +240,7 @@ void object__rs(struct object_st *res, struct object_st *err, const struct objec
     object_set_type(err, STRING_TYPE);
     string_set_str(err->data, "Object does not have __rs__ operation", 37);
 }
-void object__neg(struct object_st *res, struct object_st *err, const struct object_st *obj1){
+void object__neg(struct object_st *res, struct object_st *err, const struct object_st *obj1) {
     while (obj1 != NULL && obj1->type == OBJECT_TYPE) obj1 = obj1->data;
     if (obj1 != NULL && obj1->type != NULL && obj1->type->math != NULL && obj1->type->math->_ne != NULL) {
         return obj1->type->math->_ne(res, err, obj1->data);

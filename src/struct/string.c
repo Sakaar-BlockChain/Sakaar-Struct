@@ -10,7 +10,8 @@ struct object_type string_type = {STRING_OP, &string_tlv,  &string_sub, &string_
 struct string_st *string_new() {
     struct string_st *res = skr_malloc(sizeof(struct string_st));
     res->data = NULL;
-    res->mx_size = res->size = 0;
+    res->mx_size = 0;
+    res->size = 0;
     return res;
 }
 void string_free(struct string_st *res) {
@@ -51,7 +52,8 @@ int string_is_null(const struct string_st *res){
 // Data Methods
 void string_data_init(struct string_st *res) {
     res->data = NULL;
-    res->mx_size = res->size = 0;
+    res->mx_size = 0;
+    res->size = 0;
 }
 void string_data_free(struct string_st *res) {
     if(res->data != NULL) skr_free(res->data);

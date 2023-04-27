@@ -10,7 +10,8 @@ struct object_type list_type = {LIST_OP, &list_tlv, &list_sub,  &list_convert, &
 struct list_st *list_new() {
     struct list_st *res = skr_malloc(sizeof(struct list_st));
     res->data = NULL;
-    res->max_size = res->size = 0;
+    res->max_size = 0;
+    res->size = 0;
     return res;
 }
 void list_free(struct list_st *res) {
@@ -64,7 +65,8 @@ int list_is_null(const struct list_st *res) {
 void list_data_init(struct list_st *res) {
     if (res == NULL) return;
     res->data = NULL;
-    res->max_size = res->size = 0;
+    res->max_size = 0;
+    res->size = 0;
 }
 void list_data_free(struct list_st *res) {
     if (res == NULL) return;

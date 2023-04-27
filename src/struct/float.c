@@ -65,7 +65,7 @@ void float__rs(struct object_st *res, struct object_st *err, const struct float_
     if (count >= 0) float_rs(res->data, obj1, count);
     else float_ls(res->data, obj1, -count);
 }
-void float__neg(struct object_st *res, struct object_st *err, const struct float_st *obj1){
+void float__neg(struct object_st *res, struct object_st *err, const struct float_st *obj1) {
     object_set_type(res, FLOAT_TYPE);
     float_neg(res->data, obj1);
 }
