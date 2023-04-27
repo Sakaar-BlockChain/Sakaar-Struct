@@ -4,7 +4,7 @@
 #include "struct.h"
 
 struct activated_accounts {
-    struct list_st *addresses;
+    struct list_st addresses;
 };
 // Standard operations
 struct activated_accounts *activated_accounts_new();

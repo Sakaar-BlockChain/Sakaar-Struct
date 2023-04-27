@@ -4,15 +4,15 @@
 #include "struct.h"
 
 struct wallet_data {
-    struct string_st *address;
-    struct string_st *currency;
-    struct string_st *address_outside;
+    struct string_st address;
+    struct string_st currency;
+    struct string_st address_outside;
 
-    struct string_st *hash;
-    struct string_st *pre_hash;
+    struct string_st hash;
+    struct string_st pre_hash;
 
-    struct integer_st *balance;
-    struct integer_st *pre_balance;
+    struct integer_st balance;
+    struct integer_st pre_balance;
 };
 // Standard operations
 struct wallet_data *wallet_data_new();

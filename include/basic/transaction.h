@@ -5,17 +5,17 @@
 #include "pre_transaction.h"
 
 struct transaction_st {
-    struct string_st *address_from;
-    struct string_st *address_to;
-    struct string_st *currency;
+    struct string_st address_from;
+    struct string_st address_to;
+    struct string_st currency;
 
-    struct integer_st *balance;
-    struct integer_st *fee;
+    struct integer_st balance;
+    struct integer_st fee;
 
-    struct integer_st *balance_from;
-    struct string_st *hash_from;
+    struct integer_st balance_from;
+    struct string_st hash_from;
 
-    struct string_st *signature;
+    struct string_st signature;
 };
 // Standard operations
 struct transaction_st *transaction_new();

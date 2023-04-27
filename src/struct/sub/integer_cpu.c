@@ -161,7 +161,7 @@ signed integer_get_si(const struct integer_st *res) {
 }
 
 // Hex Methods
-void _integer_set_str(struct integer_st *res, const char *str, size_t size) {
+void integer_set_str_(struct integer_st *res, const char *str, size_t size) {
     if (str == NULL) integer_clear(res);
 #ifdef USE_GMP
     if(str == NULL) return mpz_set_ui(res->mpz_int, 0);
@@ -273,7 +273,7 @@ void integer_set_time(struct integer_st *res) {
 #endif
 }
 
-void _integer_set_str_dec(struct integer_st *res, const char *str, size_t size) {
+void integer_set_str_dec_(struct integer_st *res, const char *str, size_t size) {
     if (str == NULL) integer_clear(res);
 #ifdef USE_GMP
     if(str == NULL) return mpz_set_ui(res->mpz_int, 0);
@@ -287,7 +287,7 @@ void _integer_set_str_dec(struct integer_st *res, const char *str, size_t size) 
     // TODO set_str_dec
 #endif
 }
-void _integer_set_str_oct(struct integer_st *res, const char *str, size_t size) {
+void integer_set_str_oct_(struct integer_st *res, const char *str, size_t size) {
     if (str == NULL) integer_clear(res);
 #ifdef USE_GMP
     if(str == NULL) return mpz_set_ui(res->mpz_int, 0);
@@ -301,7 +301,7 @@ void _integer_set_str_oct(struct integer_st *res, const char *str, size_t size) 
     // TODO set_str_oct
 #endif
 }
-void _integer_set_str_bin(struct integer_st *res, const char *str, size_t size) {
+void integer_set_str_bin_(struct integer_st *res, const char *str, size_t size) {
     if (str == NULL) integer_clear(res);
 #ifdef USE_GMP
     if(str == NULL) return mpz_set_ui(res->mpz_int, 0);
@@ -365,7 +365,7 @@ void integer_random(struct integer_st *res, const struct integer_st *a) {
 }
 
 // TLV Methods
-void _integer_set_tlv(struct integer_st *res, const struct string_st *tlv) {
+void integer_set_tlv_(struct integer_st *res, const struct string_st *tlv) {
     if (res == NULL) return;
     integer_clear(res);
     if (string_is_null(tlv)) return;
@@ -409,7 +409,7 @@ void _integer_set_tlv(struct integer_st *res, const struct string_st *tlv) {
     sub_integer_fit(res->data);
 #endif
 }
-void _integer_get_tlv(const struct integer_st *res, struct string_st *tlv, unsigned tag) {
+void integer_get_tlv_(const struct integer_st *res, struct string_st *tlv, unsigned tag) {
     if (tlv == NULL) return;
     string_clear(tlv);
     if (res == NULL) return;

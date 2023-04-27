@@ -4,13 +4,13 @@
 #include "struct.h"
 
 struct block_history {
-    struct list_st *transactions;
-    struct integer_st *benefit;
-    struct integer_st *time;
-    struct string_st *address_outside;
-    struct string_st *hash;
-    struct string_st *smart_contract;
-    struct integer_st *result;
+    struct list_st transactions;
+    struct integer_st benefit;
+    struct integer_st time;
+    struct string_st address_outside;
+    struct string_st hash;
+    struct string_st smart_contract;
+    struct integer_st result;
 };
 // Standard operations
 struct block_history *block_history_new();

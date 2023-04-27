@@ -4,9 +4,9 @@
 #include "struct.h"
 
 struct account_connections {
-    struct string_st *address;
-    struct string_st *currency;
-    struct list_st *addresses;
+    struct string_st address;
+    struct string_st currency;
+    struct list_st addresses;
 };
 // Standard operations
 struct account_connections *account_connections_new();

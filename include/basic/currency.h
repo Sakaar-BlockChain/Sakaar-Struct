@@ -4,16 +4,16 @@
 #include "struct.h"
 
 struct currency_st {
-    struct string_st *name;
-    struct string_st *smart_contract;
-    struct string_st *info;
+    struct string_st name;
+    struct string_st smart_contract;
+    struct string_st info;
 
-    struct integer_st *hash_type;
-    struct integer_st *crypto_type;
-    struct integer_st *crypto_base;
+    struct integer_st hash_type;
+    struct integer_st crypto_type;
+    struct integer_st crypto_base;
 
-    struct integer_st *our;
-    struct integer_st *product;
+    struct integer_st our;
+    struct integer_st product;
 };
 // Standard operations
 struct currency_st *currency_new();

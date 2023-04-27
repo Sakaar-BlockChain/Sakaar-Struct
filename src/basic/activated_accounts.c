@@ -7,12 +7,12 @@ struct object_type active_acc_type = {ACTIVE_ACC_OP, &active_acc_tlv, &active_ac
 // Standard operations
 struct activated_accounts *activated_accounts_new() {
     struct activated_accounts *res = skr_malloc(sizeof(struct activated_accounts));
-    res->addresses = list_new();
+    list_data_init(&res->addresses);
     return res;
 }
 void activated_accounts_free(struct activated_accounts *res) {
     if (res == NULL) return;
-    list_free(res->addresses);
+    list_data_free(&res->addresses);
     skr_free(res);
 }
 
@@ -20,18 +20,18 @@ void activated_accounts_set(struct activated_accounts *res, const struct activat
     if (res == NULL) return;
     if (a == NULL) return activated_accounts_clear(res);
 
-    list_set(res->addresses, a->addresses);
+    list_set(&res->addresses, &a->addresses);
 }
 void activated_accounts_copy(struct activated_accounts *res, const struct activated_accounts *a) {
     if (res == NULL) return;
     if (a == NULL) return activated_accounts_clear(res);
 
-    list_copy(res->addresses, a->addresses);
+    list_copy(&res->addresses, &a->addresses);
 }
 
 void activated_accounts_clear(struct activated_accounts *res) {
     if (res == NULL) return;
-    list_clear(res->addresses);
+    list_clear(&res->addresses);
 }
 int activated_accounts_cmp(const struct activated_accounts *obj1, const struct activated_accounts *obj2) {
     if (obj1 == NULL || obj2 == NULL) return 2;
@@ -49,11 +49,11 @@ void activated_accounts_set_tlv(struct activated_accounts *res, const struct str
     struct string_st *_tlv = string_new();
 
     tlv_get_next_tlv(data, _tlv);
-    list_set_tlv_self(res->addresses, _tlv, LIST_TYPE);
+    list_set_tlv_self(&res->addresses, _tlv, LIST_TYPE);
     {
         struct list_st *sub_list;
-        for (size_t i = 0; i < res->addresses->size; i++) {
-            sub_list = res->addresses->data[i]->data;
+        for (size_t i = 0; i < res->addresses.size; i++) {
+            sub_list = res->addresses.data[i]->data;
             object_set_tlv_self(sub_list->data[0], STRING_TYPE);
             object_set_tlv_self(sub_list->data[1], INTEGER_TYPE);
         }
@@ -65,7 +65,7 @@ void activated_accounts_get_tlv(const struct activated_accounts *active_acc, str
     if (res == NULL) return;
     if (active_acc == NULL) return string_clear(res);
 
-    list_get_tlv(active_acc->addresses, res);
+    list_get_tlv(&active_acc->addresses, res);
     tlv_set_string(res, TLV_ACTIVE_ACC, res);
 }
 
@@ -75,7 +75,7 @@ struct object_st *activated_accounts_attrib
     struct object_st *res = object_new();
     if (str->size == 9 && memcmp(str->data, "addresses", 9) == 0) {
         object_set_type(res, LIST_TYPE);
-        list_set(res->data, active_acc->addresses);
+        list_set(res->data, &active_acc->addresses);
     }
     else {
         object_free(res);

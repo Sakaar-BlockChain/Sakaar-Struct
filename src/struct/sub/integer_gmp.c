@@ -55,6 +55,16 @@ void integer_random(struct integer_st *res, const struct integer_st *a) {
     mpz_urandomm(res->mpz_int, state, a->mpz_int);
 }
 
+// Data Methods
+void integer_data_init(struct integer_st *res) {
+    if (res == NULL) return;
+    mpz_init(res->mpz_int);
+}
+void integer_data_free(struct integer_st *res) {
+    if (res == NULL) return;
+    mpz_clear(res->mpz_int);
+}
+
 // Class Methods
 void integer_ls(struct integer_st *res, const struct integer_st *a, size_t num) {
     mpz_mul_2exp(res->mpz_int, a->mpz_int, num);
@@ -124,7 +134,7 @@ signed integer_get_si(const struct integer_st *res) {
 }
 
 // String Methods
-void _integer_set_str(struct integer_st *res, const char *str, size_t size) {
+void integer_set_str_(struct integer_st *res, const char *str, size_t size) {
     if (str == NULL) integer_clear(res);
     if(str == NULL) return mpz_set_ui(res->mpz_int, 0);
     struct string_st *temp = string_new();
@@ -158,7 +168,7 @@ void integer_set_time(struct integer_st *res) {
     mpz_add_ui(res->mpz_int, res->mpz_int, (unsigned int)seconds);
 }
 
-void _integer_set_str_dec(struct integer_st *res, const char *str, size_t size) {
+void integer_set_str_dec_(struct integer_st *res, const char *str, size_t size) {
     if (str == NULL) integer_clear(res);
     struct string_st *temp = string_new();
     string_set_str(temp, str, size);
@@ -167,7 +177,7 @@ void _integer_set_str_dec(struct integer_st *res, const char *str, size_t size) 
     else mpz_set_ui(res->mpz_int, 0);
     string_free(temp);
 }
-void _integer_set_str_oct(struct integer_st *res, const char *str, size_t size) {
+void integer_set_str_oct_(struct integer_st *res, const char *str, size_t size) {
     if (str == NULL) integer_clear(res);
     struct string_st *temp = string_new();
     string_set_str(temp, str, size);
@@ -177,7 +187,7 @@ void _integer_set_str_oct(struct integer_st *res, const char *str, size_t size) 
     string_free(temp);
 
 }
-void _integer_set_str_bin(struct integer_st *res, const char *str, size_t size) {
+void integer_set_str_bin_(struct integer_st *res, const char *str, size_t size) {
     if (str == NULL) integer_clear(res);
     struct string_st *temp = string_new();
     string_set_str(temp, str, size);
@@ -202,7 +212,7 @@ void integer_get_dec(const struct integer_st *res, struct string_st *str) {
 }
 
 // TLV Methods
-void _integer_set_tlv(struct integer_st *res, const struct string_st *tlv) {
+void integer_set_tlv_(struct integer_st *res, const struct string_st *tlv) {
     if (res == NULL) return;
     integer_clear(res);
     if (string_is_null(tlv)) return;
@@ -223,7 +233,7 @@ void _integer_set_tlv(struct integer_st *res, const struct string_st *tlv) {
     mpz_set_str(res->mpz_int, temp, 16);
     skr_free(temp);
 }
-void _integer_get_tlv(const struct integer_st *res, struct string_st *tlv, unsigned tag) {
+void integer_get_tlv_(const struct integer_st *res, struct string_st *tlv, unsigned tag) {
     if (tlv == NULL) return;
     string_clear(tlv);
     if (res == NULL) return;

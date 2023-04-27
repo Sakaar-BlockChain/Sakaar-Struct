@@ -4,15 +4,15 @@
 #include "struct.h"
 
 struct account_st {
-    struct string_st *address;
-    struct string_st *login;
+    struct string_st address;
+    struct string_st login;
 
-    struct integer_st *activated;
-    struct integer_st *freeze;
+    struct integer_st activated;
+    struct integer_st freeze;
 
-    struct integer_st *hash_type;
-    struct integer_st *crypto_type;
-    struct integer_st *crypto_base;
+    struct integer_st hash_type;
+    struct integer_st crypto_type;
+    struct integer_st crypto_base;
 };
 // Standard operations
 struct account_st *account_new();

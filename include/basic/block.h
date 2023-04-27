@@ -6,16 +6,16 @@
 #include "block_history.h"
 
 struct block_st {
-    struct list_st *transactions;
-    struct integer_st *benefit;
-    struct integer_st *time;
-    struct string_st *address_outside;
-    struct string_st *hash;
-    struct string_st *smart_contract;
-    struct list_st *nodes_done;
-    struct integer_st *result_pros;
-    struct integer_st *result_cons;
-    struct integer_st *voted;
+    struct list_st transactions;
+    struct integer_st benefit;
+    struct integer_st time;
+    struct string_st address_outside;
+    struct string_st hash;
+    struct string_st smart_contract;
+    struct list_st nodes_done;
+    struct integer_st result_pros;
+    struct integer_st result_cons;
+    struct integer_st voted;
 };
 // Standard operations
 struct block_st *block_new();

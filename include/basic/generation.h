@@ -4,9 +4,9 @@
 #include "struct.h"
 
 struct generation {
-    struct integer_st *time;
-    struct string_st *data;
-    struct string_st *hash;
+    struct integer_st time;
+    struct string_st data;
+    struct string_st hash;
 };
 // Standard operations
 struct generation *generation_new();

@@ -25,6 +25,10 @@ int integer_is_null(const struct integer_st *);
 int integer_is_neg(const struct integer_st *);
 void integer_random(struct integer_st *, const struct integer_st *);
 
+// Data Methods
+void integer_data_init(struct integer_st *);
+void integer_data_free(struct integer_st *);
+
 // Class Methods
 void integer_ls(struct integer_st *, const struct integer_st *, size_t );
 void integer_rs(struct integer_st *, const struct integer_st *, size_t );
@@ -47,21 +51,21 @@ unsigned integer_get_ui(const struct integer_st *);
 signed integer_get_si(const struct integer_st *);
 
 // String Methods
-void _integer_set_str(struct integer_st *, const char *, size_t);
+void integer_set_str_(struct integer_st *, const char *, size_t);
 void integer_set_str(struct integer_st *, const struct string_st *);
 void integer_get_str(const struct integer_st *, struct string_st *);
 void integer_set_time(struct integer_st *);
 
-void _integer_set_str_dec(struct integer_st *, const char *, size_t);
-void _integer_set_str_oct(struct integer_st *, const char *, size_t);
-void _integer_set_str_bin(struct integer_st *, const char *, size_t);
+void integer_set_str_dec_(struct integer_st *, const char *, size_t);
+void integer_set_str_oct_(struct integer_st *, const char *, size_t);
+void integer_set_str_bin_(struct integer_st *, const char *, size_t);
 
 void integer_set_dec(struct integer_st *, const struct string_st *);
 void integer_get_dec(const struct integer_st *, struct string_st *);
 
 // TLV Methods
-void _integer_set_tlv(struct integer_st *, const struct string_st *);
-void _integer_get_tlv(const struct integer_st *, struct string_st *, unsigned);
+void integer_set_tlv_(struct integer_st *, const struct string_st *);
+void integer_get_tlv_(const struct integer_st *, struct string_st *, unsigned);
 void integer_set_tlv(struct integer_st *, const struct string_st *);
 void integer_get_tlv(const struct integer_st *, struct string_st *);
 

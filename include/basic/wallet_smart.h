@@ -5,15 +5,15 @@
 #include "currency.h"
 
 struct wallet_smart {
-    struct string_st *address;
-    struct string_st *currency;
-    struct string_st *private_key;
-    struct string_st *smart_private;
-    struct string_st *smart_contract;
-    struct string_st *name;
-    struct string_st *owner;
+    struct string_st address;
+    struct string_st currency;
+    struct string_st private_key;
+    struct string_st smart_private;
+    struct string_st smart_contract;
+    struct string_st name;
+    struct string_st owner;
 
-    struct integer_st *freeze;
+    struct integer_st freeze;
 };
 // Standard operations
 struct wallet_smart *wallet_smart_new();

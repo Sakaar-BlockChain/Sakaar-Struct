@@ -7,28 +7,28 @@ struct object_type wallet_smart_type = {WALLET_SMART_OP, &wallet_smart_tlv, &wal
 // Standard operations
 struct wallet_smart *wallet_smart_new() {
     struct wallet_smart *res = skr_malloc(sizeof(struct wallet_smart));
-    res->address = string_new();
-    res->currency = string_new();
-    res->private_key = string_new();
-    res->smart_private = string_new();
-    res->smart_contract = string_new();
-    res->name = string_new();
-    res->owner = string_new();
+    string_data_init(&res->address);
+    string_data_init(&res->currency);
+    string_data_init(&res->private_key);
+    string_data_init(&res->smart_private);
+    string_data_init(&res->smart_contract);
+    string_data_init(&res->name);
+    string_data_init(&res->owner);
 
-    res->freeze = integer_new();
+    integer_data_init(&res->freeze);
     return res;
 }
 void wallet_smart_free(struct wallet_smart *res) {
     if (res == NULL) return;
-    string_free(res->address);
-    string_free(res->currency);
-    string_free(res->private_key);
-    string_free(res->smart_private);
-    string_free(res->smart_contract);
-    string_free(res->name);
-    string_free(res->owner);
+    string_data_free(&res->address);
+    string_data_free(&res->currency);
+    string_data_free(&res->private_key);
+    string_data_free(&res->smart_private);
+    string_data_free(&res->smart_contract);
+    string_data_free(&res->name);
+    string_data_free(&res->owner);
 
-    integer_free(res->freeze);
+    integer_data_free(&res->freeze);
     skr_free(res);
 }
 
@@ -36,45 +36,45 @@ void wallet_smart_set(struct wallet_smart *res, const struct wallet_smart *a) {
     if (res == NULL) return;
     if (a == NULL) return wallet_smart_clear(res);
 
-    string_set(res->address, a->address);
-    string_set(res->currency, a->currency);
-    string_set(res->private_key, a->private_key);
-    string_set(res->smart_private, a->smart_private);
-    string_set(res->smart_contract, a->smart_contract);
-    string_set(res->name, a->name);
-    string_set(res->owner, a->owner);
+    string_set(&res->address, &a->address);
+    string_set(&res->currency, &a->currency);
+    string_set(&res->private_key, &a->private_key);
+    string_set(&res->smart_private, &a->smart_private);
+    string_set(&res->smart_contract, &a->smart_contract);
+    string_set(&res->name, &a->name);
+    string_set(&res->owner, &a->owner);
 
-    integer_set(res->freeze, a->freeze);
+    integer_set(&res->freeze, &a->freeze);
 }
 void wallet_smart_copy(struct wallet_smart *res, const struct wallet_smart *a) {
     if (res == NULL) return;
     if (a == NULL) return wallet_smart_clear(res);
 
-    string_copy(res->address, a->address);
-    string_copy(res->currency, a->currency);
-    string_copy(res->private_key, a->private_key);
-    string_copy(res->smart_private, a->smart_private);
-    string_copy(res->smart_contract, a->smart_contract);
-    string_copy(res->name, a->name);
-    string_copy(res->owner, a->owner);
+    string_copy(&res->address, &a->address);
+    string_copy(&res->currency, &a->currency);
+    string_copy(&res->private_key, &a->private_key);
+    string_copy(&res->smart_private, &a->smart_private);
+    string_copy(&res->smart_contract, &a->smart_contract);
+    string_copy(&res->name, &a->name);
+    string_copy(&res->owner, &a->owner);
 
-    integer_copy(res->freeze, a->freeze);
+    integer_copy(&res->freeze, &a->freeze);
 }
 
 void wallet_smart_clear(struct wallet_smart *res) {
     if (res == NULL) return;
-    string_clear(res->address);
-    string_clear(res->currency);
-    string_clear(res->private_key);
-    string_clear(res->smart_private);
-    string_clear(res->smart_contract);
-    string_clear(res->name);
-    string_clear(res->owner);
+    string_clear(&res->address);
+    string_clear(&res->currency);
+    string_clear(&res->private_key);
+    string_clear(&res->smart_private);
+    string_clear(&res->smart_contract);
+    string_clear(&res->name);
+    string_clear(&res->owner);
 
-    integer_clear(res->freeze);
+    integer_clear(&res->freeze);
 }
 int wallet_smart_cmp(const struct wallet_smart *obj1, const struct wallet_smart *obj2) {
-    if (obj1 == NULL || obj2 == NULL || string_cmp(obj1->address, obj2->address) != 0 || string_cmp(obj1->currency, obj2->currency) != 0) return 2;
+    if (obj1 == NULL || obj2 == NULL || string_cmp(&obj1->address, &obj2->address) != 0 || string_cmp(&obj1->currency, &obj2->currency) != 0) return 2;
     return 0;
 }
 
@@ -89,28 +89,28 @@ void wallet_smart_set_tlv(struct wallet_smart *res, const struct string_st *tlv)
 
 
     data = tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(res->address, _tlv);
+    string_set_tlv(&res->address, _tlv);
 
     data = tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(res->currency, _tlv);
+    string_set_tlv(&res->currency, _tlv);
 
     data = tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(res->private_key, _tlv);
+    string_set_tlv(&res->private_key, _tlv);
 
     data = tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(res->smart_private, _tlv);
+    string_set_tlv(&res->smart_private, _tlv);
 
     data = tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(res->smart_contract, _tlv);
+    string_set_tlv(&res->smart_contract, _tlv);
 
     data = tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(res->name, _tlv);
+    string_set_tlv(&res->name, _tlv);
 
     data = tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(res->owner, _tlv);
+    string_set_tlv(&res->owner, _tlv);
 
     tlv_get_next_tlv(data, _tlv);
-    integer_set_tlv(res->freeze, _tlv);
+    integer_set_tlv(&res->freeze, _tlv);
 
     string_free(_tlv);
 }
@@ -119,27 +119,27 @@ void wallet_smart_get_tlv(const struct wallet_smart *smart, struct string_st *re
     if (smart == NULL) return string_clear(res);
 
     struct string_st *tlv = string_new();
-    string_get_tlv(smart->address, res);
+    string_get_tlv(&smart->address, res);
 
-    string_get_tlv(smart->currency, tlv);
+    string_get_tlv(&smart->currency, tlv);
     string_concat(res, tlv);
 
-    string_get_tlv(smart->private_key, tlv);
+    string_get_tlv(&smart->private_key, tlv);
     string_concat(res, tlv);
 
-    string_get_tlv(smart->smart_private, tlv);
+    string_get_tlv(&smart->smart_private, tlv);
     string_concat(res, tlv);
 
-    string_get_tlv(smart->smart_contract, tlv);
+    string_get_tlv(&smart->smart_contract, tlv);
     string_concat(res, tlv);
 
-    string_get_tlv(smart->name, tlv);
+    string_get_tlv(&smart->name, tlv);
     string_concat(res, tlv);
 
-    string_get_tlv(smart->owner, tlv);
+    string_get_tlv(&smart->owner, tlv);
     string_concat(res, tlv);
 
-    integer_get_tlv(smart->freeze, tlv);
+    integer_get_tlv(&smart->freeze, tlv);
     string_concat(res, tlv);
 
     tlv_set_string(res, TLV_WALLET_SMART, res);
@@ -152,35 +152,35 @@ struct object_st *wallet_smart_attrib
     struct object_st *res = object_new();
     if (str->size == 7 && memcmp(str->data, "address", 7) == 0) {
         object_set_type(res, STRING_TYPE);
-        string_set(res->data, smart->address);
+        string_set(res->data, &smart->address);
     }
     else if (str->size == 8 && memcmp(str->data, "currency", 8) == 0) {
         object_set_type(res, STRING_TYPE);
-        string_set(res->data, smart->currency);
+        string_set(res->data, &smart->currency);
     }
     else if (str->size == 11 && memcmp(str->data, "private_key", 11) == 0) {
         object_set_type(res, STRING_TYPE);
-        string_set(res->data, smart->private_key);
+        string_set(res->data, &smart->private_key);
     }
     else if (str->size == 13 && memcmp(str->data, "smart_private", 13) == 0) {
         object_set_type(res, STRING_TYPE);
-        string_set(res->data, smart->smart_private);
+        string_set(res->data, &smart->smart_private);
     }
     else if (str->size == 14 && memcmp(str->data, "smart_contract", 14) == 0) {
         object_set_type(res, STRING_TYPE);
-        string_set(res->data, smart->smart_contract);
+        string_set(res->data, &smart->smart_contract);
     }
     else if (str->size == 4 && memcmp(str->data, "name", 4) == 0) {
         object_set_type(res, STRING_TYPE);
-        string_set(res->data, smart->name);
+        string_set(res->data, &smart->name);
     }
     else if (str->size == 5 && memcmp(str->data, "owner", 5) == 0) {
         object_set_type(res, STRING_TYPE);
-        string_set(res->data, smart->owner);
+        string_set(res->data, &smart->owner);
     }
     else if (str->size == 6 && memcmp(str->data, "freeze", 6) == 0) {
         object_set_type(res, INTEGER_TYPE);
-        integer_set(res->data, smart->freeze);
+        integer_set(res->data, &smart->freeze);
     }
     else {
         object_free(res);
