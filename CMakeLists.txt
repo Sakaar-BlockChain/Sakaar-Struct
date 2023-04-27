@@ -6,14 +6,7 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_DIR   "${CMAKE_CURRENT_LIST_DIR}/cmake"   CACHE PATH "The the path to the cmake directory")
 option(ECC_USE_EXTERNAL_JSON "Use an external JSON library" OFF)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
-MESSAGE(STATUS ${CMAKE_MODULE_PATH})
 include(FindGMP)
-
-if(NOT TARGET Sakaar_Memory_lib)
-    add_subdirectory(lib/Sakaar-Memory)
-    link_directories(lib/Sakaar-Memory)
-    MESSAGE(STATUS "Connected: Sakaar_Memory_lib")
-endif()
 
 FILE(GLOB SOURCE_FILES_DIR_DIR "src/*/*/*.c")
 FILE(GLOB SOURCE_FILES_DIR "src/*/*.c")
@@ -23,7 +16,7 @@ target_include_directories(${PROJECT_NAME}_lib PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
         PRIVATE src)
-MESSAGE(STATUS "Connected: Sakaar_Struct_lib")
+MESSAGE(STATUS "Created: ${PROJECT_NAME}_lib")
 
 target_link_libraries(${PROJECT_NAME}_lib PUBLIC Sakaar_Memory_lib)
 target_link_libraries(${PROJECT_NAME}_lib PUBLIC gmp gmpxx)
