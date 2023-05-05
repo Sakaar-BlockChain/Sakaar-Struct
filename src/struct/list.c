@@ -162,42 +162,45 @@ void list_sort(struct list_st *res) {
 }
 
 // TLV Methods
-void list_set_tlv(struct list_st *res, const struct string_st *tlv) {
-    if (res == NULL) return;
+int list_set_tlv(struct list_st *res, const struct string_st *tlv) {
+    if (res == NULL) return 0;
     list_clear(res);
-    if (string_is_null(tlv) || tlv_get_tag(tlv->data) != LIST_TLV) return;
+    int result = tlv_get_tag(tlv);
+    if (result < 0) return result;
+    if (result != LIST_TLV) return ERR_TLV_TAG;
 
-    char *data = tlv_get_value(tlv->data);
-    char *end = data + tlv_get_size(tlv->data);
+    struct string_st _tlv = {NULL, 0, 0};
+    result = tlv_get_value(tlv, &_tlv);
 
-    for (; data != end;) {
+    for (; _tlv.size != 0 && result == 0;) {
         struct object_st *obj = object_new();
         object_set_type(obj, TLV_TYPE);
-        data = tlv_get_next_tlv(data, obj->data);
+        result = tlv_get_next_tlv(&_tlv, obj->data);
         list_append(res, obj);
         object_free(obj);
     }
+
+    string_data_free(&_tlv);
+    return result;
 }
 void list_get_tlv(const struct list_st *res, struct string_st *tlv) {
     if (tlv == NULL) return;
     string_clear(tlv);
     if (res == NULL) return;
 
-    struct string_st *temp = string_new();
+    struct string_st _tlv_data = {NULL, 0, 0};
     for (size_t i = 0; i < res->size; i++) {
-        object_get_tlv(res->data[i], temp);
-        string_concat(tlv, temp);
+        object_get_tlv(res->data[i], &_tlv_data);
+        string_concat(tlv, &_tlv_data);
     }
     tlv_set_string(tlv, LIST_TLV, tlv);
-    string_free(temp);
+    string_data_free(&_tlv_data);
 }
-void list_set_tlv_self(struct list_st *res, const struct string_st *tlv, struct object_type *type) {
-    if (res == NULL) return;
-    list_clear(res);
-    if (string_is_null(tlv)) return;
-    list_set_tlv(res, tlv);
-    for (size_t i = 0; i < res->size; i++)
-        object_set_tlv_self(res->data[i], type);
+int list_set_tlv_self(struct list_st *res, const struct string_st *tlv, struct object_type *type) {
+    int result = list_set_tlv(res, tlv);
+    for (size_t i = 0; i < res->size && result == 0; i++)
+        result = object_set_tlv_self(res->data[i], type);
+    return result;
 }
 
 // Convert Methods

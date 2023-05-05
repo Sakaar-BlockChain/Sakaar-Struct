@@ -44,45 +44,49 @@ int wallet_cmp(const struct wallet_st *obj1, const struct wallet_st *obj2) {
 }
 
 // TLV Methods
-void wallet_set_tlv(struct wallet_st *res, const struct string_st *tlv) {
-    if (res == NULL) return;
+int wallet_set_tlv(struct wallet_st *res, const struct string_st *tlv) {
+    if (res == NULL) return 0;
     wallet_clear(res);
-    if (string_is_null(tlv) || tlv_get_tag(tlv->data) != TLV_WALLET) return;
+    int result = tlv_get_tag(tlv);
+    if (result < 0) return result;
+    if (result != TLV_WALLET) return ERR_TLV_TAG;
 
-    char *data = tlv_get_value(tlv->data);
-    struct string_st *_tlv = string_new();
+    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    if ((result = tlv_get_value(tlv, &_tlv)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    wallet_data_set_tlv(res->data, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = wallet_data_set_tlv(res->data, &_tlv_data)) != 0) goto end;
 
-    tlv_get_next_tlv(data, _tlv);
-    wallet_smart_set_tlv(res->smart, _tlv);
-
-    string_free(_tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = wallet_smart_set_tlv(res->smart, &_tlv_data)) != 0) goto end;
+    end:
+    string_data_free(&_tlv);
+    string_data_free(&_tlv_data);
+    return result;
 }
 void wallet_get_tlv(const struct wallet_st *wallet, struct string_st *res) {
     if (res == NULL) return;
     if (wallet == NULL) return string_clear(res);
 
-    struct string_st *tlv = string_new();
+    struct string_st _tlv_data = {NULL, 0, 0};
     wallet_data_get_tlv(wallet->data, res);
 
-    wallet_smart_get_tlv(wallet->smart, tlv);
-    string_concat(res, tlv);
+    wallet_smart_get_tlv(wallet->smart, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
     tlv_set_string(res, TLV_WALLET, res);
-    string_free(tlv);
+    string_data_free(&_tlv_data);
 }
 
 // Attrib Methods
 struct object_st *wallet_attrib
 (struct object_st *err, const struct wallet_st *wallet, const struct string_st *str) {
     struct object_st *res = object_new();
-    if (str->size == 12 && memcmp(str->data, "data", 12) == 0) {
+    if (str->size == 12 && memcmp(str->data, "data", 4) == 0) {
         object_set_type(res, WALLET_DATA_TYPE);
         wallet_data_set(res->data, wallet->data);
     }
-    else if (str->size == 10 && memcmp(str->data, "smart", 10) == 0) {
+    else if (str->size == 10 && memcmp(str->data, "smart", 5) == 0) {
         object_set_type(res, WALLET_SMART_TYPE);
         wallet_smart_set(res->data, wallet->smart);
     }

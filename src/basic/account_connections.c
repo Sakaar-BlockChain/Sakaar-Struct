@@ -49,40 +49,44 @@ int account_connections_cmp(const struct account_connections *obj1, const struct
 }
 
 // TLV Methods
-void account_connections_set_tlv(struct account_connections *res, const struct string_st *tlv) {
-    if (res == NULL) return;
+int account_connections_set_tlv(struct account_connections *res, const struct string_st *tlv) {
+    if (res == NULL) return 0;
     account_connections_clear(res);
-    if (string_is_null(tlv) || tlv_get_tag(tlv->data) != TLV_ACCOUNT_CONN) return;
+    int result = tlv_get_tag(tlv);
+    if (result < 0) return result;
+    if (result != TLV_ACCOUNT_CONN) return ERR_TLV_TAG;
 
-    char *data = tlv_get_value(tlv->data);
-    struct string_st *_tlv = string_new();
+    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    if ((result = tlv_get_value(tlv, &_tlv)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(&res->address, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = string_set_tlv(&res->address, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(&res->currency, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = string_set_tlv(&res->currency, &_tlv_data)) != 0) goto end;
 
-    tlv_get_next_tlv(data, _tlv);
-    list_set_tlv_self(&res->addresses, _tlv, STRING_TYPE);
-
-    string_free(_tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = list_set_tlv_self(&res->addresses, &_tlv_data, STRING_TYPE)) != 0) goto end;
+    end:
+    string_data_free(&_tlv);
+    string_data_free(&_tlv_data);
+    return result;
 }
 void account_connections_get_tlv(const struct account_connections *account_conn, struct string_st *res) {
     if (res == NULL) return;
     if (account_conn == NULL) return string_clear(res);
 
-    struct string_st *tlv = string_new();
+    struct string_st _tlv_data = {NULL, 0, 0};
     string_get_tlv(&account_conn->address, res);
 
-    string_get_tlv(&account_conn->currency, tlv);
-    string_concat(res, tlv);
+    string_get_tlv(&account_conn->currency, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    list_get_tlv(&account_conn->addresses, tlv);
-    string_concat(res, tlv);
+    list_get_tlv(&account_conn->addresses, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
     tlv_set_string(res, TLV_ACCOUNT_CONN, res);
-    string_free(tlv);
+    string_data_free(&_tlv_data);
 }
 
 // Attrib Methods

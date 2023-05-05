@@ -455,10 +455,10 @@ void integer_get_tlv_(const struct integer_st *res, struct string_st *tlv, unsig
     skr_free(data);
 #endif
 }
-void integer_set_tlv(struct integer_st *res, const struct string_st *tlv) {
+int integer_set_tlv(struct integer_st *res, const struct string_st *tlv) {
     if (res == NULL) return;
     integer_clear(res);
-    if (string_is_null(tlv) || tlv_get_tag(tlv->data) != INTEGER_TLV) return;
+    if (string_is_null(tlv) || tlv_get_tag(tlv) != INTEGER_TLV) return;
 #ifdef USE_GMP
     char *data = tlv_get_value(tlv->data);
     size_t size = tlv_get_size(tlv->data);

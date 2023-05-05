@@ -19,7 +19,7 @@ void generation_clear(struct generation *);
 int generation_cmp(const struct generation *, const struct generation *);
 
 // TLV Methods
-void generation_set_tlv(struct generation *, const struct string_st *);
+int generation_set_tlv(struct generation *, const struct string_st *);
 void generation_get_tlv(const struct generation *, struct string_st *);
 
 // Attrib Methods

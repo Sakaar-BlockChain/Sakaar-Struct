@@ -92,12 +92,13 @@ void string_concat(struct string_st *res, const struct string_st *a) {
 }
 
 // TLV Methods
-void string_set_tlv(struct string_st *res, const struct string_st *tlv) {
-    if(res == NULL) return;
-    if(string_is_null(tlv)) return string_clear(res);
-
-    if(tlv_get_tag(tlv->data) != STRING_TLV) return;
-    string_set_str(res, tlv_get_value(tlv->data),tlv_get_size(tlv->data));
+int string_set_tlv(struct string_st *res, const struct string_st *tlv) {
+    if (res == NULL) return 0;
+    string_clear(res);
+    int result = tlv_get_tag(tlv);
+    if (result < 0) return result;
+    if (result != STRING_TLV) return ERR_TLV_TAG;
+    return tlv_get_value(tlv, res);
 }
 void string_get_tlv(const struct string_st *res, struct string_st *tlv) {
     if(tlv == NULL) return;

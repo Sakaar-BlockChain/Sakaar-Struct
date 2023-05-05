@@ -19,7 +19,7 @@ void account_connections_clear(struct account_connections *);
 int account_connections_cmp(const struct account_connections *, const struct account_connections *);
 
 // TLV Methods
-void account_connections_set_tlv(struct account_connections *, const struct string_st *);
+int account_connections_set_tlv(struct account_connections *, const struct string_st *);
 void account_connections_get_tlv(const struct account_connections *, struct string_st *);
 
 // Attrib Methods

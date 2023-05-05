@@ -79,71 +79,74 @@ int wallet_smart_cmp(const struct wallet_smart *obj1, const struct wallet_smart 
 }
 
 // TLV Methods
-void wallet_smart_set_tlv(struct wallet_smart *res, const struct string_st *tlv) {
-    if (res == NULL) return;
+int wallet_smart_set_tlv(struct wallet_smart *res, const struct string_st *tlv) {
+    if (res == NULL) return 0;
     wallet_smart_clear(res);
-    if (string_is_null(tlv) || tlv_get_tag(tlv->data) != TLV_WALLET_SMART) return;
+    int result = tlv_get_tag(tlv);
+    if (result < 0) return result;
+    if (result != TLV_WALLET_SMART) return ERR_TLV_TAG;
 
-    char *data = tlv_get_value(tlv->data);
-    struct string_st *_tlv = string_new();
+    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    if ((result = tlv_get_value(tlv, &_tlv)) != 0) goto end;
 
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = string_set_tlv(&res->address, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(&res->address, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = string_set_tlv(&res->currency, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(&res->currency, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = string_set_tlv(&res->private_key, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(&res->private_key, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = string_set_tlv(&res->smart_private, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(&res->smart_private, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = string_set_tlv(&res->smart_contract, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(&res->smart_contract, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = string_set_tlv(&res->name, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(&res->name, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = string_set_tlv(&res->owner, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(&res->owner, _tlv);
-
-    tlv_get_next_tlv(data, _tlv);
-    integer_set_tlv(&res->freeze, _tlv);
-
-    string_free(_tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = integer_set_tlv(&res->freeze, &_tlv_data)) != 0) goto end;
+    end:
+    string_data_free(&_tlv);
+    string_data_free(&_tlv_data);
+    return result;
 }
 void wallet_smart_get_tlv(const struct wallet_smart *smart, struct string_st *res) {
     if (res == NULL) return;
     if (smart == NULL) return string_clear(res);
 
-    struct string_st *tlv = string_new();
+    struct string_st _tlv_data = {NULL, 0, 0};
     string_get_tlv(&smart->address, res);
 
-    string_get_tlv(&smart->currency, tlv);
-    string_concat(res, tlv);
+    string_get_tlv(&smart->currency, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    string_get_tlv(&smart->private_key, tlv);
-    string_concat(res, tlv);
+    string_get_tlv(&smart->private_key, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    string_get_tlv(&smart->smart_private, tlv);
-    string_concat(res, tlv);
+    string_get_tlv(&smart->smart_private, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    string_get_tlv(&smart->smart_contract, tlv);
-    string_concat(res, tlv);
+    string_get_tlv(&smart->smart_contract, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    string_get_tlv(&smart->name, tlv);
-    string_concat(res, tlv);
+    string_get_tlv(&smart->name, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    string_get_tlv(&smart->owner, tlv);
-    string_concat(res, tlv);
+    string_get_tlv(&smart->owner, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    integer_get_tlv(&smart->freeze, tlv);
-    string_concat(res, tlv);
+    integer_get_tlv(&smart->freeze, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
     tlv_set_string(res, TLV_WALLET_SMART, res);
-    string_free(tlv);
+    string_data_free(&_tlv_data);
 }
 
 // Attrib Methods

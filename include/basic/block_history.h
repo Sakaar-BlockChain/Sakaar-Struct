@@ -23,7 +23,7 @@ void block_history_clear(struct block_history *);
 int block_history_cmp(const struct block_history *, const struct block_history *);
 
 // TLV Methods
-void block_history_set_tlv(struct block_history *, const struct string_st *);
+int block_history_set_tlv(struct block_history *, const struct string_st *);
 void block_history_get_tlv(const struct block_history *, struct string_st *);
 
 // Attrib Methods

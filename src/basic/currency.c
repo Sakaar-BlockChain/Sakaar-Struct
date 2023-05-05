@@ -84,70 +84,74 @@ int currency_cmp(const struct currency_st *obj1, const struct currency_st *obj2)
 }
 
 // TLV Methods
-void currency_set_tlv(struct currency_st *res, const struct string_st *tlv) {
-    if (res == NULL) return;
+int currency_set_tlv(struct currency_st *res, const struct string_st *tlv) {
+    if (res == NULL) return 0;
     currency_clear(res);
-    if (string_is_null(tlv) || tlv_get_tag(tlv->data) != TLV_CURRENCY) return;
+    int result = tlv_get_tag(tlv);
+    if (result < 0) return result;
+    if (result != TLV_CURRENCY) return ERR_TLV_TAG;
 
-    char *data = tlv_get_value(tlv->data);
-    struct string_st *_tlv = string_new();
+    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    if ((result = tlv_get_value(tlv, &_tlv)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(&res->name, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = string_set_tlv(&res->name, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(&res->smart_contract, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = string_set_tlv(&res->smart_contract, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(&res->info, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = string_set_tlv(&res->info, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    integer_set_tlv(&res->hash_type, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = integer_set_tlv(&res->hash_type, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    integer_set_tlv(&res->crypto_type, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = integer_set_tlv(&res->crypto_type, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    integer_set_tlv(&res->crypto_base, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = integer_set_tlv(&res->crypto_base, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    integer_set_tlv(&res->our, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = integer_set_tlv(&res->our, &_tlv_data)) != 0) goto end;
 
-    tlv_get_next_tlv(data, _tlv);
-    integer_set_tlv(&res->product, _tlv);
-
-    string_free(_tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = integer_set_tlv(&res->product, &_tlv_data)) != 0) goto end;
+    end:
+    string_data_free(&_tlv);
+    string_data_free(&_tlv_data);
+    return result;
 }
 void currency_get_tlv(const struct currency_st *currency, struct string_st *res) {
     if (res == NULL) return;
     if (currency == NULL) return string_clear(res);
 
-    struct string_st *tlv = string_new();
+    struct string_st _tlv_data = {NULL, 0, 0};
     string_get_tlv(&currency->name, res);
 
-    string_get_tlv(&currency->smart_contract, tlv);
-    string_concat(res, tlv);
+    string_get_tlv(&currency->smart_contract, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    string_get_tlv(&currency->info, tlv);
-    string_concat(res, tlv);
+    string_get_tlv(&currency->info, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    integer_get_tlv(&currency->hash_type, tlv);
-    string_concat(res, tlv);
+    integer_get_tlv(&currency->hash_type, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    integer_get_tlv(&currency->crypto_type, tlv);
-    string_concat(res, tlv);
+    integer_get_tlv(&currency->crypto_type, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    integer_get_tlv(&currency->crypto_base, tlv);
-    string_concat(res, tlv);
+    integer_get_tlv(&currency->crypto_base, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    integer_get_tlv(&currency->our, tlv);
-    string_concat(res, tlv);
+    integer_get_tlv(&currency->our, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    integer_get_tlv(&currency->product, tlv);
-    string_concat(res, tlv);
+    integer_get_tlv(&currency->product, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
     tlv_set_string(res, TLV_CURRENCY, res);
-    string_free(tlv);
+    string_data_free(&_tlv_data);
 }
 
 // Attrib Methods

@@ -28,7 +28,7 @@ int account_cmp(const struct account_st *, const struct account_st *);
 int account_is_null(const struct account_st *);
 
 // TLV Methods
-void account_set_tlv(struct account_st *, const struct string_st *);
+int account_set_tlv(struct account_st *, const struct string_st *);
 void account_get_tlv(const struct account_st *, struct string_st *);
 
 // Attrib Methods

@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "struct.h"
 
 struct object_tlv tlv_tlv = {METHOD_GET_TLV &tlv_get_tlv, METHOD_SET_TLV &tlv_set_tlv};
@@ -73,55 +74,78 @@ void tlv_set_string(struct string_st *res, unsigned tag, const struct string_st 
     skr_free(size_str);
 }
 
-size_t tlv_get_size_tag(const char *data) {
-    if ((data[0] & 0x1f) != 0x1f) return 1;
+size_t tlv_get_size_tag(const struct string_st *tlv) {
+    if (tlv == NULL || tlv->data == NULL) goto err;
+    if ((tlv->data[0] & 0x1f) != 0x1f) return 1;
     size_t _res = 1;
-    while (data[_res++] & 0x80);
+    while (tlv->data[_res++] & 0x80);
+    if (_res > tlv->size) goto err;
     return _res;
+    err:
+    fprintf(stderr, "Error tlv");
+    exit(-1);
 }
-size_t tlv_get_size(char *data) {
-    if (data == NULL) return 0;
-    size_t tag_size = tlv_get_size_tag(data);
-    size_t _size = (unsigned char) data[tag_size];
-    if (_size & 0x80) {
-        size_t size = 0;
-        _size ^= 0x80;
-        for (size_t i = tag_size + 1, j = 0; j < _size; i++, j++) {
-            size <<= 8;
-            size += (unsigned char) data[i];
-        }
-        return size;
-    }
-    return _size;
-}
-
-unsigned tlv_get_tag(char *data) {
-    if (data == NULL) return 0;
-    size_t tag_size = tlv_get_size_tag(data);
-    unsigned _res = 0;
-    for (size_t i = 0; i < tag_size; i++) {
-        _res <<= 8;
-        _res += (unsigned char) data[i];
-    }
-    return _res;
-}
-char *tlv_get_value(char *data) {
-    if (data == NULL) return NULL;
-    size_t tag_size = tlv_get_size_tag(data);
-    size_t _size = (unsigned char) data[tag_size];
+size_t tlv_get_size_head(const struct string_st *tlv) {
+    if (tlv == NULL || tlv->data == NULL) goto err;
+    size_t tag_size = tlv_get_size_tag(tlv) + 1;
+    size_t _size = (unsigned char) tlv->data[tag_size - 1];
     if (_size & 0x80) {
         _size ^= 0x80;
         tag_size += _size;
     }
-    tag_size++;
-    return data + tag_size;
+    if (tag_size > tlv->size) goto err;
+    return tag_size;
+    err:
+    fprintf(stderr, "Error tlv");
+    exit(-1);
+}
+size_t tlv_get_size_value(const struct string_st *tlv) {
+    if (tlv == NULL || tlv->data == NULL) goto err;
+    size_t tag_size = tlv_get_size_tag(tlv);
+    size_t _size = (unsigned char) tlv->data[tag_size];
+    if (_size & 0x80) {
+        size_t size = 0;
+        _size ^= 0x80;
+        if (_size > tlv->size) goto err;
+        for (size_t i = tag_size + 1, j = 0; j < _size; i++, j++) {
+            size <<= 8;
+            size += (unsigned char) tlv->data[i];
+        }
+        if (size > tlv->size) goto err;
+        return size;
+    }
+    if (_size > tlv->size) goto err;
+    return _size;
+    err:
+    fprintf(stderr, "Error tlv");
+    exit(-1);
 }
 
-char *tlv_get_next_tlv(char *data, struct string_st *res) {
-    if (data == NULL) return NULL;
-    size_t _size = tlv_get_size(data) + tlv_get_value(data) - data;
-    string_set_str(res, data, _size);
-    return data + _size;
+int tlv_get_tag(const struct string_st *tlv) {
+    size_t tag_size = tlv_get_size_tag(tlv);
+    int _res = 0;
+    for (size_t i = 0; i < tag_size; i++) {
+        _res <<= 8;
+        _res += (unsigned char) tlv->data[i];
+    }
+    return _res;
+}
+int tlv_get_value(const struct string_st *tlv, struct string_st *res) {
+    size_t head_size = tlv_get_size_head(tlv);
+    size_t value_size = tlv_get_size_value(tlv);
+    string_set_str(res, tlv->data + head_size, value_size);
+    return 0;
+}
+
+int tlv_get_next_tlv(struct string_st *tlv, struct string_st *res) {
+    size_t size = tlv_get_size_head(tlv) + tlv_get_size_value(tlv);
+    string_set_str(res, tlv->data, size);
+
+    for (size_t i = size, j = 0; i < tlv->size; i++, j++)
+        tlv->data[j] = tlv->data[i];
+    string_resize(tlv, tlv->size - size);
+    return 0;
+
 }
 void tlv_beautify(const struct string_st *tlv, struct string_st *res) {
     if (res == NULL) return;
@@ -134,8 +158,9 @@ void tlv_beautify(const struct string_st *tlv, struct string_st *res) {
 }
 
 // TLV Methods
-void tlv_set_tlv(struct string_st *res, const struct string_st *tlv) {
+int tlv_set_tlv(struct string_st *res, const struct string_st *tlv) {
     string_set(res, tlv);
+    return 0;
 }
 void tlv_get_tlv(const struct string_st *res, struct string_st *tlv) {
     string_set(tlv, res);

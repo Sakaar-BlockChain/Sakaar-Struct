@@ -89,93 +89,97 @@ int block_is_null(const struct block_st *res) {
 }
 
 // TLV Methods
-void block_set_tlv(struct block_st *res, const struct string_st *tlv) {
-    if (res == NULL) return;
+int block_set_tlv(struct block_st *res, const struct string_st *tlv) {
+    if (res == NULL) return 0;
     block_clear(res);
-    if (string_is_null(tlv) || tlv_get_tag(tlv->data) != TLV_BLOCK) return;
+    int result = tlv_get_tag(tlv);
+    if (result < 0) return result;
+    if (result != TLV_BLOCK) return ERR_TLV_TAG;
 
-    char *data = tlv_get_value(tlv->data);
-    struct string_st *_tlv = string_new();
+    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    if ((result = tlv_get_value(tlv, &_tlv)) != 0) goto end;
 
 
-    data = tlv_get_next_tlv(data, _tlv);
-    list_set_tlv_self(&res->transactions, _tlv, TRANSACTION_TYPE);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = list_set_tlv_self(&res->transactions, &_tlv_data, TRANSACTION_TYPE)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    list_set_tlv_self(&res->nodes_done, _tlv, STRING_TYPE);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = list_set_tlv_self(&res->nodes_done, &_tlv_data, STRING_TYPE)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(&res->address_outside, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = string_set_tlv(&res->address_outside, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
     {
         struct integer_st *num = integer_new();
-        integer_set_tlv(num, _tlv);
+        if ((result = integer_set_tlv(num, &_tlv_data)) != 0) goto end;
         integer_get_str(num, &res->hash);
         integer_free(num);
     }
 
-    data = tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(&res->smart_contract, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = string_set_tlv(&res->smart_contract, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    integer_set_tlv(&res->benefit, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = integer_set_tlv(&res->benefit, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    integer_set_tlv(&res->time, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = integer_set_tlv(&res->time, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    integer_set_tlv(&res->result_pros, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = integer_set_tlv(&res->result_pros, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    integer_set_tlv(&res->result_cons, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = integer_set_tlv(&res->result_cons, &_tlv_data)) != 0) goto end;
 
-    tlv_get_next_tlv(data, _tlv);
-    integer_set_tlv(&res->voted, _tlv);
-
-    string_free(_tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = integer_set_tlv(&res->voted, &_tlv_data)) != 0) goto end;
+    end:
+    string_data_free(&_tlv);
+    string_data_free(&_tlv_data);
+    return result;
 }
 void block_get_tlv(const struct block_st *block, struct string_st *res) {
     if (res == NULL) return;
     if (block == NULL) return string_clear(res);
 
-    struct string_st *tlv = string_new();
+    struct string_st _tlv_data = {NULL, 0, 0};
     list_get_tlv(&block->transactions, res);
 
-    list_get_tlv(&block->nodes_done, tlv);
-    string_concat(res, tlv);
+    list_get_tlv(&block->nodes_done, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    string_get_tlv(&block->address_outside, tlv);
-    string_concat(res, tlv);
+    string_get_tlv(&block->address_outside, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
     {
         struct integer_st *num = integer_new();
         integer_set_str(num, &block->hash);
-        integer_get_tlv(num, tlv);
+        integer_get_tlv(num, &_tlv_data);
         integer_free(num);
     }
-    string_concat(res, tlv);
+    string_concat(res, &_tlv_data);
 
-    string_get_tlv(&block->smart_contract, tlv);
-    string_concat(res, tlv);
+    string_get_tlv(&block->smart_contract, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    integer_get_tlv(&block->benefit, tlv);
-    string_concat(res, tlv);
+    integer_get_tlv(&block->benefit, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    integer_get_tlv(&block->time, tlv);
-    string_concat(res, tlv);
+    integer_get_tlv(&block->time, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    integer_get_tlv(&block->result_pros, tlv);
-    string_concat(res, tlv);
+    integer_get_tlv(&block->result_pros, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    integer_get_tlv(&block->result_cons, tlv);
-    string_concat(res, tlv);
+    integer_get_tlv(&block->result_cons, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    integer_get_tlv(&block->voted, tlv);
-    string_concat(res, tlv);
+    integer_get_tlv(&block->voted, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
     tlv_set_string(res, TLV_BLOCK, res);
-    string_free(tlv);
+    string_data_free(&_tlv_data);
 }
 
 // Attrib Methods

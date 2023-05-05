@@ -26,7 +26,7 @@ void wallet_smart_clear(struct wallet_smart *);
 int wallet_smart_cmp(const struct wallet_smart *, const struct wallet_smart *);
 
 // TLV Methods
-void wallet_smart_set_tlv(struct wallet_smart *, const struct string_st *);
+int wallet_smart_set_tlv(struct wallet_smart *, const struct string_st *);
 void wallet_smart_get_tlv(const struct wallet_smart *, struct string_st *);
 
 // Attrib Methods

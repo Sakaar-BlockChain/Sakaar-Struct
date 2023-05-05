@@ -64,9 +64,9 @@ void integer_set_dec(struct integer_st *, const struct string_st *);
 void integer_get_dec(const struct integer_st *, struct string_st *);
 
 // TLV Methods
-void integer_set_tlv_(struct integer_st *, const struct string_st *);
+int integer_set_tlv_(struct integer_st *, const struct string_st *);
 void integer_get_tlv_(const struct integer_st *, struct string_st *, unsigned);
-void integer_set_tlv(struct integer_st *, const struct string_st *);
+int integer_set_tlv(struct integer_st *, const struct string_st *);
 void integer_get_tlv(const struct integer_st *, struct string_st *);
 
 // Math Methods

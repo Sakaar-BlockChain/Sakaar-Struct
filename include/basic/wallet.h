@@ -20,7 +20,7 @@ void wallet_clear(struct wallet_st *);
 int wallet_cmp(const struct wallet_st *, const struct wallet_st *);
 
 // TLV Methods
-void wallet_set_tlv(struct wallet_st *, const struct string_st *);
+int wallet_set_tlv(struct wallet_st *, const struct string_st *);
 void wallet_get_tlv(const struct wallet_st *, struct string_st *);
 
 // Attrib Methods

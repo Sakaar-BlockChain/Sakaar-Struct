@@ -25,11 +25,11 @@ struct object_op {
 
 
 #define METHOD_GET_TLV    (void (*)(const void *, struct string_st *))
-#define METHOD_SET_TLV    (void (*)(void *, const struct string_st *))
+#define METHOD_SET_TLV    (int (*)(void *, const struct string_st *))
 
 struct object_tlv {
     void (*_get_tlv)(const void *, struct string_st *);
-    void (*_set_tlv)(void *, const struct string_st *);
+    int (*_set_tlv)(void *, const struct string_st *);
 };
 
 

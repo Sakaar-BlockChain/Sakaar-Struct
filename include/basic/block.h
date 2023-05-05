@@ -31,7 +31,7 @@ int block_cmp(const struct block_st *, const struct block_st *);
 int block_is_null(const struct block_st *);
 
 // TLV Methods
-void block_set_tlv(struct block_st *, const struct string_st *);
+int block_set_tlv(struct block_st *, const struct string_st *);
 void block_get_tlv(const struct block_st *, struct string_st *);
 
 // Attrib Methods

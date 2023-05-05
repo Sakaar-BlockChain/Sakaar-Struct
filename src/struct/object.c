@@ -77,9 +77,10 @@ void object_set_pointer(struct object_st *res, struct object_st *obj) {
 }
 
 // TLV method
-void object_set_tlv(struct object_st *res, const struct string_st *tlv) {
+int object_set_tlv(struct object_st *res, const struct string_st *tlv) {
     object_set_type(res, TLV_TYPE);
     string_set(res->data, tlv);
+    return 0;
 }
 void object_get_tlv(const struct object_st *res, struct string_st *tlv) {
     while (res != NULL && res->type == OBJECT_TYPE) res = res->data;
@@ -87,15 +88,20 @@ void object_get_tlv(const struct object_st *res, struct string_st *tlv) {
     string_clear(tlv);
     if (res->type != NULL && res->type->tlv != NULL && res->type->tlv->_get_tlv != NULL) res->type->tlv->_get_tlv(res->data, tlv);
 }
-void object_set_tlv_self(struct object_st *res, struct object_type *type) {
-    if (res->type != TLV_TYPE) return object_set_type(res, type);
-
-    struct string_st *tlv = string_new();
-    string_set(tlv, res->data);
+int object_set_tlv_self(struct object_st *res, struct object_type *type) {
+    if (res->type != TLV_TYPE) {
+        object_set_type(res, type);
+        return 0;
+    }
+    int result = 0;
+    struct string_st _tlv_data = {NULL, 0, 0};
+    string_set(&_tlv_data, res->data);
 
     object_set_type(res, type);
-    if (res->type != NULL && res->type->tlv != NULL && res->type->tlv->_set_tlv != NULL) res->type->tlv->_set_tlv(res->data, tlv);
-    string_free(tlv);
+    if (res->type != NULL && res->type->tlv != NULL && res->type->tlv->_set_tlv != NULL)
+        result = res->type->tlv->_set_tlv(res->data, &_tlv_data);
+    string_data_free(&_tlv_data);
+    return result;
 }
 
 // Sub method

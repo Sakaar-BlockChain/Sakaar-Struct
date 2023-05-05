@@ -31,7 +31,7 @@ void string_set_str(struct string_st *, const char *, size_t);
 void string_concat(struct string_st *, const struct string_st *);
 
 // TLV Methods
-void string_set_tlv(struct string_st *, const struct string_st *);
+int string_set_tlv(struct string_st *, const struct string_st *);
 void string_get_tlv(const struct string_st *, struct string_st *);
 
 // Convert Methods

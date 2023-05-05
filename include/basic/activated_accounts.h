@@ -17,7 +17,7 @@ void activated_accounts_clear(struct activated_accounts *);
 int activated_accounts_cmp(const struct activated_accounts *, const struct activated_accounts *);
 
 // TLV Methods
-void activated_accounts_set_tlv(struct activated_accounts *, const struct string_st *);
+int activated_accounts_set_tlv(struct activated_accounts *, const struct string_st *);
 void activated_accounts_get_tlv(const struct activated_accounts *, struct string_st *);
 
 // Attrib Methods

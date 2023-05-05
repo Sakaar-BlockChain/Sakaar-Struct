@@ -13,9 +13,12 @@
 
 #define USE_GMP
 
-#define INTEGER_TLV        0xC1
-#define LIST_TLV           0xF0
-#define STRING_TLV         0xCC
+#define ERR_TLV_TAG         (-0x01)
+#define ERR_TLV_VALUE       (-0x02)
+
+#define INTEGER_TLV         0xC1
+#define LIST_TLV            0xF0
+#define STRING_TLV          0xCC
 
 
 #define INTEGER_OP      (struct object_op) {METHOD_NEW &integer_new, METHOD_FREE &integer_free, METHOD_SET &integer_set, METHOD_SET &integer_copy, METHOD_CLEAR &integer_clear, METHOD_CMP &integer_cmp}

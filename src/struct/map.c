@@ -175,11 +175,7 @@ struct object_st *map_subscript(struct object_st *err, struct map_st *map, const
         return NULL;
     }
     struct object_st *res = NULL;
-    res = map_set_elm(map, ((struct string_st *)obj->data)->data, ((struct string_st *)obj->data)->size);
+    res = map_set_elm(map, ((struct string_st *)temp->data)->data, ((struct string_st *)temp->data)->size);
     object_free(temp);
-    if (res == NONE_TYPE) {
-        object_set_type(err, STRING_TYPE);
-        string_set_str(err->data, "Wrong key", 9);
-    }
     return res;
 }

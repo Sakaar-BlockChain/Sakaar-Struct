@@ -84,64 +84,68 @@ int account_is_null(const struct account_st *a) {
 }
 
 // TLV Methods
-void account_set_tlv(struct account_st *res, const struct string_st *tlv) {
-    if (res == NULL) return;
+int account_set_tlv(struct account_st *res, const struct string_st *tlv) {
+    if (res == NULL) return 0;
     account_clear(res);
-    if (string_is_null(tlv) || tlv_get_tag(tlv->data) != TLV_ACCOUNT) return;
+    int result = tlv_get_tag(tlv);
+    if (result < 0) return result;
+    if (result != TLV_ACCOUNT) return ERR_TLV_TAG;
 
-    char *data = tlv_get_value(tlv->data);
-    struct string_st *_tlv = string_new();
+    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    if ((result = tlv_get_value(tlv, &_tlv)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(&res->address, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = string_set_tlv(&res->address, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(&res->login, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = string_set_tlv(&res->login, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    integer_set_tlv(&res->activated, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = integer_set_tlv(&res->activated, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    integer_set_tlv(&res->freeze, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = integer_set_tlv(&res->freeze, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    integer_set_tlv(&res->hash_type, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = integer_set_tlv(&res->hash_type, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    integer_set_tlv(&res->crypto_type, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = integer_set_tlv(&res->crypto_type, &_tlv_data)) != 0) goto end;
 
-    tlv_get_next_tlv(data, _tlv);
-    integer_set_tlv(&res->crypto_base, _tlv);
-
-    string_free(_tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = integer_set_tlv(&res->crypto_base, &_tlv_data)) != 0) goto end;
+    end:
+    string_data_free(&_tlv);
+    string_data_free(&_tlv_data);
+    return result;
 }
 void account_get_tlv(const struct account_st *account, struct string_st *res) {
     if (res == NULL) return;
     if (account == NULL) return string_clear(res);
 
-    struct string_st *tlv = string_new();
+    struct string_st _tlv_data = {NULL, 0, 0};
     string_get_tlv(&account->address, res);
 
-    string_get_tlv(&account->login, tlv);
-    string_concat(res, tlv);
+    string_get_tlv(&account->login, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    integer_get_tlv(&account->activated, tlv);
-    string_concat(res, tlv);
+    integer_get_tlv(&account->activated, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    integer_get_tlv(&account->freeze, tlv);
-    string_concat(res, tlv);
+    integer_get_tlv(&account->freeze, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    integer_get_tlv(&account->hash_type, tlv);
-    string_concat(res, tlv);
+    integer_get_tlv(&account->hash_type, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    integer_get_tlv(&account->crypto_type, tlv);
-    string_concat(res, tlv);
+    integer_get_tlv(&account->crypto_type, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    integer_get_tlv(&account->crypto_base, tlv);
-    string_concat(res, tlv);
+    integer_get_tlv(&account->crypto_base, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
     tlv_set_string(res, TLV_ACCOUNT, res);
-    string_free(tlv);
+    string_data_free(&_tlv_data);
 }
 
 // Attrib Methods

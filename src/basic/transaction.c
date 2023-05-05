@@ -100,81 +100,84 @@ int transaction_cmp(const struct transaction_st *obj1, const struct transaction_
 }
 
 // TLV Methods
-void transaction_set_tlv(struct transaction_st *res, const struct string_st *tlv) {
-    if (res == NULL) return;
+int transaction_set_tlv(struct transaction_st *res, const struct string_st *tlv) {
+    if (res == NULL) return 0;
     transaction_clear(res);
-    if (string_is_null(tlv) || tlv_get_tag(tlv->data) != TLV_TRANSACTION) return;
+    int result = tlv_get_tag(tlv);
+    if (result < 0) return result;
+    if (result != TLV_TRANSACTION) return ERR_TLV_TAG;
 
-    char *data = tlv_get_value(tlv->data);
-    struct string_st *_tlv = string_new();
+    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    if ((result = tlv_get_value(tlv, &_tlv)) != 0) goto end;
 
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = string_set_tlv(&res->address_from, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(&res->address_from, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = string_set_tlv(&res->address_to, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(&res->address_to, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = string_set_tlv(&res->currency, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(&res->currency, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = integer_set_tlv(&res->balance, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    integer_set_tlv(&res->balance, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = integer_set_tlv(&res->fee, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    integer_set_tlv(&res->fee, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = integer_set_tlv(&res->balance_from, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    integer_set_tlv(&res->balance_from, _tlv);
-
-    data = tlv_get_next_tlv(data, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
     {
         struct integer_st *num = integer_new();
-        integer_set_tlv(num, _tlv);
+        if ((result = integer_set_tlv(num, &_tlv_data)) != 0) goto end;
         integer_get_str(num, &res->hash_from);
         integer_free(num);
     }
 
-    tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(&res->signature, _tlv);
-
-    string_free(_tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = string_set_tlv(&res->signature, &_tlv_data)) != 0) goto end;
+    end:
+    string_data_free(&_tlv);
+    string_data_free(&_tlv_data);
+    return result;
 }
 void transaction_get_tlv(const struct transaction_st *transaction, struct string_st *res) {
     if (res == NULL) return;
     if (transaction == NULL) return string_clear(res);
 
-    struct string_st *tlv = string_new();
+    struct string_st _tlv_data = {NULL, 0, 0};
     string_get_tlv(&transaction->address_from, res);
 
-    string_get_tlv(&transaction->address_to, tlv);
-    string_concat(res, tlv);
+    string_get_tlv(&transaction->address_to, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    string_get_tlv(&transaction->currency, tlv);
-    string_concat(res, tlv);
+    string_get_tlv(&transaction->currency, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    integer_get_tlv(&transaction->balance, tlv);
-    string_concat(res, tlv);
+    integer_get_tlv(&transaction->balance, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    integer_get_tlv(&transaction->fee, tlv);
-    string_concat(res, tlv);
+    integer_get_tlv(&transaction->fee, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
-    integer_get_tlv(&transaction->balance_from, tlv);
-    string_concat(res, tlv);
+    integer_get_tlv(&transaction->balance_from, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
     {
         struct integer_st *num = integer_new();
         integer_set_str(num, &transaction->hash_from);
-        integer_get_tlv(num, tlv);
+        integer_get_tlv(num, &_tlv_data);
         integer_free(num);
     }
-    string_concat(res, tlv);
+    string_concat(res, &_tlv_data);
 
-    string_get_tlv(&transaction->signature, tlv);
-    string_concat(res, tlv);
+    string_get_tlv(&transaction->signature, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
     tlv_set_string(res, TLV_TRANSACTION, res);
-    string_free(tlv);
+    string_data_free(&_tlv_data);
 }
 
 // Attrib Methods

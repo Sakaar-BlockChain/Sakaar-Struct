@@ -51,50 +51,54 @@ int generation_cmp(const struct generation *obj1, const struct generation *obj2)
 }
 
 // TLV Methods
-void generation_set_tlv(struct generation *res, const struct string_st *tlv) {
-    if (res == NULL) return;
+int generation_set_tlv(struct generation *res, const struct string_st *tlv) {
+    if (res == NULL) return 0;
     generation_clear(res);
-    if (string_is_null(tlv) || tlv_get_tag(tlv->data) != TLV_GENERATION) return;
+    int result = tlv_get_tag(tlv);
+    if (result < 0) return result;
+    if (result != TLV_GENERATION) return ERR_TLV_TAG;
 
-    char *data = tlv_get_value(tlv->data);
-    struct string_st *_tlv = string_new();
+    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    if ((result = tlv_get_value(tlv, &_tlv)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
-    integer_set_tlv(&res->time, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = integer_set_tlv(&res->time, &_tlv_data)) != 0) goto end;
 
-    data = tlv_get_next_tlv(data, _tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
     {
         struct integer_st *num = integer_new();
-        integer_set_tlv(num, _tlv);
+        if ((result = integer_set_tlv(num, &_tlv_data)) != 0) goto end;
         integer_get_str(num, &res->hash);
         integer_free(num);
     }
 
-    tlv_get_next_tlv(data, _tlv);
-    string_set_tlv(&res->data, _tlv);
-
-    string_free(_tlv);
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = string_set_tlv(&res->data, &_tlv_data)) != 0) goto end;
+    end:
+    string_data_free(&_tlv);
+    string_data_free(&_tlv_data);
+    return result;
 }
 void generation_get_tlv(const struct generation *gen, struct string_st *res) {
     if (res == NULL) return;
     if (gen == NULL) return string_clear(res);
 
-    struct string_st *tlv = string_new();
+    struct string_st _tlv_data = {NULL, 0, 0};
     integer_get_tlv(&gen->time, res);
 
     {
         struct integer_st *num = integer_new();
         integer_set_str(num, &gen->hash);
-        integer_get_tlv(num, tlv);
+        integer_get_tlv(num, &_tlv_data);
         integer_free(num);
     }
-    string_concat(res, tlv);
+    string_concat(res, &_tlv_data);
 
-    string_get_tlv(&gen->data, tlv);
-    string_concat(res, tlv);
+    string_get_tlv(&gen->data, &_tlv_data);
+    string_concat(res, &_tlv_data);
 
     tlv_set_string(res, TLV_GENERATION, res);
-    string_free(tlv);
+    string_data_free(&_tlv_data);
 }
 
 // Attrib Methods

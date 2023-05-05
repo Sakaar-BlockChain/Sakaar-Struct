@@ -25,9 +25,9 @@ void object_set_type(struct object_st *, struct object_type *);
 void object_set_pointer(struct object_st *, struct object_st *);
 
 // TLV Methods
-void object_set_tlv(struct object_st *, const struct string_st *);
+int object_set_tlv(struct object_st *, const struct string_st *);
 void object_get_tlv(const struct object_st *, struct string_st *);
-void object_set_tlv_self(struct object_st *, struct object_type *);
+int object_set_tlv_self(struct object_st *, struct object_type *);
 
 // Sub method
 struct object_st *object_subscript(struct object_st *, struct object_st *, const struct object_st *);
