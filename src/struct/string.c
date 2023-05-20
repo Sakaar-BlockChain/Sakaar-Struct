@@ -108,66 +108,87 @@ void string_get_tlv(const struct string_st *res, struct string_st *tlv) {
 }
 
 // Convert Methods
-struct object_st *string_subscript(struct object_st *err, struct string_st *str, const struct object_st *obj) {
+struct object_st *string_subscript(struct error_st *err, struct string_st *str, const struct object_st *obj) {
     while (obj != NULL && obj->type == OBJECT_TYPE) obj = obj->data;
-    struct object_st *temp = object_new();
-    object__int(temp, err, obj);
-    if(err->type != NONE_TYPE) {
-        object_free(temp);
+    if (obj == NULL) {
+        error_set_msg(err, ErrorType_Math, "Can not make operation with object None");
         return NULL;
     }
-    struct object_st *res = object_new();
-    size_t position = integer_get_ui(temp->data) % str->size;
+    struct object_st *res = NULL;
+    if (obj->type != INTEGER_TYPE) {
+        struct object_st *temp = object_new();
+        object__int(temp, err, obj);
+
+        if (!err->present) {
+            res = object_new();
+            size_t position = integer_get_ui(temp->data) % str->size;
+            object_set_type(res, STRING_TYPE);
+            string_set_str(res->data, str->data + position, 1);
+        }
+        object_free(temp);
+        return res;
+    }
+    size_t position = integer_get_ui(obj->data) % str->size;
     object_set_type(res, STRING_TYPE);
     string_set_str(res->data, str->data + position, 1);
-    object_free(temp);
     return res;
 }
 
 // Convert Methods
-void string__bool(struct object_st *res, struct object_st *err, const struct string_st *obj){
+void string__bool(struct object_st *res, struct error_st *err, const struct string_st *obj) {
     object_set_type(res, INTEGER_TYPE);
     if(obj->size == 0) integer_set_ui(res->data, 0);
     else integer_set_ui(res->data, 1);
 }
-void string__int(struct object_st *res, struct object_st *err, const struct string_st *obj){
+void string__int(struct object_st *res, struct error_st *err, const struct string_st *obj) {
     object_set_type(res, INTEGER_TYPE);
     integer_set_dec(res->data, obj);
 }
-void string__float(struct object_st *res, struct object_st *err, const struct string_st *obj){
+void string__float(struct object_st *res, struct error_st *err, const struct string_st *obj) {
     object_set_type(res, FLOAT_TYPE);
     float_set_str(res->data, obj);
 }
-void string__str(struct object_st *res, struct object_st *err, const struct string_st *obj){
+void string__str(struct object_st *res, struct error_st *err, const struct string_st *obj) {
     object_set_type(res, STRING_TYPE);
     string_set(res->data, obj);
 }
 
 // Math Methods
-void string__mul(struct object_st *res, struct object_st *err, const struct string_st *obj1, const struct object_st *obj2) {
+void string__mul(struct object_st *res, struct error_st *err, const struct string_st *obj1, const struct object_st *obj2) {
     while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = obj2->data;
-    struct object_st *temp = object_new();
-    object__int(temp, err, obj2);
-    if(err->type != NONE_TYPE) {
-        object_free(temp);
-        return;
+    if (obj2 == NULL) return error_set_msg(err, ErrorType_Math, "Can not make operation with object None");
+    if (obj2->type != INTEGER_TYPE) {
+        struct object_st *temp = object_new();
+        object__int(temp, err, obj2);
+
+        if (!err->present) {
+            object_set_type(res, STRING_TYPE);
+            unsigned int count = integer_get_ui(temp->data);
+            for (unsigned int i = 0; i < count; i++)
+                string_concat(res->data, obj1);
+        }
+        return object_free(temp);
     }
     object_set_type(res, STRING_TYPE);
-    unsigned int count = integer_get_ui(temp->data);
+    unsigned int count = integer_get_ui(obj2->data);
     for (unsigned int i = 0; i < count; i++)
         string_concat(res->data, obj1);
-    object_free(temp);
 }
-void string__add(struct object_st *res, struct object_st *err, const struct string_st *obj1, const struct object_st *obj2) {
+void string__add(struct object_st *res, struct error_st *err, const struct string_st *obj1, const struct object_st *obj2) {
     while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = obj2->data;
-    struct object_st *temp = object_new();
-    object__str(temp, err, obj2);
-    if(err->type != NONE_TYPE) {
-        object_free(temp);
-        return;
+    if (obj2 == NULL) return error_set_msg(err, ErrorType_Math, "Can not make operation with object None");
+    if (obj2->type != STRING_TYPE) {
+        struct object_st *temp = object_new();
+        object__str(temp, err, obj2);
+
+        if (!err->present) {
+            object_set_type(res, STRING_TYPE);
+            string_set(res->data, obj1);
+            string_concat(res->data, temp->data);
+        }
+        return object_free(temp);
     }
     object_set_type(res, STRING_TYPE);
     string_set(res->data, obj1);
-    string_concat(res->data, temp->data);
-    object_free(temp);
+    string_concat(res->data, obj2->data);
 }

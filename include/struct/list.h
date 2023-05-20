@@ -38,14 +38,14 @@ int list_set_tlv(struct list_st *, const struct string_st *);
 void list_get_tlv(const struct list_st *, struct string_st *);
 int list_set_tlv_self(struct list_st *, const struct string_st *, struct object_type *);
 
-void list__mul(struct object_st *, struct object_st *, const struct list_st *, const struct object_st *);
-void list__add(struct object_st *, struct object_st *, const struct list_st *, const struct object_st *);
+void list__mul(struct object_st *, struct error_st *, const struct list_st *, const struct object_st *);
+void list__add(struct object_st *, struct error_st *, const struct list_st *, struct object_st *);
 
 // Convert Methods
-void list__str(struct object_st *, struct object_st *, const struct list_st *);
+void list__str(struct object_st *, struct error_st *, const struct list_st *);
 
 // Convert Methods
-struct object_st *list_subscript(struct object_st *, struct list_st *, const struct object_st *);
+struct object_st *list_subscript(struct error_st *, struct list_st *, const struct object_st *);
 
 // Print
 void print_list(const struct list_st *, int);

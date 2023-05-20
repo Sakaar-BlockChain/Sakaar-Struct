@@ -26,7 +26,7 @@ struct object_st *map_set_elm(struct map_st *, char *, size_t);
 struct object_st *map_get_elm(const struct map_st *, char *, size_t);
 
 // Sub method
-struct object_st *map_subscript(struct object_st *, struct map_st *, const struct object_st *);
+struct object_st *map_subscript(struct error_st *, struct map_st *, const struct object_st *);
 
 // Print
 void print_map(const struct map_st *, int tabs);

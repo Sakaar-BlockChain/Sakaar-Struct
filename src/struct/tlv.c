@@ -157,6 +157,15 @@ void tlv_beautify(const struct string_st *tlv, struct string_st *res) {
     }
 }
 
+void tlv_from_beautify(const struct string_st *beaut, struct string_st *res) {
+    if (res == NULL) return;
+    if (string_is_null(beaut)) return string_clear(res);
+    string_resize(res, beaut->size / 2 + beaut->size % 2);
+    for (size_t i = 0; i < res->size; i++) {
+        res->data[i] = (char) (set_char_16(beaut->data[i * 2]) * 16 + set_char_16(beaut->data[i * 2 + 1]));
+    }
+}
+
 // TLV Methods
 int tlv_set_tlv(struct string_st *res, const struct string_st *tlv) {
     string_set(res, tlv);

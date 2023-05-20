@@ -204,61 +204,59 @@ int list_set_tlv_self(struct list_st *res, const struct string_st *tlv, struct o
 }
 
 // Convert Methods
-struct object_st *list_subscript(struct object_st *err, struct list_st *list, const struct object_st *obj) {
+struct object_st *list_subscript(struct error_st *err, struct list_st *list, const struct object_st *obj) {
     while (obj != NULL && obj->type == OBJECT_TYPE) obj = obj->data;
-    struct object_st *temp = object_new();
-    object__int(temp, err, obj);
-    if(err->type != NONE_TYPE) {
-        object_free(temp);
+    if (obj == NULL) {
+        error_set_msg(err, ErrorType_Math, "Can not make operation with object None");
         return NULL;
     }
-    size_t position = integer_get_ui(temp->data) % list->size;
-    object_free(temp);
-    return list->data[position];
-}
-void list_get_subscript(struct object_st *res, struct object_st *err, const struct list_st *list, const struct object_st *obj) {
-    while (obj != NULL && obj->type == OBJECT_TYPE) obj = obj->data;
-    struct object_st *temp = object_new();
-    object__int(temp, err, obj);
-    if(err->type != NONE_TYPE) {
+    if (obj->type != INTEGER_TYPE) {
+        struct object_st *temp = object_new();
+        object__int(temp, err, obj);
+        struct object_st *res = NULL;
+
+        if (!err->present) {
+            res = list->data[integer_get_ui(temp->data) % list->size];
+        }
         object_free(temp);
-        return;
+        return res;
     }
-    size_t position = integer_get_ui(temp->data) % list->size;
-    object_set(res, list->data[position]);
-    object_free(temp);
+    return list->data[integer_get_ui(obj->data) % list->size];
 }
 
 // Convert Methods
-void list__str(struct object_st *res, struct object_st *err, const struct list_st *obj){
-    object_set_type(err, STRING_TYPE);
-    string_set_str(err->data, "Not Done", 8);
+void list__str(struct object_st *res, struct error_st *err, const struct list_st *obj) {
+    error_set_msg(err, ErrorType_Convert, "Not Done");
     //TODO
 }
 
 // Math Methods
-void list__mul(struct object_st *res, struct object_st *err, const struct list_st *obj1, const struct object_st *obj2) {
+void list__mul(struct object_st *res, struct error_st *err, const struct list_st *obj1, const struct object_st *obj2) {
     while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = obj2->data;
-    struct object_st *temp = object_new();
-    object__int(temp, err, obj2);
-    if(err->type != NONE_TYPE) {
-        object_free(temp);
-        return;
-    }
-    object_set_type(res, STRING_TYPE);
-    unsigned int count = integer_get_ui(temp->data);
-    for (unsigned int i = 0; i < count; i++)
-        list_concat(res->data, obj1);
-    object_free(temp);
-}
-void list__add(struct object_st *res, struct object_st *err, const struct list_st *obj1, const struct object_st *obj2) {
-    while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = obj2->data;
-    if (obj2 == NULL || obj2->type != LIST_TYPE) {
-        object_set_type(err, STRING_TYPE);
-        string_set_str(err->data, "list dont have operation add with non list type", 47);
-        return;
+    if (obj2 == NULL) return error_set_msg(err, ErrorType_Math, "Can not make operation with object None");
+    if (obj2->type != INTEGER_TYPE) {
+        struct object_st *temp = object_new();
+        object__int(temp, err, obj2);
+
+        if (!err->present) {
+            object_set_type(res, LIST_TYPE);
+            unsigned int count = integer_get_ui(temp->data);
+            for (unsigned int i = 0; i < count; i++)
+                list_concat(res->data, obj1);
+        }
+        return object_free(temp);
     }
     object_set_type(res, LIST_TYPE);
+    unsigned int count = integer_get_ui(obj2->data);
+    for (unsigned int i = 0; i < count; i++)
+        list_concat(res->data, obj1);
+}
+void list__add(struct object_st *res, struct error_st *err, const struct list_st *obj1, struct object_st *obj2) {
+    while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = obj2->data;
+    if (obj2 == NULL) return error_set_msg(err, ErrorType_Math, "Can not make operation with object None");
+
+    object_set_type(res, LIST_TYPE);
     list_set(res->data, obj1);
-    list_concat(res->data, obj2->data);
+    if (obj2->type == LIST_TYPE) list_concat(res->data, obj2->data);
+    else list_append(res->data, obj2);
 }

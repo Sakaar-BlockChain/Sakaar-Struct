@@ -15,6 +15,7 @@ int tlv_get_value(const struct string_st *, struct string_st *);
 
 int tlv_get_next_tlv(struct string_st *, struct string_st *);
 void tlv_beautify(const struct string_st *, struct string_st *);
+void tlv_from_beautify(const struct string_st *, struct string_st *);
 
 // TLV Methods
 int tlv_set_tlv(struct string_st *, const struct string_st *);

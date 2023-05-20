@@ -166,16 +166,22 @@ struct object_st *map_get_elm(const struct map_st *res, char *name, size_t size)
 }
 
 // Sub method
-struct object_st *map_subscript(struct object_st *err, struct map_st *map, const struct object_st *obj) {
+struct object_st *map_subscript(struct error_st *err, struct map_st *map, const struct object_st *obj) {
     while (obj != NULL && obj->type == OBJECT_TYPE) obj = obj->data;
-    struct object_st *temp = object_new();
-    object__str(temp, err, obj);
-    if(err->type != NONE_TYPE) {
-        object_free(temp);
+    if (obj == NULL) {
+        error_set_msg(err, ErrorType_Math, "Can not make operation with object None");
         return NULL;
     }
-    struct object_st *res = NULL;
-    res = map_set_elm(map, ((struct string_st *)temp->data)->data, ((struct string_st *)temp->data)->size);
-    object_free(temp);
-    return res;
+    if (obj->type != STRING_TYPE) {
+        struct object_st *temp = object_new();
+        object__int(temp, err, obj);
+        struct object_st *res = NULL;
+
+        if (!err->present) {
+            res = map_set_elm(map, ((struct string_st *)temp->data)->data, ((struct string_st *)temp->data)->size);
+        }
+        object_free(temp);
+        return res;
+    }
+    return map_set_elm(map, ((struct string_st *)obj->data)->data, ((struct string_st *)obj->data)->size);;
 }

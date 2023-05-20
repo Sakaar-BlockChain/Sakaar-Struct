@@ -10,6 +10,7 @@
 #include "struct/float.h"
 #include "struct/list.h"
 #include "struct/map.h"
+#include "struct/error.h"
 
 #define USE_GMP
 
@@ -27,6 +28,7 @@
 #define OBJECT_OP       (struct object_op) {METHOD_NEW &object_new, METHOD_FREE &object_free, METHOD_SET &object_set, METHOD_SET &object_copy, METHOD_CLEAR &object_clear, METHOD_CMP &object_cmp}
 #define STRING_OP       (struct object_op) {METHOD_NEW &string_new, METHOD_FREE &string_free, METHOD_SET &string_set, METHOD_SET &string_copy, METHOD_CLEAR &string_clear, METHOD_CMP &string_cmp}
 #define MAP_OP          (struct object_op) {METHOD_NEW &map_new, METHOD_FREE &map_free, METHOD_SET &map_set, METHOD_SET &map_copy, METHOD_CLEAR &map_clear, METHOD_CMP &map_cmp}
+#define ERROR_OP        (struct object_op) {METHOD_NEW &error_new, METHOD_FREE &map_free, METHOD_SET &error_set, METHOD_SET &error_copy, METHOD_CLEAR &error_clear, METHOD_CMP &error_cmp}
 #define TLV_OP          STRING_OP
 
 
@@ -36,6 +38,7 @@ extern struct object_type list_type;
 extern struct object_type object_type;
 extern struct object_type string_type;
 extern struct object_type map_type;
+extern struct object_type error_type;
 extern struct object_type tlv_type;
 
 
@@ -46,6 +49,7 @@ extern struct object_type tlv_type;
 #define OBJECT_TYPE         &object_type
 #define STRING_TYPE         &string_type
 #define MAP_TYPE            &map_type
+#define ERROR_TYPE          &error_type
 #define TLV_TYPE            &tlv_type
 
 
