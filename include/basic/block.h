@@ -35,7 +35,7 @@ int block_set_tlv(struct block_st *, const struct string_st *);
 void block_get_tlv(const struct block_st *, struct string_st *);
 
 // Attrib Methods
-struct object_st *block_attrib(struct object_st *, const struct block_st *, const struct string_st *);
+struct object_st *block_attrib(struct error_st *, const struct block_st *, const struct string_st *);
 
 
 #endif //STRUCT_BLOCK_H

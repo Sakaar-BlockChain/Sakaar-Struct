@@ -184,7 +184,7 @@ void block_get_tlv(const struct block_st *block, struct string_st *res) {
 
 // Attrib Methods
 struct object_st *block_attrib
-(struct object_st *err, const struct block_st *block, const struct string_st *str) {
+(struct error_st *err, const struct block_st *block, const struct string_st *str) {
     struct object_st *res = object_new();
     if (str->size == 12 && memcmp(str->data, "transactions", 12) == 0) {
         object_set_type(res, LIST_TYPE);
@@ -224,8 +224,7 @@ struct object_st *block_attrib
     }
     else {
         object_free(res);
-        object_set_type(err, STRING_TYPE);
-        string_set_str(err->data, "This Attribute does not exist", 29);
+        error_set_msg(err, ErrorType_Math, "This Attribute does not exist");
         return NULL;
     }
     return res;

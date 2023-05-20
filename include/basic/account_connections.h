@@ -23,7 +23,7 @@ int account_connections_set_tlv(struct account_connections *, const struct strin
 void account_connections_get_tlv(const struct account_connections *, struct string_st *);
 
 // Attrib Methods
-struct object_st *account_connections_attrib(struct object_st *, const struct account_connections *, const struct string_st *);
+struct object_st *account_connections_attrib(struct error_st *, const struct account_connections *, const struct string_st *);
 
 
 #endif //STRUCT_ACCOUNT_CONNECTIONS_H

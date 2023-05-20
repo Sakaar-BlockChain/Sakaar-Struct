@@ -24,7 +24,7 @@ int wallet_set_tlv(struct wallet_st *, const struct string_st *);
 void wallet_get_tlv(const struct wallet_st *, struct string_st *);
 
 // Attrib Methods
-struct object_st *wallet_attrib(struct object_st *, const struct wallet_st *, const struct string_st *);
+struct object_st *wallet_attrib(struct error_st *, const struct wallet_st *, const struct string_st *);
 
 
 #endif //STRUCT_WALLET_H

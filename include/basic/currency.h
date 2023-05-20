@@ -30,7 +30,7 @@ int currency_set_tlv(struct currency_st *, const struct string_st *);
 void currency_get_tlv(const struct currency_st *, struct string_st *);
 
 // Attrib Methods
-struct object_st *currency_attrib(struct object_st *, const struct currency_st *, const struct string_st *);
+struct object_st *currency_attrib(struct error_st *, const struct currency_st *, const struct string_st *);
 
 
 #endif //STRUCT_CURRENCY_H

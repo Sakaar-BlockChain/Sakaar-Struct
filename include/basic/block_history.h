@@ -27,7 +27,7 @@ int block_history_set_tlv(struct block_history *, const struct string_st *);
 void block_history_get_tlv(const struct block_history *, struct string_st *);
 
 // Attrib Methods
-struct object_st *block_history_attrib(struct object_st *, const struct block_history *, const struct string_st *);
+struct object_st *block_history_attrib(struct error_st *, const struct block_history *, const struct string_st *);
 
 
 #endif //STRUCT_BLOCK_HISTORY_H

@@ -30,7 +30,7 @@ int wallet_smart_set_tlv(struct wallet_smart *, const struct string_st *);
 void wallet_smart_get_tlv(const struct wallet_smart *, struct string_st *);
 
 // Attrib Methods
-struct object_st *wallet_smart_attrib(struct object_st *, const struct wallet_smart *, const struct string_st *);
+struct object_st *wallet_smart_attrib(struct error_st *, const struct wallet_smart *, const struct string_st *);
 
 
 #endif //STRUCT_WALLET_SMART_H

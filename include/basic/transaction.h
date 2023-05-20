@@ -32,6 +32,6 @@ int transaction_set_tlv(struct transaction_st *, const struct string_st *);
 void transaction_get_tlv(const struct transaction_st *, struct string_st *);
 
 // Attrib Methods
-struct object_st *transaction_attrib(struct object_st *, const struct transaction_st *, const struct string_st *);
+struct object_st *transaction_attrib(struct error_st *, const struct transaction_st *, const struct string_st *);
 
 #endif //STRUCT_TRANSACTION_H

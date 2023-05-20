@@ -21,7 +21,7 @@ int activated_accounts_set_tlv(struct activated_accounts *, const struct string_
 void activated_accounts_get_tlv(const struct activated_accounts *, struct string_st *);
 
 // Attrib Methods
-struct object_st *activated_accounts_attrib(struct object_st *, const struct activated_accounts *, const struct string_st *);
+struct object_st *activated_accounts_attrib(struct error_st *, const struct activated_accounts *, const struct string_st *);
 
 
 #endif //STRUCT_ACTIVATED_ACCOUNTS_H

@@ -32,7 +32,7 @@ int account_set_tlv(struct account_st *, const struct string_st *);
 void account_get_tlv(const struct account_st *, struct string_st *);
 
 // Attrib Methods
-struct object_st *account_attrib(struct object_st *, const struct account_st *, const struct string_st *);
+struct object_st *account_attrib(struct error_st *, const struct account_st *, const struct string_st *);
 
 
 #endif //STRUCT_ACCOUNT_H

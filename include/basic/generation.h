@@ -23,7 +23,7 @@ int generation_set_tlv(struct generation *, const struct string_st *);
 void generation_get_tlv(const struct generation *, struct string_st *);
 
 // Attrib Methods
-struct object_st *generation_attrib(struct object_st *, const struct generation *, const struct string_st *);
+struct object_st *generation_attrib(struct error_st *, const struct generation *, const struct string_st *);
 
 
 #endif //STRUCT_GENERATION_H

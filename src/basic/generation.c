@@ -103,7 +103,7 @@ void generation_get_tlv(const struct generation *gen, struct string_st *res) {
 
 // Attrib Methods
 struct object_st *generation_attrib
-(struct object_st *err, const struct generation *gen, const struct string_st *str) {
+(struct error_st *err, const struct generation *gen, const struct string_st *str) {
     struct object_st *res = object_new();
     if (str->size == 4 && memcmp(str->data, "time", 4) == 0) {
         object_set_type(res, INTEGER_TYPE);
@@ -119,8 +119,7 @@ struct object_st *generation_attrib
     }
     else {
         object_free(res);
-        object_set_type(err, STRING_TYPE);
-        string_set_str(err->data, "This Attribute does not exist", 29);
+        error_set_msg(err, ErrorType_Math, "This Attribute does not exist");
         return NULL;
     }
     return res;
