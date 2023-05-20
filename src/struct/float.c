@@ -5,20 +5,20 @@ struct object_convert float_convert = {METHOD_CONVERT &float__bool, METHOD_CONVE
 struct object_type float_type = {FLOAT_OP, NULL, NULL, &float_convert, &float_math};
 
 // Convert Methods
-void float__bool(struct object_st *res, struct error_st *err, struct float_st *obj) {
+void float__bool(struct object_st *res, struct error_st *err, const struct float_st *obj) {
     object_set_type(res, INTEGER_TYPE);
     if (float_is_null(obj)) integer_set_ui(res->data, 0);
     else integer_set_ui(res->data, 1);
 }
-void float__int(struct object_st *res, struct error_st *err, struct float_st *obj) {
+void float__int(struct object_st *res, struct error_st *err, const struct float_st *obj) {
     error_set_msg(err, ErrorType_Convert, "Not Done");
     // TODO
 }
-void float__float(struct object_st *res, struct error_st *err, struct float_st *obj) {
+void float__float(struct object_st *res, struct error_st *err, const struct float_st *obj) {
     object_set_type(res, FLOAT_TYPE);
     float_set(res->data, obj);
 }
-void float__str(struct object_st *res, struct error_st *err, struct float_st *obj) {
+void float__str(struct object_st *res, struct error_st *err, const struct float_st *obj) {
     object_set_type(res, STRING_TYPE);
     float_get_str(obj, res->data);
 }

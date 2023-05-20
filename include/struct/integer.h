@@ -83,10 +83,10 @@ void integer__rs(struct object_st *, struct error_st *, const struct integer_st 
 void integer__neg(struct object_st *, struct error_st *, const struct integer_st *);
 
 // Convert Methods
-void integer__bool(struct object_st *, struct error_st *res, struct integer_st *obj);
-void integer__int(struct object_st *, struct error_st *res, struct integer_st *obj);
-void integer__float(struct object_st *, struct error_st *res, struct integer_st *obj);
-void integer__str(struct object_st *, struct error_st *res, struct integer_st *obj);
+void integer__bool(struct object_st *, struct error_st *res, const struct integer_st *obj);
+void integer__int(struct object_st *, struct error_st *res, const struct integer_st *obj);
+void integer__float(struct object_st *, struct error_st *res, const struct integer_st *obj);
+void integer__str(struct object_st *, struct error_st *res, const struct integer_st *obj);
 
 // Print
 void print_int(const struct integer_st *);

@@ -6,20 +6,20 @@ struct object_convert integer_convert = {METHOD_CONVERT &integer__bool, METHOD_C
 struct object_type integer_type = {INTEGER_OP, &integer_tlv, NULL, &integer_convert, &integer_math};
 
 // Convert Methods
-void integer__bool(struct object_st *res, struct error_st *err, struct integer_st *obj) {
+void integer__bool(struct object_st *res, struct error_st *err, const struct integer_st *obj) {
     object_set_type(res, INTEGER_TYPE);
     if (integer_is_null(obj)) integer_set_ui(res->data, 0);
     else integer_set_ui(res->data, 1);
 }
-void integer__int(struct object_st *res, struct error_st *err, struct integer_st *obj) {
+void integer__int(struct object_st *res, struct error_st *err, const struct integer_st *obj) {
     object_set_type(res, INTEGER_TYPE);
     integer_set(res->data, obj);
 }
-void integer__float(struct object_st *res, struct error_st *err, struct integer_st *obj) {
+void integer__float(struct object_st *res, struct error_st *err, const struct integer_st *obj) {
     error_set_msg(err, ErrorType_Convert, "Not Done");
     // TODO
 }
-void integer__str(struct object_st *res, struct error_st *err, struct integer_st *obj) {
+void integer__str(struct object_st *res, struct error_st *err, const struct integer_st *obj) {
     object_set_type(res, STRING_TYPE);
     integer_get_dec(obj, res->data);
 }

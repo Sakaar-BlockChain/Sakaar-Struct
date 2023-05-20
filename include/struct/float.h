@@ -47,10 +47,10 @@ void float__rs(struct object_st *, struct error_st *, const struct float_st *, c
 void float__neg(struct object_st *, struct error_st *, const struct float_st *);
 
 // Convert Methods
-void float__bool(struct object_st *, struct error_st *, struct float_st *);
-void float__int(struct object_st *, struct error_st *, struct float_st *);
-void float__float(struct object_st *, struct error_st *, struct float_st *);
-void float__str(struct object_st *, struct error_st *, struct float_st *);
+void float__bool(struct object_st *, struct error_st *, const struct float_st *);
+void float__int(struct object_st *, struct error_st *, const struct float_st *);
+void float__float(struct object_st *, struct error_st *, const struct float_st *);
+void float__str(struct object_st *, struct error_st *, const struct float_st *);
 
 // Print
 void print_float(const struct float_st *);
