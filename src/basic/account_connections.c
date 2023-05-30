@@ -44,29 +44,29 @@ void account_connections_clear(struct account_connections *res) {
     list_clear(&res->addresses);
 }
 int account_connections_cmp(const struct account_connections *obj1, const struct account_connections *obj2) {
-    if (obj1 == NULL || obj2 == NULL || string_cmp(&obj1->address, &obj2->address) != 0 || string_cmp(&obj1->currency, &obj2->currency) != 0) return 2;
-    return 0;
+    if (obj1 == NULL || obj2 == NULL || string_cmp(&obj1->address, &obj2->address) || string_cmp(&obj1->currency, &obj2->currency)) return CMP_NEQ;
+    return CMP_EQ;
 }
 
 // TLV Methods
 int account_connections_set_tlv(struct account_connections *res, const struct string_st *tlv) {
-    if (res == NULL) return 0;
+    if (res == NULL) return ERR_DATA_NULL;
     account_connections_clear(res);
     int result = tlv_get_tag(tlv);
     if (result < 0) return result;
     if (result != TLV_ACCOUNT_CONN) return ERR_TLV_TAG;
 
     struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
-    if ((result = tlv_get_value(tlv, &_tlv)) != 0) goto end;
+    if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
-    if ((result = string_set_tlv(&res->address, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = string_set_tlv(&res->address, &_tlv_data))) goto end;
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
-    if ((result = string_set_tlv(&res->currency, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = string_set_tlv(&res->currency, &_tlv_data))) goto end;
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
-    if ((result = list_set_tlv_self(&res->addresses, &_tlv_data, STRING_TYPE)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = list_set_tlv_self(&res->addresses, &_tlv_data, STRING_TYPE))) goto end;
     end:
     string_data_free(&_tlv);
     string_data_free(&_tlv_data);

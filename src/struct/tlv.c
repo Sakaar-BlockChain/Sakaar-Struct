@@ -19,7 +19,7 @@ void tlv_set_str(struct string_st *res, unsigned tag, const char *data, size_t s
     if (size > 127) {
         size_str[size_len] = size_len | 0x80;
         size_len++;
-    } else if (size != 0) {
+    } else if (size) {
         size_len = 1;
     } else {
         size_str[0] = 0;
@@ -54,7 +54,7 @@ void tlv_set_string(struct string_st *res, unsigned tag, const struct string_st 
     if (str->size > 127) {
         size_str[size_len] = size_len | 0x80;
         size_len++;
-    } else if (str->size != 0) {
+    } else if (str->size) {
         size_len = 1;
     } else {
         size_str[0] = 0;
@@ -134,7 +134,7 @@ int tlv_get_value(const struct string_st *tlv, struct string_st *res) {
     size_t head_size = tlv_get_size_head(tlv);
     size_t value_size = tlv_get_size_value(tlv);
     string_set_str(res, tlv->data + head_size, value_size);
-    return 0;
+    return ERR_SUCCESS;
 }
 
 int tlv_get_next_tlv(struct string_st *tlv, struct string_st *res) {
@@ -144,7 +144,7 @@ int tlv_get_next_tlv(struct string_st *tlv, struct string_st *res) {
     for (size_t i = size, j = 0; i < tlv->size; i++, j++)
         tlv->data[j] = tlv->data[i];
     string_resize(tlv, tlv->size - size);
-    return 0;
+    return ERR_SUCCESS;
 
 }
 void tlv_beautify(const struct string_st *tlv, struct string_st *res) {
@@ -169,7 +169,7 @@ void tlv_from_beautify(const struct string_st *beaut, struct string_st *res) {
 // TLV Methods
 int tlv_set_tlv(struct string_st *res, const struct string_st *tlv) {
     string_set(res, tlv);
-    return 0;
+    return ERR_SUCCESS;
 }
 void tlv_get_tlv(const struct string_st *res, struct string_st *tlv) {
     string_set(tlv, res);

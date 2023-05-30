@@ -44,16 +44,16 @@ void list_clear(struct list_st *res) {
     list_resize(res, 0);
 }
 int list_cmp(const struct list_st *obj1, const struct list_st *obj2) {
-    if (obj1 == NULL || obj2 == NULL) return 2;
-    if (obj1->size > obj2->size) return 1;
-    if (obj1->size < obj2->size) return -1;
+    if (obj1 == NULL || obj2 == NULL) return CMP_NEQ;
+    if (obj1->size > obj2->size) return CMP_GRET;
+    if (obj1->size < obj2->size) return CMP_LESS;
     int res_cmp_sub;
     for (size_t i = 0; i < obj1->size; i++) {
         res_cmp_sub = object_cmp(obj1->data[i], obj2->data[i]);
-        if (res_cmp_sub == -1) return -1;
-        if (res_cmp_sub == 1) return 1;
+        if (res_cmp_sub == CMP_LESS) return CMP_LESS;
+        if (res_cmp_sub == CMP_GRET) return CMP_GRET;
     }
-    return 0;
+    return CMP_EQ;
 }
 
 // Cmp Methods
@@ -76,7 +76,7 @@ void list_data_free(struct list_st *res) {
 
 // Class Methods
 void list_resize(struct list_st *res, size_t size) {
-    if (res->data == NULL && size != 0) {
+    if (res->data == NULL && size) {
         res->max_size = size;
         res->data = skr_malloc(sizeof(struct object_st *) * size);
         for (size_t i = 0; i < size; i++) res->data[i] = NULL;
@@ -163,7 +163,7 @@ void list_sort(struct list_st *res) {
 
 // TLV Methods
 int list_set_tlv(struct list_st *res, const struct string_st *tlv) {
-    if (res == NULL) return 0;
+    if (res == NULL) return ERR_DATA_NULL;
     list_clear(res);
     int result = tlv_get_tag(tlv);
     if (result < 0) return result;
@@ -172,7 +172,7 @@ int list_set_tlv(struct list_st *res, const struct string_st *tlv) {
     struct string_st _tlv = {NULL, 0, 0};
     result = tlv_get_value(tlv, &_tlv);
 
-    for (; _tlv.size != 0 && result == 0;) {
+    for (; _tlv.size && result == 0;) {
         struct object_st *obj = object_new();
         object_set_type(obj, TLV_TYPE);
         result = tlv_get_next_tlv(&_tlv, obj->data);
@@ -226,8 +226,24 @@ struct object_st *list_subscript(struct error_st *err, struct list_st *list, con
 
 // Convert Methods
 void list__str(struct object_st *res, struct error_st *err, const struct list_st *obj) {
-    error_set_msg(err, ErrorType_Convert, "Not Done");
-    //TODO
+    object_set_type(res, STRING_TYPE);
+    string_set_str(res->data, "[", 1);
+    struct object_st *temp = object_new();
+    for(size_t i = 0; i < obj->size; i++){
+        object__str(temp, err, obj->data[i]);
+        if (err->present) {
+            object_free(temp);
+            return;
+        }
+        string_concat(res->data, temp->data);
+        if (i + 1 < obj->size) {
+            string_set_str(temp->data, ", ", 2);
+            string_concat(res->data, temp->data);
+        }
+    }
+    string_set_str(temp->data, "]", 1);
+    string_concat(res->data, temp->data);
+    object_free(temp);
 }
 
 // Math Methods

@@ -51,8 +51,8 @@ void error_clear(struct error_st *res) {
     string_clear(&res->msg);
 }
 int error_cmp(const struct error_st *obj1, const struct error_st *obj2) {
-    if (obj1 == NULL || obj2 == NULL || string_cmp(&obj1->type, &obj2->type) != 0 || string_cmp(&obj1->msg, &obj2->msg) != 0) return 2;
-    return 0;
+    if (obj1 == NULL || obj2 == NULL || string_cmp(&obj1->type, &obj2->type) || string_cmp(&obj1->msg, &obj2->msg)) return CMP_NEQ;
+    return CMP_EQ;
 }
 
 void error_set_pos(struct error_st *res, size_t line_num, size_t line_pos, size_t pos) {

@@ -64,16 +64,16 @@ void map_clear(struct map_st *res) {
     }
 }
 int map_cmp(const struct map_st *obj1, const struct map_st *obj2) {
-    if (obj1 == NULL || obj2 == NULL) return 2;
-    if (obj1 == obj2) return 0;
-    return 2;
+    if (obj1 == NULL || obj2 == NULL) return CMP_NEQ;
+    if (obj1 == obj2) return CMP_EQ;
+    return CMP_NEQ;
 }
 
 // Class Methods
 void map_set_name_(struct map_st *res, const char *name, size_t size) {
     if (res->name != NULL) skr_free(res->name);
     res->size = size;
-    if (size != 0) {
+    if (size) {
         res->name = skr_malloc(res->size);
         memcpy(res->name, name, size);
     } else {
@@ -90,7 +90,7 @@ void map_clear_(struct map_st *res) {
 }
 struct object_st *map_set_elm(struct map_st *res, char *name, size_t size) {
     while (1) {
-        if (size < res->size || memcmp(name, res->name, res->size) != 0) {
+        if (size < res->size || memcmp(name, res->name, res->size)) {
             size_t i = 0;
             size_t S = res->size;
             if (size < S) S = size;
@@ -152,7 +152,7 @@ struct object_st *map_set_elm(struct map_st *res, char *name, size_t size) {
 }
 struct object_st *map_get_elm(const struct map_st *res, char *name, size_t size) {
     while (1) {
-        if (size < res->size || memcmp(name, res->name, res->size) != 0) {
+        if (size < res->size || memcmp(name, res->name, res->size)) {
             return NULL;
         }
         if (size == res->size) return object_copy_obj(res->data);

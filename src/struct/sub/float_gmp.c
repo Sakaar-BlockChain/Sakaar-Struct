@@ -28,7 +28,7 @@ void float_clear(struct float_st *res) {
     mpf_set_ui(res->mpz_int, 0);
 }
 int float_cmp(const struct float_st *obj1, const struct float_st *obj2) {
-    if (obj1 == NULL || obj2 == NULL) return 2;
+    if (obj1 == NULL || obj2 == NULL) return CMP_NEQ;
     return mpf_cmp(obj1->mpz_int, obj2->mpz_int);
 }
 

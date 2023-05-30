@@ -74,44 +74,44 @@ void wallet_smart_clear(struct wallet_smart *res) {
     integer_clear(&res->freeze);
 }
 int wallet_smart_cmp(const struct wallet_smart *obj1, const struct wallet_smart *obj2) {
-    if (obj1 == NULL || obj2 == NULL || string_cmp(&obj1->address, &obj2->address) != 0 || string_cmp(&obj1->currency, &obj2->currency) != 0) return 2;
-    return 0;
+    if (obj1 == NULL || obj2 == NULL || string_cmp(&obj1->address, &obj2->address) || string_cmp(&obj1->currency, &obj2->currency)) return CMP_NEQ;
+    return CMP_EQ;
 }
 
 // TLV Methods
 int wallet_smart_set_tlv(struct wallet_smart *res, const struct string_st *tlv) {
-    if (res == NULL) return 0;
+    if (res == NULL) return ERR_DATA_NULL;
     wallet_smart_clear(res);
     int result = tlv_get_tag(tlv);
     if (result < 0) return result;
     if (result != TLV_WALLET_SMART) return ERR_TLV_TAG;
 
     struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
-    if ((result = tlv_get_value(tlv, &_tlv)) != 0) goto end;
+    if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
-    if ((result = string_set_tlv(&res->address, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = string_set_tlv(&res->address, &_tlv_data))) goto end;
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
-    if ((result = string_set_tlv(&res->currency, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = string_set_tlv(&res->currency, &_tlv_data))) goto end;
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
-    if ((result = string_set_tlv(&res->private_key, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = string_set_tlv(&res->private_key, &_tlv_data))) goto end;
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
-    if ((result = string_set_tlv(&res->smart_private, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = string_set_tlv(&res->smart_private, &_tlv_data))) goto end;
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
-    if ((result = string_set_tlv(&res->smart_contract, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = string_set_tlv(&res->smart_contract, &_tlv_data))) goto end;
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
-    if ((result = string_set_tlv(&res->name, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = string_set_tlv(&res->name, &_tlv_data))) goto end;
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
-    if ((result = string_set_tlv(&res->owner, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = string_set_tlv(&res->owner, &_tlv_data))) goto end;
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
-    if ((result = integer_set_tlv(&res->freeze, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = integer_set_tlv(&res->freeze, &_tlv_data))) goto end;
     end:
     string_data_free(&_tlv);
     string_data_free(&_tlv_data);

@@ -84,60 +84,60 @@ void transaction_clear(struct transaction_st *res) {
     string_clear(&res->signature);
 }
 int transaction_cmp(const struct transaction_st *obj1, const struct transaction_st *obj2) {
-    if (obj1 == NULL || obj2 == NULL) return 2;
-    if (string_cmp(&obj1->address_from, &obj2->address_from) != 0) return 2;
-    if (string_cmp(&obj1->address_to, &obj2->address_to) != 0) return 2;
-    if (string_cmp(&obj1->currency, &obj2->currency) != 0) return 2;
+    if (obj1 == NULL || obj2 == NULL) return CMP_NEQ;
+    if (string_cmp(&obj1->address_from, &obj2->address_from)) return CMP_NEQ;
+    if (string_cmp(&obj1->address_to, &obj2->address_to)) return CMP_NEQ;
+    if (string_cmp(&obj1->currency, &obj2->currency)) return CMP_NEQ;
 
-    if (integer_cmp(&obj1->balance, &obj2->balance) != 0) return 2;
-    if (integer_cmp(&obj1->fee, &obj2->fee) != 0) return 2;
+    if (integer_cmp(&obj1->balance, &obj2->balance)) return CMP_NEQ;
+    if (integer_cmp(&obj1->fee, &obj2->fee)) return CMP_NEQ;
 
-    if (integer_cmp(&obj1->balance_from, &obj2->balance_from) != 0) return 2;
-    if (string_cmp(&obj1->hash_from, &obj2->hash_from) != 0) return 2;
+    if (integer_cmp(&obj1->balance_from, &obj2->balance_from)) return CMP_NEQ;
+    if (string_cmp(&obj1->hash_from, &obj2->hash_from)) return CMP_NEQ;
 
-    if (string_cmp(&obj1->signature, &obj2->signature) != 0) return 2;
-    return 0;
+    if (string_cmp(&obj1->signature, &obj2->signature)) return CMP_NEQ;
+    return CMP_EQ;
 }
 
 // TLV Methods
 int transaction_set_tlv(struct transaction_st *res, const struct string_st *tlv) {
-    if (res == NULL) return 0;
+    if (res == NULL) return ERR_DATA_NULL;
     transaction_clear(res);
     int result = tlv_get_tag(tlv);
     if (result < 0) return result;
     if (result != TLV_TRANSACTION) return ERR_TLV_TAG;
 
     struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
-    if ((result = tlv_get_value(tlv, &_tlv)) != 0) goto end;
+    if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
-    if ((result = string_set_tlv(&res->address_from, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = string_set_tlv(&res->address_from, &_tlv_data))) goto end;
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
-    if ((result = string_set_tlv(&res->address_to, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = string_set_tlv(&res->address_to, &_tlv_data))) goto end;
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
-    if ((result = string_set_tlv(&res->currency, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = string_set_tlv(&res->currency, &_tlv_data))) goto end;
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
-    if ((result = integer_set_tlv(&res->balance, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = integer_set_tlv(&res->balance, &_tlv_data))) goto end;
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
-    if ((result = integer_set_tlv(&res->fee, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = integer_set_tlv(&res->fee, &_tlv_data))) goto end;
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
-    if ((result = integer_set_tlv(&res->balance_from, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = integer_set_tlv(&res->balance_from, &_tlv_data))) goto end;
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
     {
         struct integer_st *num = integer_new();
-        if ((result = integer_set_tlv(num, &_tlv_data)) != 0) goto end;
+        if ((result = integer_set_tlv(num, &_tlv_data))) goto end;
         integer_get_str(num, &res->hash_from);
         integer_free(num);
     }
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
-    if ((result = string_set_tlv(&res->signature, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = string_set_tlv(&res->signature, &_tlv_data))) goto end;
     end:
     string_data_free(&_tlv);
     string_data_free(&_tlv_data);

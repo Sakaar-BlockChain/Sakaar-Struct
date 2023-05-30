@@ -46,34 +46,34 @@ void generation_clear(struct generation *res) {
     string_clear(&res->data);
 }
 int generation_cmp(const struct generation *obj1, const struct generation *obj2) {
-    if (obj1 == NULL || obj2 == NULL || string_cmp(&obj1->hash, &obj2->hash) != 0 || integer_cmp(&obj1->time, &obj2->time) != 0) return 2;
-    return 0;
+    if (obj1 == NULL || obj2 == NULL || string_cmp(&obj1->hash, &obj2->hash) || integer_cmp(&obj1->time, &obj2->time)) return CMP_NEQ;
+    return CMP_EQ;
 }
 
 // TLV Methods
 int generation_set_tlv(struct generation *res, const struct string_st *tlv) {
-    if (res == NULL) return 0;
+    if (res == NULL) return ERR_DATA_NULL;
     generation_clear(res);
     int result = tlv_get_tag(tlv);
     if (result < 0) return result;
     if (result != TLV_GENERATION) return ERR_TLV_TAG;
 
     struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
-    if ((result = tlv_get_value(tlv, &_tlv)) != 0) goto end;
+    if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
-    if ((result = integer_set_tlv(&res->time, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = integer_set_tlv(&res->time, &_tlv_data))) goto end;
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
     {
         struct integer_st *num = integer_new();
-        if ((result = integer_set_tlv(num, &_tlv_data)) != 0) goto end;
+        if ((result = integer_set_tlv(num, &_tlv_data))) goto end;
         integer_get_str(num, &res->hash);
         integer_free(num);
     }
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
-    if ((result = string_set_tlv(&res->data, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = string_set_tlv(&res->data, &_tlv_data))) goto end;
     end:
     string_data_free(&_tlv);
     string_data_free(&_tlv_data);

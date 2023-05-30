@@ -30,7 +30,7 @@ void integer_clear(struct integer_st *res) {
     mpz_set_ui(res->mpz_int, 0);
 }
 int integer_cmp(const struct integer_st *obj1, const struct integer_st *obj2) {
-    if (obj1 == NULL || obj2 == NULL) return 2;
+    if (obj1 == NULL || obj2 == NULL) return CMP_NEQ;
     return mpz_cmp(obj1->mpz_int, obj2->mpz_int);
 }
 
@@ -213,7 +213,7 @@ void integer_get_dec(const struct integer_st *res, struct string_st *str) {
 
 // TLV Methods
 int integer_set_tlv_(struct integer_st *res, const struct string_st *tlv) {
-    if (res == NULL) return 0;
+    if (res == NULL) return ERR_DATA_NULL;
     integer_clear(res);
 
 
@@ -260,7 +260,7 @@ void integer_get_tlv_(const struct integer_st *res, struct string_st *tlv, unsig
     tlv_set_string(tlv, tag, tlv);
 }
 int integer_set_tlv(struct integer_st *res, const struct string_st *tlv) {
-    if (res == NULL) return 0;
+    if (res == NULL) return ERR_DATA_NULL;
     integer_clear(res);
     int result = tlv_get_tag(tlv);
     if (result < 0) return result;

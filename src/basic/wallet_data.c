@@ -75,51 +75,51 @@ void wallet_data_clear(struct wallet_data *res) {
     integer_clear(&res->pre_balance);
 }
 int wallet_data_cmp(const struct wallet_data *obj1, const struct wallet_data *obj2) {
-    if (obj1 == NULL || obj2 == NULL || string_cmp(&obj1->address, &obj2->address) != 0 || string_cmp(&obj1->currency, &obj2->currency) != 0) return 2;
-    return 0;
+    if (obj1 == NULL || obj2 == NULL || string_cmp(&obj1->address, &obj2->address) || string_cmp(&obj1->currency, &obj2->currency)) return CMP_NEQ;
+    return CMP_EQ;
 }
 
 // TLV Methods
 int wallet_data_set_tlv(struct wallet_data *res, const struct string_st *tlv) {
-    if (res == NULL) return 0;
+    if (res == NULL) return ERR_DATA_NULL;
     wallet_data_clear(res);
     int result = tlv_get_tag(tlv);
     if (result < 0) return result;
     if (result != TLV_WALLET_DATA) return ERR_TLV_TAG;
 
     struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
-    if ((result = tlv_get_value(tlv, &_tlv)) != 0) goto end;
+    if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
-    if ((result = string_set_tlv(&res->address, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = string_set_tlv(&res->address, &_tlv_data))) goto end;
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
-    if ((result = string_set_tlv(&res->currency, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = string_set_tlv(&res->currency, &_tlv_data))) goto end;
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
-    if ((result = string_set_tlv(&res->address_outside, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = string_set_tlv(&res->address_outside, &_tlv_data))) goto end;
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
     {
         struct integer_st *num = integer_new();
-        if ((result = integer_set_tlv(num, &_tlv_data)) != 0) goto end;
+        if ((result = integer_set_tlv(num, &_tlv_data))) goto end;
         integer_get_str(num, &res->hash);
         integer_free(num);
     }
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
     {
         struct integer_st *num = integer_new();
-        if ((result = integer_set_tlv(num, &_tlv_data)) != 0) goto end;
+        if ((result = integer_set_tlv(num, &_tlv_data))) goto end;
         integer_get_str(num, &res->pre_hash);
         integer_free(num);
     }
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
-    if ((result = integer_set_tlv(&res->balance, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = integer_set_tlv(&res->balance, &_tlv_data))) goto end;
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
-    if ((result = integer_set_tlv(&res->pre_balance, &_tlv_data)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = integer_set_tlv(&res->pre_balance, &_tlv_data))) goto end;
     end:
     string_data_free(&_tlv);
     string_data_free(&_tlv_data);

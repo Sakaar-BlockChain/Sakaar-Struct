@@ -67,14 +67,14 @@ void pre_transaction_clear(struct pre_transaction *res) {
     string_clear(&res->private_key);
 }
 int pre_transaction_cmp(const struct pre_transaction *obj1, const struct pre_transaction *obj2) {
-    if (obj1 == NULL || obj2 == NULL) return 2;
-    if (string_cmp(&obj1->address_from, &obj2->address_from) != 0) return 2;
-    if (string_cmp(&obj1->address_to, &obj2->address_to) != 0) return 2;
-    if (string_cmp(&obj1->currency, &obj2->currency) != 0) return 2;
+    if (obj1 == NULL || obj2 == NULL) return CMP_NEQ;
+    if (string_cmp(&obj1->address_from, &obj2->address_from)) return CMP_NEQ;
+    if (string_cmp(&obj1->address_to, &obj2->address_to)) return CMP_NEQ;
+    if (string_cmp(&obj1->currency, &obj2->currency)) return CMP_NEQ;
 
-    if (integer_cmp(&obj1->balance, &obj2->balance) != 0) return 2;
-    if (integer_cmp(&obj1->fee, &obj2->fee) != 0) return 2;
+    if (integer_cmp(&obj1->balance, &obj2->balance)) return CMP_NEQ;
+    if (integer_cmp(&obj1->fee, &obj2->fee)) return CMP_NEQ;
 
-    if (string_cmp(&obj1->private_key, &obj2->private_key) != 0) return 2;
-    return 0;
+    if (string_cmp(&obj1->private_key, &obj2->private_key)) return CMP_NEQ;
+    return CMP_EQ;
 }

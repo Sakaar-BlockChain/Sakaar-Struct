@@ -34,30 +34,30 @@ void activated_accounts_clear(struct activated_accounts *res) {
     list_clear(&res->addresses);
 }
 int activated_accounts_cmp(const struct activated_accounts *obj1, const struct activated_accounts *obj2) {
-    if (obj1 == NULL || obj2 == NULL) return 2;
-    return 0;
+    if (obj1 == NULL || obj2 == NULL) return CMP_NEQ;
+    return CMP_EQ;
 }
 
 // TLV Methods
 int activated_accounts_set_tlv(struct activated_accounts *res, const struct string_st *tlv) {
-    if (res == NULL) return 0;
+    if (res == NULL) return ERR_DATA_NULL;
     activated_accounts_clear(res);
     int result = tlv_get_tag(tlv);
     if (result < 0) return result;
     if (result != TLV_ACTIVE_ACC) return ERR_TLV_TAG;
 
     struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
-    if ((result = tlv_get_value(tlv, &_tlv)) != 0) goto end;
+    if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data)) != 0) goto end;
-    if ((result = list_set_tlv_self(&res->addresses, &_tlv_data, LIST_TYPE)) != 0) goto end;
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = list_set_tlv_self(&res->addresses, &_tlv_data, LIST_TYPE))) goto end;
     {
         struct list_st *sub_list;
         for (size_t i = 0; i < res->addresses.size; i++) {
             sub_list = res->addresses.data[i]->data;
-            if (sub_list->size != 2 && (result = ERR_TLV_VALUE) != 0) goto end;
-            if ((result = object_set_tlv_self(sub_list->data[0], STRING_TYPE)) != 0) goto end;
-            if ((result = object_set_tlv_self(sub_list->data[1], INTEGER_TYPE)) != 0) goto end;
+            if (sub_list->size != 2 && (result = ERR_TLV_VALUE)) goto end;
+            if ((result = object_set_tlv_self(sub_list->data[0], STRING_TYPE))) goto end;
+            if ((result = object_set_tlv_self(sub_list->data[1], INTEGER_TYPE))) goto end;
         }
     }
     end:

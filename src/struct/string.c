@@ -38,9 +38,9 @@ void string_clear(struct string_st *res) {
     string_resize(res, 0);
 }
 int string_cmp(const struct string_st *obj1, const struct string_st *obj2) {
-    if (obj1 == NULL || obj2 == NULL) return 2;
-    if (obj1->size > obj2->size) return 1;
-    if (obj1->size < obj2->size) return -1;
+    if (obj1 == NULL || obj2 == NULL) return CMP_NEQ;
+    if (obj1->size > obj2->size) return CMP_GRET;
+    if (obj1->size < obj2->size) return CMP_LESS;
     return memcmp(obj1->data, obj2->data, obj1->size);
 }
 
@@ -61,7 +61,7 @@ void string_data_free(struct string_st *res) {
 
 // Class Methods
 void string_resize(struct string_st *res, size_t size) {
-    if (res->data == NULL && size != 0) {
+    if (res->data == NULL && size) {
         res->mx_size = size;
         res->data = skr_malloc(size + 1);
         if (res->data != NULL) for (size_t i = 0; i < size + 1; i++) res->data[i] = 0;
@@ -93,7 +93,7 @@ void string_concat(struct string_st *res, const struct string_st *a) {
 
 // TLV Methods
 int string_set_tlv(struct string_st *res, const struct string_st *tlv) {
-    if (res == NULL) return 0;
+    if (res == NULL) return ERR_DATA_NULL;
     string_clear(res);
     int result = tlv_get_tag(tlv);
     if (result < 0) return result;

@@ -43,11 +43,11 @@ int object_cmp(const struct object_st *obj1, const struct object_st *obj2) {
     while (obj1 != NULL && obj1->type == OBJECT_TYPE) obj1 = obj1->data;
     while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = obj2->data;
 
-    if (obj1 == obj2) return 0;
-    if (obj1 == NULL || obj2 == NULL) return 2;
-    if (obj1->type != obj2->type) return 2;
+    if (obj1 == obj2) return CMP_EQ;
+    if (obj1 == NULL || obj2 == NULL) return CMP_NEQ;
+    if (obj1->type != obj2->type) return CMP_NEQ;
     if (obj1->type != NULL && obj1->type->self._cmp != NULL) return obj1->type->self._cmp(obj1->data, obj2->data);
-    return 0;
+    return CMP_EQ;
 }
 
 // Class Methods
@@ -80,7 +80,7 @@ void object_set_pointer(struct object_st *res, struct object_st *obj) {
 int object_set_tlv(struct object_st *res, const struct string_st *tlv) {
     object_set_type(res, TLV_TYPE);
     string_set(res->data, tlv);
-    return 0;
+    return ERR_SUCCESS;
 }
 void object_get_tlv(const struct object_st *res, struct string_st *tlv) {
     while (res != NULL && res->type == OBJECT_TYPE) res = res->data;
@@ -91,9 +91,9 @@ void object_get_tlv(const struct object_st *res, struct string_st *tlv) {
 int object_set_tlv_self(struct object_st *res, struct object_type *type) {
     if (res->type != TLV_TYPE) {
         object_set_type(res, type);
-        return 0;
+        return ERR_SUCCESS;
     }
-    int result = 0;
+    int result = ERR_SUCCESS;
     struct string_st _tlv_data = {NULL, 0, 0};
     string_set(&_tlv_data, res->data);
 

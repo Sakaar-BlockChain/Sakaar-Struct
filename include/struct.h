@@ -14,8 +14,26 @@
 
 #define USE_GMP
 
+#define ERR_SUCCESS         0
 #define ERR_TLV_TAG         (-0x01)
 #define ERR_TLV_VALUE       (-0x02)
+
+#define ERR_DATA_NULL       (-0x11)
+#define ERR_DATA_CHECK      (-0x12)
+
+#define ERR_FILE_OPEN       (-0x21)
+#define ERR_FILE_READ       (-0x22)
+#define ERR_FILE_WRITE      (-0x23)
+#define ERR_FILE_REMOVE     (-0x24)
+
+#define CMP_LESS            (-1)
+#define CMP_GRET            1
+#define CMP_EQ              0
+#define CMP_NEQ             2
+
+#define CHECK_TRUE          1
+#define CHECK_FALSE         0
+
 
 #define INTEGER_TLV         0xC1
 #define LIST_TLV            0xF0
