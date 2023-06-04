@@ -138,12 +138,12 @@ void parser_set_file(struct parser_st *res, char *file_path){
 #endif
     fclose(fp);
 }
-void parser_set_str(struct parser_st *res, char *data, size_t size) {
+void parser_set_str(struct parser_st *res, struct string_st *str) {
     parser_clear(res);
 
-    res->data_size = size;
+    res->data_size = str->size;
     res->data_str = skr_malloc(res->data_size);
-    memcpy(res->data_str, data, size);
+    memcpy(res->data_str, str->data, str->size);
 }
 void parser_set_error_token(struct parser_st *parser, char *type, char *msg, size_t token_pos) {
     error_set_msg(parser->error, type, msg);

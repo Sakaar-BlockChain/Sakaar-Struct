@@ -5,7 +5,7 @@
 
 struct op_function {
     struct frame_st *closure;
-    struct variable_list_st *argument;
+    size_t argument;
     size_t function_body;
     size_t argument_size;
 
@@ -22,7 +22,7 @@ void op_function_copy(struct op_function *, const struct op_function *);
 void op_function_clear(struct op_function *);
 int op_function_cmp(const struct op_function *, const struct op_function *);
 
-void op_function_define(struct op_function *, struct node_st *, struct parser_st *);
+void op_function_define(struct op_function *, size_t, struct parser_st *);
 
 // Convert Methods
 //void op_object__bool(struct object_st *, struct object_st *, const struct op_object *);

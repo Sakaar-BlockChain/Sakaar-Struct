@@ -43,11 +43,12 @@ void variable_list_list_append(struct variable_list_list_st *res, struct variabl
     variable_list_list_resize(res, res->size + 1);
     res->variable_lists[res->size - 1] = data;
 }
-void variable_list_list_add_new(struct variable_list_list_st *res) {
-    if(!res->type) return;
+size_t variable_list_list_add_new(struct variable_list_list_st *res) {
+    if(!res->type) return 0;
     variable_list_list_resize(res, res->size + 1);
     res->variable_lists[res->size - 1] = variable_list_new();
     res->variable_lists[res->size - 1]->type = res->type;
+    return res->size - 1;
 }
 struct variable_list_st *variable_list_list_last(struct variable_list_list_st *res) {
     if (res->variable_lists == NULL || res->size == 0) return NULL;

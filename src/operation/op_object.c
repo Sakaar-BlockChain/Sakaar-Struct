@@ -10,7 +10,7 @@ struct op_object *op_object_new() {
     res->attr = map_new();
 
     res->closure = NULL;
-    res->argument = NULL;
+    res->argument = 0;
     res->class_body = 0;
 
     return res;
@@ -56,7 +56,7 @@ void op_object_clear(struct op_object *res) {
 
     if(res->closure != NULL) frame_free(res->closure);
     res->closure = NULL;
-    res->argument = NULL;
+    res->argument = 0;
     res->class_body = 0;
 }
 int op_object_cmp(const struct op_object *obj1, const struct op_object *obj2) {

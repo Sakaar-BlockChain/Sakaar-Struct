@@ -9,8 +9,8 @@ struct node_st *node_new() {
     node_list_data_init(&res->nodes);
 
     res->data = 0;
-    res->variable = NULL;
-    res->closure = NULL;
+    res->variable = 0;
+    res->closure = 0;
     return res;
 }
 void node_set(struct node_st *res, const struct node_st *a) {
@@ -34,8 +34,8 @@ void node_clear(struct node_st *res) {
     node_list_clear(&res->nodes);
 
     res->data = 0;
-    res->variable = NULL;
-    res->closure = NULL;
+    res->variable = 0;
+    res->closure = 0;
 }
 void node_free(struct node_st *res) {
     token_list_data_free(&res->tokens);
@@ -51,8 +51,8 @@ void node_data_init(struct node_st *res) {
     node_list_data_init(&res->nodes);
 
     res->data = 0;
-    res->variable = NULL;
-    res->closure = NULL;
+    res->variable = 0;
+    res->closure = 0;
 }
 void node_data_free(struct node_st *res) {
     token_list_data_free(&res->tokens);

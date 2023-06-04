@@ -47,7 +47,10 @@
 
 struct bytecode_st {
     char *command;
-    void **data;
+    size_t *data;
+
+    size_t closure;
+    size_t variable;
 
     size_t max_size, size;
 };
@@ -56,9 +59,9 @@ struct bytecode_st *bytecode_new();
 void bytecode_free(struct bytecode_st *);
 
 void bytecode_resize(struct bytecode_st *, size_t);
-void bytecode_append(struct bytecode_st *, char , void *);
+void bytecode_append(struct bytecode_st *, char , size_t);
 
-void print_code(char command, void *data);
+void print_code(char command, size_t data);
 void print_bytecode(const struct bytecode_st *, int);
 
 #endif //BYTECODE_H

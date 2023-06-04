@@ -8,7 +8,7 @@ struct op_class {
     struct map_st *attr;
 
     struct frame_st *closure;
-    struct variable_list_st *argument;
+    size_t argument;
     size_t class_body;
 };
 
@@ -21,7 +21,7 @@ void op_class_copy(struct op_class *, const struct op_class *);
 void op_class_clear(struct op_class *);
 int op_class_cmp(const struct op_class *, const struct op_class *);
 
-void op_class_define(struct op_class *, struct node_st *, struct parser_st *);
+void op_class_define(struct op_class *, size_t, struct parser_st *);
 struct object_st *op_class_save_value(struct op_class *, struct parser_st *);
 
 // Sub method

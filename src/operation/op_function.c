@@ -7,7 +7,7 @@ struct op_function *op_function_new() {
     struct op_function *res = skr_malloc(OP_FUNCTION_SIZE);
 
     res->closure = NULL;
-    res->argument = NULL;
+    res->argument = 0;
     res->function_body = 0;
     res->argument_size = 0;
 
@@ -58,7 +58,7 @@ void op_function_clear(struct op_function *res) {
 
     if(res->closure != NULL) frame_free(res->closure);
     res->closure = NULL;
-    res->argument = NULL;
+    res->argument = 0;
     res->function_body = 0;
     res->argument_size = 0;
 
@@ -70,15 +70,16 @@ int op_function_cmp(const struct op_function *obj1, const struct op_function *ob
     return CMP_EQ;
 }
 
-void op_function_define(struct op_function *res, struct node_st *node, struct parser_st *parser) {
-    res->argument_size = node->nodes.nodes[0]->nodes.size;
-    res->argument = node->variable;
-    res->function_body = node->data;
+void op_function_define(struct op_function *res, size_t function_body, struct parser_st *parser) {
+    res->function_body = function_body;
+    struct bytecode_st *code = parser->codes.bytecodes[function_body];
+    res->argument = code->variable;
+    res->argument_size = parser->variables.variable_lists[code->variable]->size - parser->closures.closures[code->closure]->data.size;
 
     struct frame_st *frame = res->closure = frame_new();
-    struct variable_list_st data = node->closure->data;
+    struct variable_list_st data = parser->closures.closures[code->closure]->data;
 
-    variable_list_set(&frame->attrib, &node->closure->attrib);
+    variable_list_set(&frame->attrib, &parser->closures.closures[code->closure]->attrib);
     list_resize(&frame->data, data.size);
     for (size_t i = 0; i < data.size; i++) {
         frame->data.data[i] = object_copy_obj(parser->var_stack->data[parser->var_start_pos + data.variables[i]->position]);

@@ -18,7 +18,7 @@ void variable_list_list_data_free(struct variable_list_list_st *);
 
 void variable_list_list_resize(struct variable_list_list_st *, size_t);
 void variable_list_list_append(struct variable_list_list_st *, struct variable_list_st *);
-void variable_list_list_add_new(struct variable_list_list_st *);
+size_t variable_list_list_add_new(struct variable_list_list_st *);
 struct variable_list_st *variable_list_list_last(struct variable_list_list_st *);
 
 

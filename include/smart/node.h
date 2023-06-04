@@ -20,8 +20,10 @@ struct node_st{
     struct token_list_st tokens;
     struct node_list_st nodes;
 
-    struct variable_list_st *variable;
-    struct closure_st *closure;
+//    struct variable_list_st *variable;
+//    struct closure_st *closure;
+    size_t variable;
+    size_t closure;
 
     size_t data;
 };

@@ -9,7 +9,7 @@ struct op_object{
 
     // Function inside
     struct frame_st *closure;
-    struct variable_list_st *argument;
+    size_t argument;
     size_t class_body;
 };
 

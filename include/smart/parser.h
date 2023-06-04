@@ -40,17 +40,17 @@ struct parser_st{
 
     struct error_st *error;
 
-    struct bytecode_list_st codes;
-    struct closure_list_st closures;
     struct node_list_st nodes;
     struct token_list_st tokens;
-    struct variable_list_list_st variables;
+    struct bytecode_list_st codes; //
+    struct closure_list_st closures; //
+    struct variable_list_list_st variables; //
 
     struct bytecode_list_st codes_stack;
     struct closure_list_st closures_stack;
     struct variable_list_list_st variables_stack;
 
-    struct list_st *const_objects;
+    struct list_st *const_objects; //
     struct list_st *temp_stack;
     struct list_st *var_stack;
     size_t var_start_pos;
@@ -62,7 +62,7 @@ void parser_data_inti(struct parser_st *);
 void parser_data_free(struct parser_st *);
 
 void parser_set_file(struct parser_st *, char *);
-void parser_set_str(struct parser_st *, char *, size_t);
+void parser_set_str(struct parser_st *, struct string_st *);
 void parser_set_error_token(struct parser_st *, char *type, char *msg, size_t token_pos);
 
 size_t parser_new_ident(struct parser_st *, struct string_st *);

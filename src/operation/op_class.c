@@ -10,7 +10,7 @@ struct op_class *op_class_new() {
     res->attr = map_new();
 
     res->closure = NULL;
-    res->argument = NULL;
+    res->argument = 0;
     res->class_body = 0;
 
     return res;
@@ -56,7 +56,7 @@ void op_class_clear(struct op_class *res) {
 
     if(res->closure != NULL) frame_free(res->closure);
     res->closure = NULL;
-    res->argument = NULL;
+    res->argument = 0;
     res->class_body = 0;
 }
 int op_class_cmp(const struct op_class *obj1, const struct op_class *obj2) {
@@ -64,21 +64,22 @@ int op_class_cmp(const struct op_class *obj1, const struct op_class *obj2) {
     return CMP_EQ;
 }
 
-void op_class_define(struct op_class *res, struct node_st *node, struct parser_st *parser) {
-    res->argument = node->variable;
-    res->class_body = node->data;
+void op_class_define(struct op_class *res, size_t class_body, struct parser_st *parser) {
+    res->class_body = class_body;
+    struct bytecode_st *code = parser->codes.bytecodes[class_body];
+    res->argument = code->variable;
 
     struct frame_st *frame = res->closure = frame_new();
-    struct variable_list_st data = node->closure->data;
+    struct variable_list_st data = parser->closures.closures[code->closure]->data;
 
-    variable_list_set(&frame->attrib, &node->closure->attrib);
+    variable_list_set(&frame->attrib, &parser->closures.closures[code->closure]->attrib);
     list_resize(&frame->data, data.size);
     for (size_t i = 0; i < data.size; i++) {
         frame->data.data[i] = object_copy_obj(parser->var_stack->data[parser->var_start_pos + data.variables[i]->position]);
     }
 }
 struct object_st *op_class_save_value(struct op_class *res, struct parser_st* parser) {
-    struct variable_list_st *attrib = res->argument;
+    struct variable_list_st *attrib = parser->variables.variable_lists[res->argument];
     struct object_st *obj = NULL;
     struct op_function *func = NULL;
     size_t var_start_pos = parser->var_start_pos;

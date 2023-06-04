@@ -43,10 +43,11 @@ void closure_list_append(struct closure_list_st *res, struct closure_st *data) {
     closure_list_resize(res, res->size + 1);
     res->closures[res->size - 1] = data;
 }
-void closure_list_add_new(struct closure_list_st *res) {
-    if(!res->type) return;
+size_t closure_list_add_new(struct closure_list_st *res) {
+    if(!res->type) return 0;
     closure_list_resize(res, res->size + 1);
     res->closures[res->size - 1] = closure_new();
+    return res->size - 1;
 }
 struct closure_st *closure_list_last(struct closure_list_st *res) {
     if (res->closures == NULL || res->size == 0) return NULL;
