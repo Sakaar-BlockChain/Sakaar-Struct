@@ -42,10 +42,11 @@ void bytecode_list_append(struct bytecode_list_st *res, struct bytecode_st *data
     bytecode_list_resize(res, res->size + 1);
     res->bytecodes[res->size - 1] = data;
 }
-void bytecode_list_add_new(struct bytecode_list_st *res) {
-    if(!res->type) return;
+size_t bytecode_list_add_new(struct bytecode_list_st *res) {
+    if(!res->type) return 0;
     bytecode_list_resize(res, res->size + 1);
     res->bytecodes[res->size - 1] = bytecode_new();
+    return res->size - 1;
 }
 struct bytecode_st *bytecode_list_last(struct bytecode_list_st *res) {
     if (res->bytecodes == NULL || res->size == 0) return NULL;
@@ -54,4 +55,38 @@ struct bytecode_st *bytecode_list_last(struct bytecode_list_st *res) {
 struct bytecode_st *bytecode_list_pop(struct bytecode_list_st *res) {
     if (res->type || res->bytecodes == NULL || res->size == 0) return NULL;
     return res->bytecodes[--res->size];
+}
+
+// TLV Methods
+int bytecode_list_set_tlv(struct bytecode_list_st *res, const struct string_st *tlv) {
+    if (res == NULL) return ERR_DATA_NULL;
+    bytecode_list_clear(res);
+    int result = tlv_get_tag(tlv);
+    if (result < 0) return result;
+    if (result != TLV_BYTECODE_LIST) return ERR_TLV_TAG;
+
+    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    result = tlv_get_value(tlv, &_tlv);
+
+    for (; _tlv.size && result == 0;) {
+        if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) break;
+        result = bytecode_set_tlv(res->bytecodes[bytecode_list_add_new(res)], &_tlv_data);
+    }
+
+    string_data_free(&_tlv);
+    string_data_free(&_tlv_data);
+    return result;
+}
+void bytecode_list_get_tlv(const struct bytecode_list_st *res, struct string_st *tlv) {
+    if (tlv == NULL) return;
+    string_clear(tlv);
+    if (res == NULL) return;
+
+    struct string_st _tlv_data = {NULL, 0, 0};
+    for (size_t i = 0; i < res->size; i++) {
+        bytecode_get_tlv(res->bytecodes[i], &_tlv_data);
+        string_concat(tlv, &_tlv_data);
+    }
+    tlv_set_string(tlv, TLV_BYTECODE_LIST, tlv);
+    string_data_free(&_tlv_data);
 }

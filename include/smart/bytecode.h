@@ -46,20 +46,25 @@
 #define BC_Continue         0x54
 
 struct bytecode_st {
-    char *command;
-    size_t *data;
-
     size_t closure;
     size_t variable;
+
+    char *command;
+    size_t *data;
 
     size_t max_size, size;
 };
 
 struct bytecode_st *bytecode_new();
+void bytecode_clear(struct bytecode_st *);
 void bytecode_free(struct bytecode_st *);
 
 void bytecode_resize(struct bytecode_st *, size_t);
 void bytecode_append(struct bytecode_st *, char , size_t);
+
+// TLV Methods
+int bytecode_set_tlv(struct bytecode_st *, const struct string_st *);
+void bytecode_get_tlv(const struct bytecode_st *, struct string_st *);
 
 void print_code(char command, size_t data);
 void print_bytecode(const struct bytecode_st *, int);

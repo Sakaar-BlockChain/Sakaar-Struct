@@ -21,4 +21,14 @@
 #include "smart/frame.h"
 
 
+#define TLV_BYTECODE            0x7F01
+#define TLV_BYTECODE_LIST       0x7F11
+#define TLV_CLOSURE             0x7F02
+#define TLV_CLOSURE_LIST        0x7F12
+#define TLV_FRAME               0x7F03
+#define TLV_VARIABLE            0x7F04
+#define TLV_VARIABLE_LIST       0x7F14
+#define TLV_VARIABLE_LIST_LIST  0x7F24
+
+
 #endif //SC_STRUCTS_H

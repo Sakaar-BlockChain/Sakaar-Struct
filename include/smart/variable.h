@@ -16,6 +16,9 @@ void variable_free(struct variable_st *);
 void variable_data_init(struct variable_st *);
 void variable_data_free(struct variable_st *);
 
+// TLV Methods
+int variable_set_tlv(struct variable_st *, const struct string_st *);
+void variable_get_tlv(const struct variable_st *, struct string_st *);
 
 void print_variable(const struct variable_st *, int);
 

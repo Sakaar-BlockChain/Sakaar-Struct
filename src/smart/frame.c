@@ -19,3 +19,38 @@ void frame_free(struct frame_st *res) {
     list_data_free(&res->data);
     skr_free(res);
 }
+
+// TLV Methods
+int frame_set_tlv(struct frame_st *res, const struct string_st *tlv) {
+    if (res == NULL) return ERR_DATA_NULL;
+    frame_clear(res);
+    int result = tlv_get_tag(tlv);
+    if (result < 0) return result;
+    if (result != TLV_FRAME) return ERR_TLV_TAG;
+
+    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    if ((result = tlv_get_value(tlv, &_tlv))) goto end;
+
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = variable_list_set_tlv(&res->attrib, &_tlv_data))) goto end;
+
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = list_set_tlv(&res->data, &_tlv_data))) goto end;
+    end:
+    string_data_free(&_tlv);
+    string_data_free(&_tlv_data);
+    return result;
+}
+void frame_get_tlv(const struct frame_st *res, struct string_st *tlv) {
+    if (tlv == NULL) return;
+    if (res == NULL) return string_clear(tlv);
+
+    struct string_st _tlv_data = {NULL, 0, 0};
+    variable_list_get_tlv(&res->attrib, tlv);
+
+    list_get_tlv(&res->data, &_tlv_data);
+    string_concat(tlv, &_tlv_data);
+
+    tlv_set_string(tlv, TLV_FRAME, tlv);
+    string_data_free(&_tlv_data);
+}

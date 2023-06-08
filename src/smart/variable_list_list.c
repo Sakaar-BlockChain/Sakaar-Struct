@@ -54,3 +54,37 @@ struct variable_list_st *variable_list_list_last(struct variable_list_list_st *r
     if (res->variable_lists == NULL || res->size == 0) return NULL;
     return res->variable_lists[res->size - 1];
 }
+
+// TLV Methods
+int variable_list_list_set_tlv(struct variable_list_list_st *res, const struct string_st *tlv) {
+    if (res == NULL) return ERR_DATA_NULL;
+    variable_list_list_clear(res);
+    int result = tlv_get_tag(tlv);
+    if (result < 0) return result;
+    if (result != TLV_VARIABLE_LIST_LIST) return ERR_TLV_TAG;
+
+    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    result = tlv_get_value(tlv, &_tlv);
+    
+    for (; _tlv.size && result == 0;) {
+        if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) break;
+        result = variable_list_set_tlv(res->variable_lists[variable_list_list_add_new(res)], &_tlv_data);
+    }
+    
+    string_data_free(&_tlv);
+    string_data_free(&_tlv_data);
+    return result;
+}
+void variable_list_list_get_tlv(const struct variable_list_list_st *res, struct string_st *tlv) {
+    if (tlv == NULL) return;
+    string_clear(tlv);
+    if (res == NULL) return;
+
+    struct string_st _tlv_data = {NULL, 0, 0};
+    for (size_t i = 0; i < res->size; i++) {
+        variable_list_get_tlv(res->variable_lists[i], &_tlv_data);
+        string_concat(tlv, &_tlv_data);
+    }
+    tlv_set_string(tlv, TLV_VARIABLE_LIST_LIST, tlv);
+    string_data_free(&_tlv_data);
+}

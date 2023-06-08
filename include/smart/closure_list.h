@@ -21,6 +21,9 @@ void closure_list_append(struct closure_list_st *, struct closure_st *);
 size_t closure_list_add_new(struct closure_list_st *);
 struct closure_st *closure_list_last(struct closure_list_st *);
 
+// TLV Methods
+int closure_list_set_tlv(struct closure_list_st *, const struct string_st *);
+void closure_list_get_tlv(const struct closure_list_st *, struct string_st *);
 
 void print_closure_list(const struct closure_list_st *, int);
 

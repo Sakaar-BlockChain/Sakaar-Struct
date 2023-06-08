@@ -24,6 +24,10 @@ int op_function_cmp(const struct op_function *, const struct op_function *);
 
 void op_function_define(struct op_function *, size_t, struct parser_st *);
 
+// TLV Methods
+//int op_function_set_tlv(struct op_function *, const struct string_st *);
+//void op_function_get_tlv(const struct op_function *, struct string_st *);
+
 // Convert Methods
 //void op_object__bool(struct object_st *, struct object_st *, const struct op_object *);
 //void op_object__int(struct object_st *, struct object_st *, const struct op_object *);

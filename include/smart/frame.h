@@ -14,6 +14,10 @@ void frame_set(struct frame_st *, const struct frame_st *);
 void frame_clear(struct frame_st *);
 void frame_free(struct frame_st *);
 
+// TLV Methods
+int frame_set_tlv(struct frame_st *, const struct string_st *);
+void frame_get_tlv(const struct frame_st *, struct string_st *);
+
 void print_frame(const struct frame_st *, int);
 
 #endif //FRAME_H
