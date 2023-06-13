@@ -458,7 +458,7 @@ void integer_get_tlv_(const struct integer_st *res, struct string_st *tlv, unsig
 int integer_set_tlv(struct integer_st *res, const struct string_st *tlv) {
     if (res == NULL) return;
     integer_clear(res);
-    if (string_is_null(tlv) || tlv_get_tag(tlv) != INTEGER_TLV) return;
+    if (string_is_null(tlv) || tlv_get_tag(tlv) != TLV_INTEGER) return;
 #ifdef USE_GMP
     char *data = tlv_get_value(tlv->data);
     size_t size = tlv_get_size(tlv->data);
@@ -519,7 +519,7 @@ void integer_get_tlv(const struct integer_st *res, struct string_st *tlv) {
     }
 
     skr_free(temp);
-    tlv_set_string(tlv, INTEGER_TLV, tlv);
+    tlv_set_string(tlv, TLV_INTEGER, tlv);
 #else
     size_t type_size = 8;
     size_t dif = (16 / type_size);
@@ -541,7 +541,7 @@ void integer_get_tlv(const struct integer_st *res, struct string_st *tlv) {
             }
         }
     }
-    tlv_set_str(tlv, INTEGER_TLV, data, j);
+    tlv_set_str(tlv, TLV_INTEGER, data, j);
     skr_free(data);
 #endif
 }

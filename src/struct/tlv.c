@@ -141,7 +141,7 @@ int tlv_get_next_tlv(struct string_st *tlv, struct string_st *res) {
     size_t size = tlv_get_size_head(tlv) + tlv_get_size_value(tlv);
     string_set_str(res, tlv->data, size);
 
-    for (size_t i = size, j = 0; i < tlv->size; i++, j++)
+    for (size_t i = size, j = 0, l = tlv->size; i < l; i++, j++)
         tlv->data[j] = tlv->data[i];
     string_resize(tlv, tlv->size - size);
     return ERR_SUCCESS;
@@ -151,7 +151,7 @@ void tlv_beautify(const struct string_st *tlv, struct string_st *res) {
     if (res == NULL) return;
     if (string_is_null(tlv)) return string_clear(res);
     string_resize(res, tlv->size * 2);
-    for (size_t i = 0; i < tlv->size; i++) {
+    for (size_t i = 0, size = tlv->size; i < size; i++) {
         res->data[i * 2] = get_char_16((unsigned char) tlv->data[i] / 16);
         res->data[i * 2 + 1] = get_char_16((unsigned char) tlv->data[i] % 16);
     }
@@ -161,7 +161,7 @@ void tlv_from_beautify(const struct string_st *beaut, struct string_st *res) {
     if (res == NULL) return;
     if (string_is_null(beaut)) return string_clear(res);
     string_resize(res, beaut->size / 2 + beaut->size % 2);
-    for (size_t i = 0; i < res->size; i++) {
+    for (size_t i = 0, size = res->size; i < size; i++)  {
         res->data[i] = (char) (set_char_16(beaut->data[i * 2]) * 16 + set_char_16(beaut->data[i * 2 + 1]));
     }
 }

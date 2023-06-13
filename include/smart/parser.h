@@ -52,7 +52,7 @@ struct parser_st{
 
     struct list_st *const_objects; //
     struct list_st *temp_stack;
-    struct list_st *var_stack;
+    struct list_st *var_stack; //
     size_t var_start_pos;
 };
 
@@ -62,7 +62,7 @@ void parser_data_inti(struct parser_st *);
 void parser_data_free(struct parser_st *);
 
 void parser_set_file(struct parser_st *, char *);
-void parser_set_str(struct parser_st *, struct string_st *);
+void parser_set_str(struct parser_st *, const struct string_st *);
 void parser_set_error_token(struct parser_st *, char *type, char *msg, size_t token_pos);
 
 size_t parser_new_ident(struct parser_st *, struct string_st *);
@@ -72,6 +72,12 @@ size_t parser_codespace(struct parser_st *);
 
 void parser_store_vars(struct parser_st *, size_t, size_t);
 size_t parser_restore_vars(struct parser_st *);
+
+struct object_st *parser_get_var(struct parser_st *, struct string_st *);
+
+// TLV Methods
+int parser_set_tlv(struct parser_st *, const struct string_st *);
+void parser_get_tlv(const struct parser_st *, struct string_st *);
 
 
 #endif //PARSER_H

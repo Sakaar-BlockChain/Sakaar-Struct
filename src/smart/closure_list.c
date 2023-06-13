@@ -4,7 +4,7 @@
 void closure_list_set(struct closure_list_st *res, const struct closure_list_st *a) {
     if(res->type) return;
     closure_list_resize(res, a->size);
-    for (size_t i = 0; i < a->size; i++) res->closures[i] = a->closures[i];
+    for (size_t i = 0, size = a->size; i < size; i++) res->closures[i] = a->closures[i];
 }
 void closure_list_clear(struct closure_list_st *res) {
     closure_list_resize(res, 0);
@@ -28,11 +28,11 @@ void closure_list_resize(struct closure_list_st *res, size_t size) {
         for (size_t i = 0; i < size; i++) res->closures[i] = NULL;
     } else if (res->max_size < size) {
         res->closures = skr_realloc(res->closures, sizeof(struct closure_st *) * size * 2);
-        for (size_t i = res->max_size; i < size * 2; i++) res->closures[i] = NULL;
+        for (size_t i = res->max_size, l = size * 2; i < l; i++) res->closures[i] = NULL;
         res->max_size = size * 2;
     }
     if (res->type && res->size > size) {
-        for (size_t i = size; i < res->size; i++) {
+        for (size_t i = size, l = res->size; i < l; i++) {
             if (res->closures[i] != NULL) closure_free(res->closures[i]);
             res->closures[i] = NULL;
         }
@@ -80,7 +80,7 @@ void closure_list_get_tlv(const struct closure_list_st *res, struct string_st *t
     if (res == NULL) return;
 
     struct string_st _tlv_data = {NULL, 0, 0};
-    for (size_t i = 0; i < res->size; i++) {
+    for (size_t i = 0, size = res->size; i < size; i++) {
         closure_get_tlv(res->closures[i], &_tlv_data);
         string_concat(tlv, &_tlv_data);
     }

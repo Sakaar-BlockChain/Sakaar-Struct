@@ -14,6 +14,9 @@ void list_free(struct list_st *);
 void list_set(struct list_st *, const struct list_st *);
 void list_copy(struct list_st *, const struct list_st *);
 
+void list_mark(struct list_st *);
+void list_unmark(struct list_st *);
+
 void list_clear(struct list_st *);
 int list_cmp(const struct list_st *, const struct list_st *);
 

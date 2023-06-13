@@ -29,6 +29,15 @@ void activated_accounts_copy(struct activated_accounts *res, const struct activa
     list_copy(&res->addresses, &a->addresses);
 }
 
+void activated_accounts_mark(struct activated_accounts *res) {
+    if (res == NULL) return;
+    list_mark(&res->addresses);
+}
+void activated_accounts_unmark(struct activated_accounts *res) {
+    if (res == NULL) return;
+    list_unmark(&res->addresses);
+}
+
 void activated_accounts_clear(struct activated_accounts *res) {
     if (res == NULL) return;
     list_clear(&res->addresses);
@@ -53,9 +62,12 @@ int activated_accounts_set_tlv(struct activated_accounts *res, const struct stri
     if ((result = list_set_tlv_self(&res->addresses, &_tlv_data, LIST_TYPE))) goto end;
     {
         struct list_st *sub_list;
-        for (size_t i = 0; i < res->addresses.size; i++) {
+        for (size_t i = 0, size = res->addresses.size; i < size; i++) {
             sub_list = res->addresses.data[i]->data;
-            if (sub_list->size != 2 && (result = ERR_TLV_VALUE)) goto end;
+            if (sub_list->size != 2) {
+                result = ERR_TLV_VALUE;
+                goto end;
+            }
             if ((result = object_set_tlv_self(sub_list->data[0], STRING_TYPE))) goto end;
             if ((result = object_set_tlv_self(sub_list->data[1], INTEGER_TYPE))) goto end;
         }

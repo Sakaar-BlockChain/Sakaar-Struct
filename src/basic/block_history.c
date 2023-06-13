@@ -52,6 +52,15 @@ void block_history_copy(struct block_history *res, const struct block_history *a
     integer_copy(&res->result, &a->result);
 }
 
+void block_history_mark(struct block_history *res) {
+    if (res == NULL) return;
+    list_mark(&res->transactions);
+}
+void block_history_unmark(struct block_history *res) {
+    if (res == NULL) return;
+    list_unmark(&res->transactions);
+}
+
 void block_history_clear(struct block_history *res) {
     if (res == NULL) return;
     list_clear(&res->transactions);

@@ -29,6 +29,8 @@
 #define TLV_VARIABLE            0x7F04
 #define TLV_VARIABLE_LIST       0x7F14
 #define TLV_VARIABLE_LIST_LIST  0x7F24
+#define TLV_PARSER              0x7F30
+
 
 
 #endif //SC_STRUCTS_H

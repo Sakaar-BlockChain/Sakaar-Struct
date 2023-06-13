@@ -65,6 +65,17 @@ void block_copy(struct block_st *res, const struct block_st *a) {
     integer_copy(&res->voted, &a->voted);
 }
 
+void block_mark(struct block_st *res) {
+    if (res == NULL) return;
+    list_mark(&res->transactions);
+    list_mark(&res->nodes_done);
+}
+void block_unmark(struct block_st *res) {
+    if (res == NULL) return;
+    list_unmark(&res->transactions);
+    list_unmark(&res->nodes_done);
+}
+
 void block_clear(struct block_st *res) {
     if (res == NULL) return;
     list_clear(&res->transactions);

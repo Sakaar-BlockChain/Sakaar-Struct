@@ -67,11 +67,11 @@ void string_resize(struct string_st *res, size_t size) {
         if (res->data != NULL) for (size_t i = 0; i < size + 1; i++) res->data[i] = 0;
     } else if (res->mx_size < size) {
         res->data = skr_realloc(res->data, size * 2 + 1);
-        if (res->data != NULL) for (size_t i = res->mx_size; i < size * 2 + 1; i++) res->data[i] = 0;
+        if (res->data != NULL) for (size_t i = res->mx_size, l = size * 2; i < l + 1; i++) res->data[i] = 0;
         res->mx_size = size * 2;
     }
     if (res->size > size)
-        for (size_t i = size; i < res->size; i++) {
+        for (size_t i = size, l = res->size; i < l; i++) {
             res->data[i] = 0;
         }
     res->size = size;
@@ -97,14 +97,14 @@ int string_set_tlv(struct string_st *res, const struct string_st *tlv) {
     string_clear(res);
     int result = tlv_get_tag(tlv);
     if (result < 0) return result;
-    if (result != STRING_TLV) return ERR_TLV_TAG;
+    if (result != TLV_STRING) return ERR_TLV_TAG;
     return tlv_get_value(tlv, res);
 }
 void string_get_tlv(const struct string_st *res, struct string_st *tlv) {
     if(tlv == NULL) return;
     if(res == NULL) return string_clear(tlv);
 
-    tlv_set_string(tlv, STRING_TLV, res);
+    tlv_set_string(tlv, TLV_STRING, res);
 }
 
 // Convert Methods
@@ -119,7 +119,7 @@ struct object_st *string_subscript(struct error_st *err, struct string_st *str, 
         struct object_st *temp = object_new();
         object__int(temp, err, obj);
 
-        if (!err->present) {
+        if (err == NULL || !err->present) {
             res = object_new();
             size_t position = integer_get_ui(temp->data) % str->size;
             object_set_type(res, STRING_TYPE);
@@ -161,7 +161,7 @@ void string__mul(struct object_st *res, struct error_st *err, const struct strin
         struct object_st *temp = object_new();
         object__int(temp, err, obj2);
 
-        if (!err->present) {
+        if (err == NULL || !err->present) {
             object_set_type(res, STRING_TYPE);
             unsigned int count = integer_get_ui(temp->data);
             for (unsigned int i = 0; i < count; i++)
@@ -174,14 +174,14 @@ void string__mul(struct object_st *res, struct error_st *err, const struct strin
     for (unsigned int i = 0; i < count; i++)
         string_concat(res->data, obj1);
 }
-void string__add(struct object_st *res, struct error_st *err, const struct string_st *obj1, const struct object_st *obj2) {
+void string__add(struct object_st *res, struct error_st *err, const struct string_st *obj1, struct object_st *obj2) {
     while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = obj2->data;
     if (obj2 == NULL) return error_set_msg(err, ErrorType_Math, "Can not make operation with object None");
     if (obj2->type != STRING_TYPE) {
         struct object_st *temp = object_new();
         object__str(temp, err, obj2);
 
-        if (!err->present) {
+        if (err == NULL || !err->present) {
             object_set_type(res, STRING_TYPE);
             string_set(res->data, obj1);
             string_concat(res->data, temp->data);

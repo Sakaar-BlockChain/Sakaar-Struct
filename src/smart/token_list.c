@@ -3,7 +3,7 @@
 void token_list_set(struct token_list_st *res, const struct token_list_st *a) {
     if(res->type) return;
     token_list_resize(res, a->size);
-    for (size_t i = 0; i < a->size; i++) res->tokens[i] = a->tokens[i];
+    for (size_t i = 0, size = a->size; i < size; i++) res->tokens[i] = a->tokens[i];
 }
 void token_list_clear(struct token_list_st *res) {
     token_list_resize(res, 0);
@@ -27,11 +27,11 @@ void token_list_resize(struct token_list_st *res, size_t size) {
         for (size_t i = 0; i < size; i++) res->tokens[i] = NULL;
     } else if (res->max_size < size) {
         res->tokens = skr_realloc(res->tokens, sizeof(struct token_st *) * size * 2);
-        for (size_t i = res->max_size; i < size * 2; i++) res->tokens[i] = NULL;
+        for (size_t i = res->max_size, l = size * 2; i < l; i++) res->tokens[i] = NULL;
         res->max_size = size * 2;
     }
     if (res->type && res->size > size) {
-        for (size_t i = size; i < res->size; i++) {
+        for (size_t i = size, l = res->size; i < l; i++) {
             if (res->tokens[i] != NULL) token_free(res->tokens[i]);
             res->tokens[i] = NULL;
         }

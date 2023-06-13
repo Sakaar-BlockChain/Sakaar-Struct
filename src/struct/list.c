@@ -26,17 +26,28 @@ void list_set(struct list_st *res, const struct list_st *a) {
     list_clear(res);
     if (a == NULL) return;
     list_resize(res, a->size);
-    for (size_t i = 0; i < a->size; i++) res->data[i] = object_copy_obj(a->data[i]);
+    for (size_t i = 0, size = a->size; i < size; i++) res->data[i] = object_copy_obj(a->data[i]);
 }
 void list_copy(struct list_st *res, const struct list_st *a) {
     if (res == NULL) return;
     list_clear(res);
     if (a == NULL) return list_clear(res);
     list_resize(res, a->size);
-    for (size_t i = 0; i < a->size; i++) {
+    for (size_t i = 0, size = a->size; i < size; i++) {
         res->data[i] = object_new();
         object_copy(res->data[i], a->data[i]);
     }
+}
+
+void list_mark(struct list_st *res) {
+    if (res == NULL) return;
+    for (size_t i = 0, size = res->size; i < size; i++)
+        object_mark(res->data[i]);
+}
+void list_unmark(struct list_st *res) {
+    if (res == NULL) return;
+    for (size_t i = 0, size = res->size; i < size; i++)
+        object_unmark(res->data[i]);
 }
 
 void list_clear(struct list_st *res) {
@@ -48,7 +59,7 @@ int list_cmp(const struct list_st *obj1, const struct list_st *obj2) {
     if (obj1->size > obj2->size) return CMP_GRET;
     if (obj1->size < obj2->size) return CMP_LESS;
     int res_cmp_sub;
-    for (size_t i = 0; i < obj1->size; i++) {
+    for (size_t i = 0, size = obj1->size; i < size; i++) {
         res_cmp_sub = object_cmp(obj1->data[i], obj2->data[i]);
         if (res_cmp_sub == CMP_LESS) return CMP_LESS;
         if (res_cmp_sub == CMP_GRET) return CMP_GRET;
@@ -82,11 +93,11 @@ void list_resize(struct list_st *res, size_t size) {
         for (size_t i = 0; i < size; i++) res->data[i] = NULL;
     } else if (res->max_size < size) {
         res->data = skr_realloc(res->data, sizeof(struct object_st *) * size * 2);
-        for (size_t i = res->max_size; i < size * 2; i++) res->data[i] = NULL;
+        for (size_t i = res->max_size, l = size * 2; i < l; i++) res->data[i] = NULL;
         res->max_size = size * 2;
     }
     if (res->size > size) {
-        for (size_t i = size; i < res->size; i++) {
+        for (size_t i = size, l = res->size; i < l; i++) {
             if (res->data[i] != NULL) object_free(res->data[i]);
             res->data[i] = NULL;
         }
@@ -104,7 +115,7 @@ void list_concat(struct list_st *res, const struct list_st *a) {
 
     size_t _size = res->size;
     list_resize(res, res->size + a->size);
-    for (size_t i = 0; i < a->size; i++) {
+    for (size_t i = 0, size = a->size; i < size; i++) {
         res->data[_size + i] = object_copy_obj(a->data[i]);
     }
 }
@@ -167,20 +178,24 @@ int list_set_tlv(struct list_st *res, const struct string_st *tlv) {
     list_clear(res);
     int result = tlv_get_tag(tlv);
     if (result < 0) return result;
-    if (result != LIST_TLV) return ERR_TLV_TAG;
+    if (result != TLV_LIST) return ERR_TLV_TAG;
 
-    struct string_st _tlv = {NULL, 0, 0};
+    struct object_st *obj = NULL, *obj_ = NULL;
+    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
     result = tlv_get_value(tlv, &_tlv);
 
     for (; _tlv.size && result == 0;) {
-        struct object_st *obj = object_new();
-        object_set_type(obj, TLV_TYPE);
-        result = tlv_get_next_tlv(&_tlv, obj->data);
-        list_append(res, obj);
+        if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) break;
+        obj = object_new();
+        obj_ = obj;
+        if ((result = object_set_tlv(obj, &_tlv_data))) break;
+        while(obj_ != NULL && obj_->type == OBJECT_TYPE) obj_ = obj_->data;
+        list_append(res, obj_);
         object_free(obj);
     }
 
     string_data_free(&_tlv);
+    string_data_free(&_tlv_data);
     return result;
 }
 void list_get_tlv(const struct list_st *res, struct string_st *tlv) {
@@ -189,16 +204,16 @@ void list_get_tlv(const struct list_st *res, struct string_st *tlv) {
     if (res == NULL) return;
 
     struct string_st _tlv_data = {NULL, 0, 0};
-    for (size_t i = 0; i < res->size; i++) {
+    for (size_t i = 0, size = res->size; i < size; i++) {
         object_get_tlv(res->data[i], &_tlv_data);
         string_concat(tlv, &_tlv_data);
     }
-    tlv_set_string(tlv, LIST_TLV, tlv);
+    tlv_set_string(tlv, TLV_LIST, tlv);
     string_data_free(&_tlv_data);
 }
 int list_set_tlv_self(struct list_st *res, const struct string_st *tlv, struct object_type *type) {
     int result = list_set_tlv(res, tlv);
-    for (size_t i = 0; i < res->size && result == 0; i++)
+    for (size_t i = 0, size = res->size; i < size && result == 0; i++)
         result = object_set_tlv_self(res->data[i], type);
     return result;
 }
@@ -215,7 +230,7 @@ struct object_st *list_subscript(struct error_st *err, struct list_st *list, con
         object__int(temp, err, obj);
         struct object_st *res = NULL;
 
-        if (!err->present) {
+        if (err == NULL || !err->present) {
             res = list->data[integer_get_ui(temp->data) % list->size];
         }
         object_free(temp);
@@ -229,9 +244,9 @@ void list__str(struct object_st *res, struct error_st *err, const struct list_st
     object_set_type(res, STRING_TYPE);
     string_set_str(res->data, "[", 1);
     struct object_st *temp = object_new();
-    for(size_t i = 0; i < obj->size; i++){
+    for(size_t i = 0, size = obj->size; i < size; i++){
         object__str(temp, err, obj->data[i]);
-        if (err->present) {
+        if (err != NULL && err->present) {
             object_free(temp);
             return;
         }
@@ -254,7 +269,7 @@ void list__mul(struct object_st *res, struct error_st *err, const struct list_st
         struct object_st *temp = object_new();
         object__int(temp, err, obj2);
 
-        if (!err->present) {
+        if (err == NULL || !err->present) {
             object_set_type(res, LIST_TYPE);
             unsigned int count = integer_get_ui(temp->data);
             for (unsigned int i = 0; i < count; i++)

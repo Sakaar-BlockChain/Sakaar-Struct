@@ -19,6 +19,9 @@ void block_history_free(struct block_history *);
 void block_history_set(struct block_history *, const struct block_history *);
 void block_history_copy(struct block_history *, const struct block_history *);
 
+void block_history_mark(struct block_history *);
+void block_history_unmark(struct block_history *);
+
 void block_history_clear(struct block_history *);
 int block_history_cmp(const struct block_history *, const struct block_history *);
 

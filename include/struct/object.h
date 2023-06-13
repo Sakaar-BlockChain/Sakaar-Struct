@@ -7,6 +7,7 @@
 struct object_st {
     struct object_type *type;
     size_t counter;
+    int flag;
     void *data;
 };
 // Standard operations
@@ -15,6 +16,9 @@ void object_free(struct object_st *);
 
 void object_set(struct object_st *, const struct object_st *);
 void object_copy(struct object_st *, const struct object_st *);
+
+void object_mark(struct object_st *);
+void object_unmark(struct object_st *);
 
 void object_clear(struct object_st *);
 int object_cmp(const struct object_st *, const struct object_st *);
@@ -26,7 +30,7 @@ void object_set_pointer(struct object_st *, struct object_st *);
 
 // TLV Methods
 int object_set_tlv(struct object_st *, const struct string_st *);
-void object_get_tlv(const struct object_st *, struct string_st *);
+void object_get_tlv(struct object_st *, struct string_st *);
 int object_set_tlv_self(struct object_st *, struct object_type *);
 
 // Sub method
@@ -37,7 +41,7 @@ struct object_st *object_attrib(struct error_st *, const struct object_st *, con
 void object__bool(struct object_st *, struct error_st *, const struct object_st *);
 void object__int(struct object_st *, struct error_st *, const struct object_st *);
 void object__float(struct object_st *, struct error_st *, const struct object_st *);
-void object__str(struct object_st *, struct error_st *, const struct object_st *);
+void object__str(struct object_st *, struct error_st *, struct object_st *);
 
 // Math Methods
 void object__mod(struct object_st *, struct error_st *, const struct object_st *, const struct object_st *);

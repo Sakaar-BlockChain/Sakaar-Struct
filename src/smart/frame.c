@@ -20,6 +20,15 @@ void frame_free(struct frame_st *res) {
     skr_free(res);
 }
 
+void frame_mark(struct frame_st *res) {
+    if (res == NULL) return;
+    list_mark(&res->data);
+}
+void frame_unmark(struct frame_st *res) {
+    if (res == NULL) return;
+    list_unmark(&res->data);
+}
+
 // TLV Methods
 int frame_set_tlv(struct frame_st *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;

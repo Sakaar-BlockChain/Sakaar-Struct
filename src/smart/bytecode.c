@@ -34,12 +34,12 @@ void bytecode_resize(struct bytecode_st *res, size_t size) {
     } else if (res->max_size < size) {
         res->data = skr_realloc(res->data, size * 2 * sizeof(void *));
         res->command = skr_realloc(res->command, size * 2);
-        if (res->data != NULL) for (size_t i = res->max_size; i < size * 2; i++) res->data[i] = 0;
-        if (res->command != NULL) for (size_t i = res->max_size; i < size * 2; i++) res->command[i] = 0;
+        if (res->data != NULL) for (size_t i = res->max_size, l = size * 2; i < l; i++) res->data[i] = 0;
+        if (res->command != NULL) for (size_t i = res->max_size, l = size * 2; i < l; i++) res->command[i] = 0;
         res->max_size = size * 2;
     }
     if (res->size > size)
-        for (size_t i = size; i < res->size; i++) {
+        for (size_t i = size, l = res->size; i < l; i++) {
             res->data[i] = 0;
             res->command[i] = 0;
         }
@@ -107,7 +107,7 @@ void bytecode_get_tlv(const struct bytecode_st *res, struct string_st *tlv) {
     integer_get_tlv(&position, &_tlv_data);
     string_concat(tlv, &_tlv_data);
 
-    for (size_t i = 0; i < res->size; i++) {
+    for (size_t i = 0, size = res->size; i < size; i++) {
         integer_set_ui(&position, res->command[i]);
         integer_get_tlv(&position, &_tlv_data);
         string_concat(tlv, &_tlv_data);

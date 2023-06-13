@@ -264,7 +264,7 @@ int integer_set_tlv(struct integer_st *res, const struct string_st *tlv) {
     integer_clear(res);
     int result = tlv_get_tag(tlv);
     if (result < 0) return result;
-    if (result != INTEGER_TLV) return ERR_TLV_TAG;
+    if (result != TLV_INTEGER) return ERR_TLV_TAG;
 
 
     struct string_st _tlv = {NULL, 0, 0};
@@ -309,6 +309,6 @@ void integer_get_tlv(const struct integer_st *res, struct string_st *tlv) {
         skr_free(temp);
     }
 
-    tlv_set_string(tlv, INTEGER_TLV, tlv);
+    tlv_set_string(tlv, TLV_INTEGER, tlv);
 }
 #endif

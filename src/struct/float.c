@@ -30,7 +30,7 @@ void float__mul(struct object_st *res, struct error_st *err, const struct float_
     if (obj2->type != FLOAT_TYPE) {
         struct object_st *temp = object_new();
         object__float(temp, err, obj2);
-        if (!err->present) {
+        if (err == NULL || !err->present) {
             object_set_type(res, FLOAT_TYPE);
             float_mul(res->data, obj1, temp->data);
         }
@@ -45,7 +45,7 @@ void float__add(struct object_st *res, struct error_st *err, const struct float_
     if (obj2->type != FLOAT_TYPE) {
         struct object_st *temp = object_new();
         object__float(temp, err, obj2);
-        if (!err->present) {
+        if (err == NULL || !err->present) {
             object_set_type(res, FLOAT_TYPE);
             float_add(res->data, obj1, temp->data);
         }
@@ -60,7 +60,7 @@ void float__sub(struct object_st *res, struct error_st *err, const struct float_
     if (obj2->type != FLOAT_TYPE) {
         struct object_st *temp = object_new();
         object__float(temp, err, obj2);
-        if (!err->present) {
+        if (err == NULL || !err->present) {
             object_set_type(res, FLOAT_TYPE);
             float_sub(res->data, obj1, temp->data);
         }
@@ -75,7 +75,7 @@ void float__div(struct object_st *res, struct error_st *err, const struct float_
     if (obj2->type != FLOAT_TYPE) {
         struct object_st *temp = object_new();
         object__float(temp, err, obj2);
-        if (!err->present) {
+        if (err == NULL || !err->present) {
             object_set_type(res, FLOAT_TYPE);
             float_div(res->data, obj1, temp->data);
         }
@@ -90,7 +90,7 @@ void float__ls(struct object_st *res, struct error_st *err, const struct float_s
     if (obj2->type != INTEGER_TYPE) {
         struct object_st *temp = object_new();
         object__int(temp, err, obj2);
-        if (!err->present) {
+        if (err == NULL || !err->present) {
             object_set_type(res, FLOAT_TYPE);
             int count = integer_get_si(temp->data);
             if (count >= 0) float_ls(res->data, obj1, count);
@@ -109,7 +109,7 @@ void float__rs(struct object_st *res, struct error_st *err, const struct float_s
     if (obj2->type != INTEGER_TYPE) {
         struct object_st *temp = object_new();
         object__int(temp, err, obj2);
-        if (!err->present) {
+        if (err == NULL || !err->present) {
             object_set_type(res, FLOAT_TYPE);
             int count = integer_get_si(temp->data);
             if (count >= 0) float_rs(res->data, obj1, count);

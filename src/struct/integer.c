@@ -33,14 +33,14 @@ void integer__mod(struct object_st *res, struct error_st *err, const struct inte
         object__int(temp, err, obj2);
 
         if (integer_is_null(temp->data)) error_set_msg(err, ErrorType_Math, "Division by zero");
-        if (!err->present) {
+        if (err == NULL || !err->present) {
             object_set_type(res, INTEGER_TYPE);
             integer_mod(res->data, obj1, temp->data);
         }
         return object_free(temp);
     }
     if (integer_is_null(obj2->data)) error_set_msg(err, ErrorType_Math, "Division by zero");
-    if (!err->present) {
+    if (err == NULL || !err->present) {
         object_set_type(res, INTEGER_TYPE);
         integer_mod(res->data, obj1, obj2->data);
     }
@@ -52,7 +52,7 @@ void integer__and(struct object_st *res, struct error_st *err, const struct inte
         struct object_st *temp = object_new();
         object__int(temp, err, obj2);
 
-        if (!err->present) {
+        if (err == NULL || !err->present) {
             object_set_type(res, INTEGER_TYPE);
             integer_and(res->data, obj1, temp->data);
         }
@@ -68,7 +68,7 @@ void integer__mul(struct object_st *res, struct error_st *err, const struct inte
         struct object_st *temp = object_new();
         object__int(temp, err, obj2);
 
-        if (!err->present) {
+        if (err == NULL || !err->present) {
             object_set_type(res, INTEGER_TYPE);
             integer_mul(res->data, obj1, temp->data);
         }
@@ -84,7 +84,7 @@ void integer__add(struct object_st *res, struct error_st *err, const struct inte
         struct object_st *temp = object_new();
         object__int(temp, err, obj2);
 
-        if (!err->present) {
+        if (err == NULL || !err->present) {
             object_set_type(res, INTEGER_TYPE);
             integer_add(res->data, obj1, temp->data);
         }
@@ -100,7 +100,7 @@ void integer__sub(struct object_st *res, struct error_st *err, const struct inte
         struct object_st *temp = object_new();
         object__int(temp, err, obj2);
 
-        if (!err->present) {
+        if (err == NULL || !err->present) {
             object_set_type(res, INTEGER_TYPE);
             integer_sub(res->data, obj1, temp->data);
         }
@@ -117,14 +117,14 @@ void integer__div(struct object_st *res, struct error_st *err, const struct inte
         object__int(temp, err, obj2);
 
         if (integer_is_null(temp->data)) error_set_msg(err, ErrorType_Math, "Division by zero");
-        if (!err->present) {
+        if (err == NULL || !err->present) {
             object_set_type(res, INTEGER_TYPE);
             integer_div(res->data, obj1, temp->data);
         }
         return object_free(temp);
     }
     if (integer_is_null(obj2->data)) error_set_msg(err, ErrorType_Math, "Division by zero");
-    if (!err->present) {
+    if (err == NULL || !err->present) {
         object_set_type(res, INTEGER_TYPE);
         integer_div(res->data, obj1, obj2->data);
     }
@@ -136,7 +136,7 @@ void integer__xor(struct object_st *res, struct error_st *err, const struct inte
         struct object_st *temp = object_new();
         object__int(temp, err, obj2);
 
-        if (!err->present) {
+        if (err == NULL || !err->present) {
             object_set_type(res, INTEGER_TYPE);
             integer_xor(res->data, obj1, temp->data);
         }
@@ -152,7 +152,7 @@ void integer__or(struct object_st *res, struct error_st *err, const struct integ
         struct object_st *temp = object_new();
         object__int(temp, err, obj2);
 
-        if (!err->present) {
+        if (err == NULL || !err->present) {
             object_set_type(res, INTEGER_TYPE);
             integer_or(res->data, obj1, temp->data);
         }
@@ -168,7 +168,7 @@ void integer__ls(struct object_st *res, struct error_st *err, const struct integ
         struct object_st *temp = object_new();
         object__int(temp, err, obj2);
 
-        if (!err->present) {
+        if (err == NULL || !err->present) {
             object_set_type(res, INTEGER_TYPE);
             int count = integer_get_si(temp->data);
             if (count >= 0) integer_ls(res->data, obj1, count);
@@ -188,7 +188,7 @@ void integer__rs(struct object_st *res, struct error_st *err, const struct integ
         struct object_st *temp = object_new();
         object__int(temp, err, obj2);
 
-        if (!err->present) {
+        if (err == NULL || !err->present) {
             object_set_type(res, INTEGER_TYPE);
             int count = integer_get_si(temp->data);
             if (count >= 0) integer_rs(res->data, obj1, count);

@@ -4,7 +4,7 @@
 void variable_list_list_set(struct variable_list_list_st *res, const struct variable_list_list_st *a) {
     if(res->type) return;
     variable_list_list_resize(res, a->size);
-    for (size_t i = 0; i < a->size; i++) res->variable_lists[i] = a->variable_lists[i];
+    for (size_t i = 0, size = a->size; i < size; i++) res->variable_lists[i] = a->variable_lists[i];
 }
 void variable_list_list_clear(struct variable_list_list_st *res) {
     variable_list_list_resize(res, 0);
@@ -28,11 +28,11 @@ void variable_list_list_resize(struct variable_list_list_st *res, size_t size) {
         for (size_t i = 0; i < size; i++) res->variable_lists[i] = NULL;
     } else if (res->max_size < size) {
         res->variable_lists = skr_realloc(res->variable_lists, sizeof(struct variable_list_st *) * size * 2);
-        for (size_t i = res->max_size; i < size * 2; i++) res->variable_lists[i] = NULL;
+        for (size_t i = res->max_size, l = size * 2; i < l; i++) res->variable_lists[i] = NULL;
         res->max_size = size * 2;
     }
     if (res->type && res->size > size) {
-        for (size_t i = size; i < res->size; i++) {
+        for (size_t i = size, l = res->size; i < l; i++) {
             if (res->variable_lists[i] != NULL) variable_list_free(res->variable_lists[i]);
             res->variable_lists[i] = NULL;
         }
@@ -66,9 +66,10 @@ int variable_list_list_set_tlv(struct variable_list_list_st *res, const struct s
     struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
     result = tlv_get_value(tlv, &_tlv);
     
-    for (; _tlv.size && result == 0;) {
+    for (size_t pos; _tlv.size && result == 0;) {
         if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) break;
-        result = variable_list_set_tlv(res->variable_lists[variable_list_list_add_new(res)], &_tlv_data);
+        pos = variable_list_list_add_new(res);
+        result = variable_list_set_tlv(res->variable_lists[pos], &_tlv_data);
     }
     
     string_data_free(&_tlv);
@@ -81,7 +82,7 @@ void variable_list_list_get_tlv(const struct variable_list_list_st *res, struct 
     if (res == NULL) return;
 
     struct string_st _tlv_data = {NULL, 0, 0};
-    for (size_t i = 0; i < res->size; i++) {
+    for (size_t i = 0, size = res->size; i < size; i++)  {
         variable_list_get_tlv(res->variable_lists[i], &_tlv_data);
         string_concat(tlv, &_tlv_data);
     }

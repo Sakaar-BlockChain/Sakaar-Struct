@@ -10,6 +10,7 @@ struct object_st;
 #define METHOD_NEW        (void *(*)())
 #define METHOD_FREE       (void (*)(void *))
 #define METHOD_SET        (void (*)(void *, const void *))
+#define METHOD_MARK       (void (*)(void *))
 #define METHOD_CLEAR      (void (*)(void *))
 #define METHOD_CMP        (int (*)(const void *, const void *))
 
@@ -19,6 +20,9 @@ struct object_op {
 
     void (*_set)(void *, const void *);
     void (*_copy)(void *, const void *);
+
+    void (*_mark)(void *);
+    void (*_unmark)(void *);
 
     void (*_clear)(void *);
     int (*_cmp)(const void *, const void *);

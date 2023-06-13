@@ -13,6 +13,9 @@ void activated_accounts_free(struct activated_accounts *);
 void activated_accounts_set(struct activated_accounts *, const struct activated_accounts *);
 void activated_accounts_copy(struct activated_accounts *, const struct activated_accounts *);
 
+void activated_accounts_mark(struct activated_accounts *);
+void activated_accounts_unmark(struct activated_accounts *);
+
 void activated_accounts_clear(struct activated_accounts *);
 int activated_accounts_cmp(const struct activated_accounts *, const struct activated_accounts *);
 

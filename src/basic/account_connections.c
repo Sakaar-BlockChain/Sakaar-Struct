@@ -37,6 +37,15 @@ void account_connections_copy(struct account_connections *res, const struct acco
     list_copy(&res->addresses, &a->addresses);
 }
 
+void account_connections_mark(struct account_connections *res) {
+    if (res == NULL) return;
+    list_mark(&res->addresses);
+}
+void account_connections_unmark(struct account_connections *res) {
+    if (res == NULL) return;
+    list_unmark(&res->addresses);
+}
+
 void account_connections_clear(struct account_connections *res) {
     if (res == NULL) return;
     string_clear(&res->address);

@@ -4,7 +4,7 @@
 void node_list_set(struct node_list_st *res, const struct node_list_st *a) {
     if(res->type) return;
     node_list_resize(res, a->size);
-    for (size_t i = 0; i < a->size; i++) res->nodes[i] = a->nodes[i];
+    for (size_t i = 0, size = a->size; i < size; i++) res->nodes[i] = a->nodes[i];
 }
 void node_list_clear(struct node_list_st *res) {
     node_list_resize(res, 0);
@@ -28,11 +28,11 @@ void node_list_resize(struct node_list_st *res, size_t size) {
         for (size_t i = 0; i < size; i++) res->nodes[i] = NULL;
     } else if (res->max_size < size) {
         res->nodes = skr_realloc(res->nodes, sizeof(struct node_st *) * size * 2);
-        for (size_t i = res->max_size; i < size * 2; i++) res->nodes[i] = NULL;
+        for (size_t i = res->max_size, l = size * 2; i < l; i++) res->nodes[i] = NULL;
         res->max_size = size * 2;
     }
     if (res->type && res->size > size) {
-        for (size_t i = size; i < res->size; i++) {
+        for (size_t i = size, l = res->size; i < l; i++) {
             if (res->nodes[i] != NULL) node_free(res->nodes[i]);
             res->nodes[i] = NULL;
         }

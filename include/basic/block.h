@@ -24,6 +24,9 @@ void block_free(struct block_st *);
 void block_set(struct block_st *, const struct block_st *);
 void block_copy(struct block_st *, const struct block_st *);
 
+void block_mark(struct block_st *);
+void block_unmark(struct block_st *);
+
 void block_clear(struct block_st *);
 int block_cmp(const struct block_st *, const struct block_st *);
 

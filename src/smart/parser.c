@@ -132,13 +132,13 @@ void parser_set_file(struct parser_st *res, char *file_path){
     }
     res->data_size = i;
 #else
-    for (size_t i = 0; i < res->data_size; i++) {
+    for (size_t i = 0, size = res->data_size; i < size; i++) {
         res->data_str[i] = (char) getc(fp);
     }
 #endif
     fclose(fp);
 }
-void parser_set_str(struct parser_st *res, struct string_st *str) {
+void parser_set_str(struct parser_st *res, const struct string_st *str) {
     parser_clear(res);
 
     res->data_size = str->size;
@@ -156,7 +156,7 @@ void parser_set_error_token(struct parser_st *parser, char *type, char *msg, siz
 
 size_t parser_new_ident(struct parser_st *res, struct string_st *name) {
     struct variable_list_st *list = variable_list_list_last(&res->variables_stack);
-    for (size_t i = 0; i < list->size; i++) {
+    for (size_t i = 0, size = list->size; i < size; i++) {
         if (string_cmp(&list->variables[i]->name, name) == 0) {
             return i + 1;
         }
@@ -175,7 +175,7 @@ size_t parser_get_ident(struct parser_st *res, struct string_st *name) {
 
     for (; i > 0; i--) {
         list = res->variables_stack.variable_lists[i - 1];
-        for (size_t j = 0; j < list->size; j++) {
+        for (size_t j = 0, size = list->size; j < size; j++) {
             if (string_cmp(&list->variables[j]->name, name) == 0) {
                 ptr = list->variables[j];
                 pos = j + 1;
@@ -187,7 +187,7 @@ size_t parser_get_ident(struct parser_st *res, struct string_st *name) {
 
     if (ptr == NULL) return 0;
 
-    for (; i < res->variables_stack.size; i++) {
+    for (size_t size = res->variables_stack.size; i < size; i++) {
         if (res->closures_stack.closures[i] == NULL) continue;
         list = res->variables_stack.variable_lists[i];
         closure = res->closures_stack.closures[i];
@@ -204,7 +204,7 @@ size_t parser_get_ident(struct parser_st *res, struct string_st *name) {
     return pos;
 }
 size_t parser_const_obj(struct parser_st *res, struct object_st *obj) {
-    for(size_t i=0; i<res->const_objects->size;i++){
+    for(size_t i=0, size = res->const_objects->size; i < size; i++) {
         if (object_cmp(res->const_objects->data[i], obj) == 0) {
             object_free(obj);
             return i;
@@ -233,4 +233,89 @@ size_t parser_restore_vars(struct parser_st *res) {
     res->var_start_pos = integer_get_ui(res->var_stack->data[res->var_start_pos - 1]->data);
     list_resize(res->var_stack, size - 1);
     return position;
+}
+
+struct object_st *parser_get_var(struct parser_st *res, struct string_st *name) {
+    if (res->variables.size == 0 || res->var_stack->size <= 2) return NULL;
+    struct variable_list_st *list = res->variables.variable_lists[0];
+    struct object_st *result = NULL;
+
+    for (size_t i = 0, size = list->size; i < size; i++) {
+        if (string_cmp(&list->variables[i]->name, name) == 0) {
+            result = object_copy_obj(res->var_stack->data[res->var_start_pos + list->variables[i]->position]);
+            break;
+        }
+    }
+    return result;
+}
+
+// TLV Methods
+int parser_set_tlv(struct parser_st *res, const struct string_st *tlv) {
+    if (res == NULL) return ERR_DATA_NULL;
+    parser_clear(res);
+    int result = tlv_get_tag(tlv);
+    if (result < 0) return result;
+    if (result != TLV_PARSER) return ERR_TLV_TAG;
+
+    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    if ((result = tlv_get_value(tlv, &_tlv))) goto end;
+
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = bytecode_list_set_tlv(&res->codes, &_tlv_data))) goto end;
+
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = closure_list_set_tlv(&res->closures, &_tlv_data))) goto end;
+
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = variable_list_list_set_tlv(&res->variables, &_tlv_data))) goto end;
+
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = list_set_tlv(res->const_objects, &_tlv_data))) goto end;
+
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = list_set_tlv(res->var_stack, &_tlv_data))) goto end;
+
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    {
+        struct integer_st position;
+        integer_data_init(&position);
+        result = integer_set_tlv(&position, &_tlv_data);
+        if (!result) res->var_start_pos = integer_get_si(&position);
+        integer_data_free(&position);
+    }
+    end:
+    string_data_free(&_tlv);
+    string_data_free(&_tlv_data);
+    return result;
+}
+void parser_get_tlv(const struct parser_st *res, struct string_st *tlv) {
+    if (tlv == NULL) return;
+    if (res == NULL) return string_clear(tlv);
+
+    struct string_st _tlv_data = {NULL, 0, 0};
+    bytecode_list_get_tlv(&res->codes, tlv);
+
+    closure_list_get_tlv(&res->closures, &_tlv_data);
+    string_concat(tlv, &_tlv_data);
+
+    variable_list_list_get_tlv(&res->variables, &_tlv_data);
+    string_concat(tlv, &_tlv_data);
+
+    list_get_tlv(res->const_objects, &_tlv_data);
+    string_concat(tlv, &_tlv_data);
+
+    list_get_tlv(res->var_stack, &_tlv_data);
+    string_concat(tlv, &_tlv_data);
+
+    {
+        struct integer_st position;
+        integer_data_init(&position);
+        integer_set_ui(&position, res->var_start_pos);
+        integer_get_tlv(&position, &_tlv_data);
+        integer_data_free(&position);
+    }
+    string_concat(tlv, &_tlv_data);
+
+    tlv_set_string(tlv, TLV_PARSER, tlv);
+    string_data_free(&_tlv_data);
 }

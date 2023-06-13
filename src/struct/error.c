@@ -61,6 +61,7 @@ void error_set_pos(struct error_st *res, size_t line_num, size_t line_pos, size_
     res->pos = pos;
 }
 void error_set_msg(struct error_st *res, char *type, char *msg) {
+    if (res == NULL) return;
     res->present = 1;
     string_set_str(&res->type, type, strlen(type));
     string_set_str(&res->msg, msg, strlen(msg));

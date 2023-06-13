@@ -39,7 +39,7 @@ struct object_st *string_subscript(struct error_st *, struct string_st *, const 
 
 // Math Methods
 void string__mul(struct object_st *, struct error_st *, const struct string_st *, const struct object_st *);
-void string__add(struct object_st *, struct error_st *, const struct string_st *, const struct object_st *);
+void string__add(struct object_st *, struct error_st *, const struct string_st *, struct object_st *);
 
 // Convert Methods
 void string__bool(struct object_st *, struct error_st *, const struct string_st *);

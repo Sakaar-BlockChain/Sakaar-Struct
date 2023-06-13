@@ -15,6 +15,9 @@ void account_connections_free(struct account_connections *);
 void account_connections_set(struct account_connections *, const struct account_connections *);
 void account_connections_copy(struct account_connections *, const struct account_connections *);
 
+void account_connections_mark(struct account_connections *);
+void account_connections_unmark(struct account_connections *);
+
 void account_connections_clear(struct account_connections *);
 int account_connections_cmp(const struct account_connections *, const struct account_connections *);
 
