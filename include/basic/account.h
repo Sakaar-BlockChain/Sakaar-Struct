@@ -24,6 +24,10 @@ void account_copy(struct account_st *, const struct account_st *);
 void account_clear(struct account_st *);
 int account_cmp(const struct account_st *, const struct account_st *);
 
+// Data Methods
+void account_data_init(struct account_st *);
+void account_data_free(struct account_st *);
+
 // Cmp Methods
 int account_is_null(const struct account_st *);
 

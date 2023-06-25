@@ -1,7 +1,7 @@
 #include "smart.h"
 
 struct token_st *token_new(){
-    struct token_st *res = skr_malloc(sizeof(struct token_st));
+    struct token_st *res = malloc(sizeof(struct token_st));
     res->type = TokenType_None;
     res->sub_type = TokenType_None;
 
@@ -30,7 +30,7 @@ void token_clear(struct token_st *res){
 }
 void token_free(struct token_st *res){
     string_data_free(&res->data);
-    skr_free(res);
+    free(res);
 }
 
 void token_data_init(struct token_st *res){

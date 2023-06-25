@@ -5,8 +5,8 @@ struct object_tlv generation_tlv = {METHOD_GET_TLV &generation_get_tlv, METHOD_S
 struct object_type generation_type = {GENERATION_OP, &generation_tlv, &generation_sub};
 
 // Standard operations
-struct generation *generation_new() {
-    struct generation *res = skr_malloc(sizeof(struct currency_st));
+struct generation_st *generation_new() {
+    struct generation_st *res = malloc(sizeof(struct currency_st));
     integer_data_init(&res->time);
     string_data_init(&res->hash);
     string_data_init(&res->data);
@@ -14,15 +14,15 @@ struct generation *generation_new() {
     integer_set_time(&res->time);
     return res;
 }
-void generation_free(struct generation *res) {
+void generation_free(struct generation_st *res) {
     if (res == NULL) return;
     integer_data_free(&res->time);
     string_data_free(&res->hash);
     string_data_free(&res->data);
-    skr_free(res);
+    free(res);
 }
 
-void generation_set(struct generation *res, const struct generation *a) {
+void generation_set(struct generation_st *res, const struct generation_st *a) {
     if (res == NULL) return;
     if (a == NULL) return generation_clear(res);
 
@@ -30,7 +30,7 @@ void generation_set(struct generation *res, const struct generation *a) {
     string_set(&res->hash, &a->hash);
     string_set(&res->data, &a->data);
 }
-void generation_copy(struct generation *res, const struct generation *a) {
+void generation_copy(struct generation_st *res, const struct generation_st *a) {
     if (res == NULL) return;
     if (a == NULL) return generation_clear(res);
 
@@ -39,26 +39,44 @@ void generation_copy(struct generation *res, const struct generation *a) {
     string_copy(&res->data, &a->data);
 }
 
-void generation_clear(struct generation *res) {
+void generation_clear(struct generation_st *res) {
     if (res == NULL) return;
     integer_clear(&res->time);
     string_clear(&res->hash);
     string_clear(&res->data);
 }
-int generation_cmp(const struct generation *obj1, const struct generation *obj2) {
+int generation_cmp(const struct generation_st *obj1, const struct generation_st *obj2) {
     if (obj1 == NULL || obj2 == NULL || string_cmp(&obj1->hash, &obj2->hash) || integer_cmp(&obj1->time, &obj2->time)) return CMP_NEQ;
     return CMP_EQ;
 }
 
+// Data Methods
+void generation_data_init(struct generation_st *res) {
+    if (res == NULL) return;
+    integer_data_init(&res->time);
+    string_data_init(&res->hash);
+    string_data_init(&res->data);
+
+    integer_set_time(&res->time);
+}
+void generation_data_free(struct generation_st *res) {
+    if (res == NULL) return;
+    integer_data_free(&res->time);
+    string_data_free(&res->hash);
+    string_data_free(&res->data);
+}
+
 // TLV Methods
-int generation_set_tlv(struct generation *res, const struct string_st *tlv) {
+int generation_set_tlv(struct generation_st *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
     generation_clear(res);
     int result = tlv_get_tag(tlv);
     if (result < 0) return result;
     if (result != TLV_GENERATION) return ERR_TLV_TAG;
 
-    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    struct string_st _tlv, _tlv_data;
+    string_data_init(&_tlv_data);
+    string_data_init(&_tlv);
     if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
@@ -79,11 +97,12 @@ int generation_set_tlv(struct generation *res, const struct string_st *tlv) {
     string_data_free(&_tlv_data);
     return result;
 }
-void generation_get_tlv(const struct generation *gen, struct string_st *res) {
+void generation_get_tlv(const struct generation_st *gen, struct string_st *res) {
     if (res == NULL) return;
     if (gen == NULL) return string_clear(res);
 
-    struct string_st _tlv_data = {NULL, 0, 0};
+    struct string_st _tlv_data;
+    string_data_init(&_tlv_data);
     integer_get_tlv(&gen->time, res);
 
     {
@@ -103,7 +122,7 @@ void generation_get_tlv(const struct generation *gen, struct string_st *res) {
 
 // Attrib Methods
 struct object_st *generation_attrib
-(struct error_st *err, const struct generation *gen, const struct string_st *str) {
+(struct error_st *err, const struct generation_st *gen, const struct string_st *str) {
     struct object_st *res = object_new();
     if (str->size == 4 && memcmp(str->data, "time", 4) == 0) {
         object_set_type(res, INTEGER_TYPE);
@@ -118,7 +137,7 @@ struct object_st *generation_attrib
         string_set(res->data, &gen->hash);
     }
     else {
-        object_free(res);
+        object_clear(res);
         error_set_msg(err, ErrorType_Math, "This Attribute does not exist");
         return NULL;
     }

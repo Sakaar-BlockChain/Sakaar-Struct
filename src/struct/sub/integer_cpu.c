@@ -3,7 +3,7 @@
 #ifndef USE_GMP
 // Standard operations
 struct integer_st *integer_new() {
-    struct integer_st *res = skr_malloc(sizeof(struct integer_st));
+    struct integer_st *res = malloc(sizeof(struct integer_st));
 #ifdef USE_GMP
     mpz_init(res->mpz_int);
 #else
@@ -32,7 +32,7 @@ void integer_free(struct integer_st *res) {
 #else
     sub_integer_free(res->data);
 #endif
-    skr_free(res);
+    free(res);
 }
 int integer_cmp(const struct integer_st *obj1, const struct integer_st *obj2) {
 #ifdef USE_GMP
@@ -232,7 +232,7 @@ void integer_get_str(const struct integer_st *res, struct string_st *str) {
     size_t dif = (16 / type_size);
     size_t size = (res->data->size * dif);
 
-    char *data = skr_malloc(size + 2);
+    char *data = malloc(size + 2);
 
     size_t j = 0;
     if(!res->data->positive) data[j++] = '-';
@@ -249,7 +249,7 @@ void integer_get_str(const struct integer_st *res, struct string_st *str) {
         }
     }
     string_set_str(str, data, j);
-    skr_free(data);
+    free(data);
 #endif
 }
 void integer_set_time(struct integer_st *res) {
@@ -375,7 +375,7 @@ void integer_set_tlv_(struct integer_st *res, const struct string_st *tlv) {
     size_t is_neg = (data[0] == 0x00);
     size_t num_len = (size - is_neg) * 2;
 
-    char *temp = skr_malloc(num_len + is_neg + 1);
+    char *temp = malloc(num_len + is_neg + 1);
     for(size_t i = 0; i < num_len + is_neg + 1; i++) temp[i] = 0;
     if (is_neg) temp[0] = '-';
 
@@ -385,7 +385,7 @@ void integer_set_tlv_(struct integer_st *res, const struct string_st *tlv) {
     }
 
     mpz_set_str(res->mpz_int, temp, 16);
-    skr_free(temp);
+    free(temp);
 #else
     char *data = tlv_get_value(tlv->data);
     size_t size = tlv_get_size(tlv->data);
@@ -418,7 +418,7 @@ void integer_get_tlv_(const struct integer_st *res, struct string_st *tlv, unsig
     size_t is_neg = (mpz_sgn(res->mpz_int) == -1);
     size_t tlv_len = (num_len + 1) / 2;
 
-    char *temp = skr_malloc(num_len + is_neg + 1);
+    char *temp = malloc(num_len + is_neg + 1);
     mpz_get_str(temp, 16, res->mpz_int);
 
     string_resize(tlv, tlv_len + is_neg);
@@ -428,14 +428,14 @@ void integer_get_tlv_(const struct integer_st *res, struct string_st *tlv, unsig
         tlv->data[id] = (char)((tlv->data[id] << 4) | set_char_16(temp[is_neg + i]));
     }
 
-    skr_free(temp);
+    free(temp);
     tlv_set_string(tlv, tag, tlv);
 #else
     size_t type_size = 8;
     size_t dif = (16 / type_size);
     size_t size = (res->data->size * dif);
 
-    char *data = skr_malloc(size + 2);
+    char *data = malloc(size + 2);
 
     size_t j = 0;
     if(!res->data->positive) data[j++] = 0x00;
@@ -452,7 +452,7 @@ void integer_get_tlv_(const struct integer_st *res, struct string_st *tlv, unsig
         }
     }
     tlv_set_str(tlv, tag, data, j);
-    skr_free(data);
+    free(data);
 #endif
 }
 int integer_set_tlv(struct integer_st *res, const struct string_st *tlv) {
@@ -465,7 +465,7 @@ int integer_set_tlv(struct integer_st *res, const struct string_st *tlv) {
     size_t is_neg = (data[0] == 0x00);
     size_t num_len = (size - is_neg) * 2;
 
-    char *temp = skr_malloc(num_len + is_neg + 1);
+    char *temp = malloc(num_len + is_neg + 1);
     for(size_t i = 0; i < num_len + is_neg + 1; i++) temp[i] = 0;
     if (is_neg) temp[0] = '-';
 
@@ -475,7 +475,7 @@ int integer_set_tlv(struct integer_st *res, const struct string_st *tlv) {
     }
 
     mpz_set_str(res->mpz_int, temp, 16);
-    skr_free(temp);
+    free(temp);
 #else
     char *data = tlv_get_value(tlv->data);
     size_t size = tlv_get_size(tlv->data);
@@ -508,7 +508,7 @@ void integer_get_tlv(const struct integer_st *res, struct string_st *tlv) {
     size_t is_neg = (mpz_sgn(res->mpz_int) == -1);
     size_t tlv_len = (num_len + 1) / 2;
 
-    char *temp = skr_malloc(num_len + is_neg + 1);
+    char *temp = malloc(num_len + is_neg + 1);
     mpz_get_str(temp, 16, res->mpz_int);
 
     string_resize(tlv, tlv_len + is_neg);
@@ -518,14 +518,14 @@ void integer_get_tlv(const struct integer_st *res, struct string_st *tlv) {
         tlv->data[id] = (char)((tlv->data[id] << 4) | set_char_16(temp[is_neg + i]));
     }
 
-    skr_free(temp);
+    free(temp);
     tlv_set_string(tlv, TLV_INTEGER, tlv);
 #else
     size_t type_size = 8;
     size_t dif = (16 / type_size);
     size_t size = (res->data->size * dif);
 
-    char *data = skr_malloc(size + 2);
+    char *data = malloc(size + 2);
 
     size_t j = 0;
     if(!res->data->positive) data[j++] = 0x00;
@@ -542,7 +542,7 @@ void integer_get_tlv(const struct integer_st *res, struct string_st *tlv) {
         }
     }
     tlv_set_str(tlv, TLV_INTEGER, data, j);
-    skr_free(data);
+    free(data);
 #endif
 }
 #endif

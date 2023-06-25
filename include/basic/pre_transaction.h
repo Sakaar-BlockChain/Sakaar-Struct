@@ -20,6 +20,10 @@ void pre_transaction_free(struct pre_transaction *);
 void pre_transaction_set(struct pre_transaction *, const struct pre_transaction *);
 void pre_transaction_copy(struct pre_transaction *, const struct pre_transaction *);
 
+// Data Methods
+void pre_transaction_data_init(struct pre_transaction *);
+void pre_transaction_data_free(struct pre_transaction *);
+
 void pre_transaction_clear(struct pre_transaction *);
 int pre_transaction_cmp(const struct pre_transaction *, const struct pre_transaction *);
 

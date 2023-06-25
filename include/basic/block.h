@@ -6,13 +6,13 @@
 #include "block_history.h"
 
 struct block_st {
-    struct list_st transactions;
+    struct transaction_list_st transactions;
     struct integer_st benefit;
     struct integer_st time;
     struct string_st address_outside;
     struct string_st hash;
     struct string_st smart_contract;
-    struct list_st nodes_done;
+    struct address_list_st nodes_done;
     struct integer_st result_pros;
     struct integer_st result_cons;
     struct integer_st voted;
@@ -24,11 +24,12 @@ void block_free(struct block_st *);
 void block_set(struct block_st *, const struct block_st *);
 void block_copy(struct block_st *, const struct block_st *);
 
-void block_mark(struct block_st *);
-void block_unmark(struct block_st *);
-
 void block_clear(struct block_st *);
 int block_cmp(const struct block_st *, const struct block_st *);
+
+// Data Methods
+void block_data_init(struct block_st *);
+void block_data_free(struct block_st *);
 
 // Cmp Methods
 int block_is_null(const struct block_st *);

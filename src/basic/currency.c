@@ -6,7 +6,7 @@ struct object_type currency_type = {CURRENCY_OP, &currency_tlv, &currency_sub};
 
 // Standard operations
 struct currency_st *currency_new() {
-    struct currency_st *res = skr_malloc(sizeof(struct currency_st));
+    struct currency_st *res = malloc(sizeof(struct currency_st));
     string_data_init(&res->smart_contract);
     string_data_init(&res->name);
     string_data_init(&res->info);
@@ -31,7 +31,7 @@ void currency_free(struct currency_st *res) {
 
     integer_data_free(&res->our);
     integer_data_free(&res->product);
-    skr_free(res);
+    free(res);
 }
 
 void currency_set(struct currency_st *res, const struct currency_st *a) {
@@ -83,6 +83,34 @@ int currency_cmp(const struct currency_st *obj1, const struct currency_st *obj2)
     return CMP_EQ;
 }
 
+// Data Methods
+void currency_data_init(struct currency_st *res) {
+    if (res == NULL) return;
+    string_data_init(&res->smart_contract);
+    string_data_init(&res->name);
+    string_data_init(&res->info);
+
+    integer_data_init(&res->hash_type);
+    integer_data_init(&res->crypto_type);
+    integer_data_init(&res->crypto_base);
+
+    integer_data_init(&res->our);
+    integer_data_init(&res->product);
+}
+void currency_data_free(struct currency_st *res) {
+    if (res == NULL) return;
+    string_data_free(&res->smart_contract);
+    string_data_free(&res->name);
+    string_data_free(&res->info);
+
+    integer_data_free(&res->hash_type);
+    integer_data_free(&res->crypto_type);
+    integer_data_free(&res->crypto_base);
+
+    integer_data_free(&res->our);
+    integer_data_free(&res->product);
+}
+
 // TLV Methods
 int currency_set_tlv(struct currency_st *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
@@ -91,7 +119,9 @@ int currency_set_tlv(struct currency_st *res, const struct string_st *tlv) {
     if (result < 0) return result;
     if (result != TLV_CURRENCY) return ERR_TLV_TAG;
 
-    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    struct string_st _tlv, _tlv_data;
+    string_data_init(&_tlv_data);
+    string_data_init(&_tlv);
     if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
@@ -126,7 +156,8 @@ void currency_get_tlv(const struct currency_st *currency, struct string_st *res)
     if (res == NULL) return;
     if (currency == NULL) return string_clear(res);
 
-    struct string_st _tlv_data = {NULL, 0, 0};
+    struct string_st _tlv_data;
+    string_data_init(&_tlv_data);
     string_get_tlv(&currency->name, res);
 
     string_get_tlv(&currency->smart_contract, &_tlv_data);
@@ -191,7 +222,7 @@ struct object_st *currency_attrib
         integer_set(res->data, &currency->product);
     }
     else {
-        object_free(res);
+        object_clear(res);
         error_set_msg(err, ErrorType_Math, "This Attribute does not exist");
         return NULL;
     }

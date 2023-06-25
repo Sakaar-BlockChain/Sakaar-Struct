@@ -3,14 +3,14 @@
 #ifdef USE_GMP
 // Standard operations
 struct integer_st *integer_new() {
-    struct integer_st *res = skr_malloc(sizeof(struct integer_st));
+    struct integer_st *res = malloc(sizeof(struct integer_st));
     mpz_init(res->mpz_int);
     return res;
 }
 void integer_free(struct integer_st *res) {
     if (res == NULL) return;
     mpz_clear(res->mpz_int);
-    skr_free(res);
+    free(res);
 }
 
 void integer_set(struct integer_st *res, const struct integer_st *a) {
@@ -217,13 +217,14 @@ int integer_set_tlv_(struct integer_st *res, const struct string_st *tlv) {
     integer_clear(res);
 
 
-    struct string_st _tlv = {NULL, 0, 0};
+    struct string_st _tlv;
+    string_data_init(&_tlv);
     int result = tlv_get_value(tlv, &_tlv);
     if (result == 0 && _tlv.data != NULL) {
         size_t is_neg = (_tlv.data[0] == 0x00);
         size_t num_len = (_tlv.size - is_neg) * 2;
 
-        char *temp = skr_malloc(num_len + is_neg + 1);
+        char *temp = malloc(num_len + is_neg + 1);
         for (size_t i = 0; i < num_len + is_neg + 1; i++) temp[i] = 0;
         if (is_neg) temp[0] = '-';
 
@@ -233,7 +234,7 @@ int integer_set_tlv_(struct integer_st *res, const struct string_st *tlv) {
         }
 
         mpz_set_str(res->mpz_int, temp, 16);
-        skr_free(temp);
+        free(temp);
     }
     string_data_free(&_tlv);
     return result;
@@ -246,7 +247,7 @@ void integer_get_tlv_(const struct integer_st *res, struct string_st *tlv, unsig
     size_t is_neg = (mpz_sgn(res->mpz_int) == -1);
     size_t tlv_len = (num_len + 1) / 2;
 
-    char *temp = skr_malloc(num_len + is_neg + 1);
+    char *temp = malloc(num_len + is_neg + 1);
     mpz_get_str(temp, 16, res->mpz_int);
 
     string_resize(tlv, tlv_len + is_neg);
@@ -256,7 +257,7 @@ void integer_get_tlv_(const struct integer_st *res, struct string_st *tlv, unsig
         tlv->data[id] = (char)((tlv->data[id] << 4) | set_char_16(temp[is_neg + i]));
     }
 
-    skr_free(temp);
+    free(temp);
     tlv_set_string(tlv, tag, tlv);
 }
 int integer_set_tlv(struct integer_st *res, const struct string_st *tlv) {
@@ -267,13 +268,14 @@ int integer_set_tlv(struct integer_st *res, const struct string_st *tlv) {
     if (result != TLV_INTEGER) return ERR_TLV_TAG;
 
 
-    struct string_st _tlv = {NULL, 0, 0};
+    struct string_st _tlv;
+    string_data_init(&_tlv);
     result = tlv_get_value(tlv, &_tlv);
     if (result == 0 && _tlv.data != NULL) {
         size_t is_neg = (_tlv.data[0] == 0x00);
         size_t num_len = (_tlv.size - is_neg) * 2;
 
-        char *temp = skr_malloc(num_len + is_neg + 1);
+        char *temp = malloc(num_len + is_neg + 1);
         for (size_t i = 0; i < num_len + is_neg + 1; i++) temp[i] = 0;
         if (is_neg) temp[0] = '-';
 
@@ -283,7 +285,7 @@ int integer_set_tlv(struct integer_st *res, const struct string_st *tlv) {
         }
 
         mpz_set_str(res->mpz_int, temp, 16);
-        skr_free(temp);
+        free(temp);
     }
     string_data_free(&_tlv);
     return result;
@@ -296,7 +298,7 @@ void integer_get_tlv(const struct integer_st *res, struct string_st *tlv) {
         size_t is_neg = (mpz_sgn(res->mpz_int) == -1);
         size_t tlv_len = (num_len + 1) / 2;
 
-        char *temp = skr_malloc(num_len + is_neg + 1);
+        char *temp = malloc(num_len + is_neg + 1);
         mpz_get_str(temp, 16, res->mpz_int);
 
         string_resize(tlv, tlv_len + is_neg);
@@ -306,7 +308,7 @@ void integer_get_tlv(const struct integer_st *res, struct string_st *tlv) {
             tlv->data[id] = (char) ((tlv->data[id] << 4) | set_char_16(temp[is_neg + i]));
         }
 
-        skr_free(temp);
+        free(temp);
     }
 
     tlv_set_string(tlv, TLV_INTEGER, tlv);

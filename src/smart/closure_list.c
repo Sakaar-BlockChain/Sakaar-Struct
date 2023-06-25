@@ -18,16 +18,16 @@ void closure_list_data_init(struct closure_list_st *res) {
 }
 void closure_list_data_free(struct closure_list_st *res) {
     closure_list_resize(res, 0);
-    if (res->closures != NULL) skr_free(res->closures);
+    if (res->closures != NULL) free(res->closures);
 }
 
 void closure_list_resize(struct closure_list_st *res, size_t size) {
     if (res->closures == NULL && size != 0) {
         res->max_size = size;
-        res->closures = skr_malloc(sizeof(struct closure_st *) * size);
+        res->closures = malloc(sizeof(struct closure_st *) * size);
         for (size_t i = 0; i < size; i++) res->closures[i] = NULL;
     } else if (res->max_size < size) {
-        res->closures = skr_realloc(res->closures, sizeof(struct closure_st *) * size * 2);
+        res->closures = realloc(res->closures, sizeof(struct closure_st *) * size * 2);
         for (size_t i = res->max_size, l = size * 2; i < l; i++) res->closures[i] = NULL;
         res->max_size = size * 2;
     }
@@ -62,7 +62,9 @@ int closure_list_set_tlv(struct closure_list_st *res, const struct string_st *tl
     if (result < 0) return result;
     if (result != TLV_CLOSURE_LIST) return ERR_TLV_TAG;
 
-    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    struct string_st _tlv, _tlv_data;
+    string_data_init(&_tlv_data);
+    string_data_init(&_tlv);
     result = tlv_get_value(tlv, &_tlv);
 
     for (; _tlv.size && result == 0;) {
@@ -79,7 +81,8 @@ void closure_list_get_tlv(const struct closure_list_st *res, struct string_st *t
     string_clear(tlv);
     if (res == NULL) return;
 
-    struct string_st _tlv_data = {NULL, 0, 0};
+    struct string_st _tlv_data;
+    string_data_init(&_tlv_data);
     for (size_t i = 0, size = res->size; i < size; i++) {
         closure_get_tlv(res->closures[i], &_tlv_data);
         string_concat(tlv, &_tlv_data);

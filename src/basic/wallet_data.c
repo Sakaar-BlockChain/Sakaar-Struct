@@ -6,7 +6,7 @@ struct object_type wallet_data_type = {WALLET_DATA_OP, &wallet_data_tlv, &wallet
 
 // Standard operations
 struct wallet_data *wallet_data_new() {
-    struct wallet_data *res = skr_malloc(sizeof(struct wallet_data));
+    struct wallet_data *res = malloc(sizeof(struct wallet_data));
 
     string_data_init(&res->address);
     string_data_init(&res->currency);
@@ -30,7 +30,7 @@ void wallet_data_free(struct wallet_data *res) {
 
     integer_data_free(&res->balance);
     integer_data_free(&res->pre_balance);
-    skr_free(res);
+    free(res);
 }
 
 void wallet_data_set(struct wallet_data *res, const struct wallet_data *a) {
@@ -79,6 +79,32 @@ int wallet_data_cmp(const struct wallet_data *obj1, const struct wallet_data *ob
     return CMP_EQ;
 }
 
+// Data Methods
+void wallet_data_data_init(struct wallet_data *res) {
+    if (res == NULL) return;
+    string_data_init(&res->address);
+    string_data_init(&res->currency);
+    string_data_init(&res->address_outside);
+
+    string_data_init(&res->hash);
+    string_data_init(&res->pre_hash);
+
+    integer_data_init(&res->balance);
+    integer_data_init(&res->pre_balance);
+}
+void wallet_data_data_free(struct wallet_data *res) {
+    if (res == NULL) return;
+    string_data_free(&res->address);
+    string_data_free(&res->currency);
+    string_data_free(&res->address_outside);
+
+    string_data_free(&res->hash);
+    string_data_free(&res->pre_hash);
+
+    integer_data_free(&res->balance);
+    integer_data_free(&res->pre_balance);
+}
+
 // TLV Methods
 int wallet_data_set_tlv(struct wallet_data *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
@@ -87,7 +113,9 @@ int wallet_data_set_tlv(struct wallet_data *res, const struct string_st *tlv) {
     if (result < 0) return result;
     if (result != TLV_WALLET_DATA) return ERR_TLV_TAG;
 
-    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    struct string_st _tlv, _tlv_data;
+    string_data_init(&_tlv_data);
+    string_data_init(&_tlv);
     if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
@@ -129,7 +157,8 @@ void wallet_data_get_tlv(const struct wallet_data *data, struct string_st *res) 
     if (res == NULL) return;
     if (data == NULL) return string_clear(res);
 
-    struct string_st _tlv_data = {NULL, 0, 0};
+    struct string_st _tlv_data;
+    string_data_init(&_tlv_data);
     string_get_tlv(&data->address, res);
 
     string_get_tlv(&data->currency, &_tlv_data);
@@ -197,7 +226,7 @@ struct object_st *wallet_data_attrib
         integer_set(res->data, &data->pre_balance);
     }
     else {
-        object_free(res);
+        object_clear(res);
         error_set_msg(err, ErrorType_Math, "This Attribute does not exist");
         return NULL;
     }

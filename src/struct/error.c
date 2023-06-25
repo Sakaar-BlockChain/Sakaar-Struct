@@ -6,20 +6,20 @@ struct object_convert error_convert = {NULL, NULL, NULL, METHOD_CONVERT &error__
 struct object_type error_type = {ERROR_OP, NULL,  NULL, &error_convert};
 
 struct error_st *error_new() {
-    struct error_st *res = skr_malloc(sizeof(struct error_st));
+    struct error_st *res = malloc(sizeof(struct error_st));
     res->present = 0;
     res->line_num = 0;
     res->line_pos = 0;
     res->pos = 0;
 
-    res->type = (struct string_st) {NULL, 0, 0};
-    res->msg = (struct string_st) {NULL, 0, 0};
+    string_data_init(&res->type);
+    string_data_init(&res->msg);
     return res;
 }
 void error_free(struct error_st *res) {
     string_data_free(&res->type);
     string_data_free(&res->msg);
-    skr_free(res);
+    free(res);
 }
 
 void error_set(struct error_st *res, const struct error_st *a) {

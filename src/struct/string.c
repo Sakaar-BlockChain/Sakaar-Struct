@@ -8,7 +8,7 @@ struct object_type string_type = {STRING_OP, &string_tlv,  &string_sub, &string_
 
 // Standard operations
 struct string_st *string_new() {
-    struct string_st *res = skr_malloc(sizeof(struct string_st));
+    struct string_st *res = malloc(sizeof(struct string_st));
     res->data = NULL;
     res->mx_size = 0;
     res->size = 0;
@@ -16,8 +16,8 @@ struct string_st *string_new() {
 }
 void string_free(struct string_st *res) {
     if (res == NULL) return;
-    if (res->data != NULL) skr_free(res->data);
-    skr_free(res);
+    if (res->data != NULL) free(res->data);
+    free(res);
 }
 
 void string_set(struct string_st *res, const struct string_st *a) {
@@ -56,17 +56,17 @@ void string_data_init(struct string_st *res) {
     res->size = 0;
 }
 void string_data_free(struct string_st *res) {
-    if(res->data != NULL) skr_free(res->data);
+    if(res->data != NULL) free(res->data);
 }
 
 // Class Methods
 void string_resize(struct string_st *res, size_t size) {
     if (res->data == NULL && size) {
         res->mx_size = size;
-        res->data = skr_malloc(size + 1);
+        res->data = malloc(size + 1);
         if (res->data != NULL) for (size_t i = 0; i < size + 1; i++) res->data[i] = 0;
     } else if (res->mx_size < size) {
-        res->data = skr_realloc(res->data, size * 2 + 1);
+        res->data = realloc(res->data, size * 2 + 1);
         if (res->data != NULL) for (size_t i = res->mx_size, l = size * 2; i < l + 1; i++) res->data[i] = 0;
         res->mx_size = size * 2;
     }

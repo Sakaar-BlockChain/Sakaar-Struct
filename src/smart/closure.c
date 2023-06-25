@@ -1,7 +1,7 @@
 #include "smart.h"
 
 struct closure_st *closure_new() {
-    struct closure_st *res = skr_malloc(sizeof(struct closure_st));
+    struct closure_st *res = malloc(sizeof(struct closure_st));
     variable_list_data_init(&res->attrib);
     variable_list_data_init(&res->data);
     return res;
@@ -17,7 +17,7 @@ void closure_clear(struct closure_st *res) {
 void closure_free(struct closure_st *res) {
     variable_list_data_free(&res->attrib);
     variable_list_data_free(&res->data);
-    skr_free(res);
+    free(res);
 }
 
 void closure_data_init(struct closure_st *res) {
@@ -42,7 +42,9 @@ int closure_set_tlv(struct closure_st *res, const struct string_st *tlv) {
     if (result < 0) return result;
     if (result != TLV_CLOSURE) return ERR_TLV_TAG;
 
-    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    struct string_st _tlv, _tlv_data;
+    string_data_init(&_tlv_data);
+    string_data_init(&_tlv);
     if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
@@ -59,7 +61,8 @@ void closure_get_tlv(const struct closure_st *res, struct string_st *tlv) {
     if (tlv == NULL) return;
     if (res == NULL) return string_clear(tlv);
 
-    struct string_st _tlv_data = {NULL, 0, 0};
+    struct string_st _tlv_data;
+    string_data_init(&_tlv_data);
     variable_list_get_tlv(&res->attrib, tlv);
 
     variable_list_get_tlv(&res->data, &_tlv_data);

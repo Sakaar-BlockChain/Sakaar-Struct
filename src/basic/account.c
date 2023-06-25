@@ -6,7 +6,7 @@ struct object_type account_type = {ACCOUNT_OP, &account_tlv, &account_sub};
 
 // Standard operations
 struct account_st *account_new() {
-    struct account_st *res = skr_malloc(sizeof(struct account_st));
+    struct account_st *res = malloc(sizeof(struct account_st));
     string_data_init(&res->address);
     string_data_init(&res->login);
 
@@ -29,7 +29,7 @@ void account_free(struct account_st *res) {
     integer_data_free(&res->hash_type);
     integer_data_free(&res->crypto_type);
     integer_data_free(&res->crypto_base);
-    skr_free(res);
+    free(res);
 }
 
 void account_set(struct account_st *res, const struct account_st *a) {
@@ -78,6 +78,32 @@ int account_cmp(const struct account_st *obj1, const struct account_st *obj2) {
     return CMP_EQ;
 }
 
+// Data Methods
+void account_data_init(struct account_st *res) {
+    if (res == NULL) return;
+    string_data_init(&res->address);
+    string_data_init(&res->login);
+
+    integer_data_init(&res->activated);
+    integer_data_init(&res->freeze);
+
+    integer_data_init(&res->hash_type);
+    integer_data_init(&res->crypto_type);
+    integer_data_init(&res->crypto_base);
+}
+void account_data_free(struct account_st *res) {
+    if (res == NULL) return;
+    string_data_free(&res->address);
+    string_data_free(&res->login);
+
+    integer_data_free(&res->activated);
+    integer_data_free(&res->freeze);
+
+    integer_data_free(&res->hash_type);
+    integer_data_free(&res->crypto_type);
+    integer_data_free(&res->crypto_base);
+}
+
 // Cmp Methods
 int account_is_null(const struct account_st *a) {
     return (a == NULL || string_is_null(&a->address));
@@ -91,7 +117,9 @@ int account_set_tlv(struct account_st *res, const struct string_st *tlv) {
     if (result < 0) return result;
     if (result != TLV_ACCOUNT) return ERR_TLV_TAG;
 
-    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    struct string_st _tlv, _tlv_data;
+    string_data_init(&_tlv_data);
+    string_data_init(&_tlv);
     if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
@@ -123,7 +151,8 @@ void account_get_tlv(const struct account_st *account, struct string_st *res) {
     if (res == NULL) return;
     if (account == NULL) return string_clear(res);
 
-    struct string_st _tlv_data = {NULL, 0, 0};
+    struct string_st _tlv_data;
+    string_data_init(&_tlv_data);
     string_get_tlv(&account->address, res);
 
     string_get_tlv(&account->login, &_tlv_data);
@@ -181,7 +210,7 @@ struct object_st *account_attrib
         integer_set(res->data, &account->crypto_base);
     }
     else {
-        object_free(res);
+        object_clear(res);
         error_set_msg(err, ErrorType_Math, "This Attribute does not exist");
         return NULL;
     }

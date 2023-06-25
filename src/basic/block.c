@@ -6,9 +6,9 @@ struct object_type block_type = {BLOCK_OP, &block_tlv, &block_sub};
 
 // Standard operations
 struct block_st *block_new() {
-    struct block_st *res = skr_malloc(sizeof(struct block_st));
-    list_data_init(&res->transactions);
-    list_data_init(&res->nodes_done);
+    struct block_st *res = malloc(sizeof(struct block_st));
+    transaction_list_data_init(&res->transactions);
+    address_list_data_init(&res->nodes_done);
     string_data_init(&res->address_outside);
     string_data_init(&res->hash);
     string_data_init(&res->smart_contract);
@@ -21,8 +21,8 @@ struct block_st *block_new() {
 }
 void block_free(struct block_st *res) {
     if (res == NULL) return;
-    list_data_free(&res->transactions);
-    list_data_free(&res->nodes_done);
+    transaction_list_data_free(&res->transactions);
+    address_list_data_free(&res->nodes_done);
     string_data_free(&res->address_outside);
     string_data_free(&res->hash);
     string_data_free(&res->smart_contract);
@@ -31,15 +31,15 @@ void block_free(struct block_st *res) {
     integer_data_free(&res->result_pros);
     integer_data_free(&res->result_cons);
     integer_data_free(&res->voted);
-    skr_free(res);
+    free(res);
 }
 
 void block_set(struct block_st *res, const struct block_st *a) {
     if (res == NULL) return;
     if (a == NULL) return block_clear(res);
 
-    list_set(&res->transactions, &a->transactions);
-    list_set(&res->nodes_done, &a->nodes_done);
+    transaction_list_set(&res->transactions, &a->transactions);
+    address_list_set(&res->nodes_done, &a->nodes_done);
     string_set(&res->address_outside, &a->address_outside);
     string_set(&res->hash, &a->hash);
     string_set(&res->smart_contract, &a->smart_contract);
@@ -53,8 +53,8 @@ void block_copy(struct block_st *res, const struct block_st *a) {
     if (res == NULL) return;
     if (a == NULL) return block_clear(res);
 
-    list_copy(&res->transactions, &a->transactions);
-    list_copy(&res->nodes_done, &a->nodes_done);
+    transaction_list_copy(&res->transactions, &a->transactions);
+    address_list_copy(&res->nodes_done, &a->nodes_done);
     string_copy(&res->address_outside, &a->address_outside);
     string_copy(&res->hash, &a->hash);
     string_copy(&res->smart_contract, &a->smart_contract);
@@ -65,21 +65,10 @@ void block_copy(struct block_st *res, const struct block_st *a) {
     integer_copy(&res->voted, &a->voted);
 }
 
-void block_mark(struct block_st *res) {
-    if (res == NULL) return;
-    list_mark(&res->transactions);
-    list_mark(&res->nodes_done);
-}
-void block_unmark(struct block_st *res) {
-    if (res == NULL) return;
-    list_unmark(&res->transactions);
-    list_unmark(&res->nodes_done);
-}
-
 void block_clear(struct block_st *res) {
     if (res == NULL) return;
-    list_clear(&res->transactions);
-    list_clear(&res->nodes_done);
+    transaction_list_clear(&res->transactions);
+    address_list_clear(&res->nodes_done);
     string_clear(&res->address_outside);
     string_clear(&res->hash);
     string_clear(&res->smart_contract);
@@ -92,6 +81,33 @@ void block_clear(struct block_st *res) {
 int block_cmp(const struct block_st *obj1, const struct block_st *obj2) {
     if (obj1 == NULL || obj2 == NULL || string_cmp(&obj1->hash, &obj2->hash) || integer_cmp(&obj1->time, &obj2->time)) return CMP_NEQ;
     return CMP_EQ;
+}
+
+// Data Methods
+void block_data_init(struct block_st *res) {
+    transaction_list_data_init(&res->transactions);
+    address_list_data_init(&res->nodes_done);
+    string_data_init(&res->address_outside);
+    string_data_init(&res->hash);
+    string_data_init(&res->smart_contract);
+    integer_data_init(&res->benefit);
+    integer_data_init(&res->time);
+    integer_data_init(&res->result_pros);
+    integer_data_init(&res->result_cons);
+    integer_data_init(&res->voted);
+}
+void block_data_free(struct block_st *res) {
+    if (res == NULL) return;
+    transaction_list_data_free(&res->transactions);
+    address_list_data_free(&res->nodes_done);
+    string_data_free(&res->address_outside);
+    string_data_free(&res->hash);
+    string_data_free(&res->smart_contract);
+    integer_data_free(&res->benefit);
+    integer_data_free(&res->time);
+    integer_data_free(&res->result_pros);
+    integer_data_free(&res->result_cons);
+    integer_data_free(&res->voted);
 }
 
 // Cmp Methods
@@ -107,15 +123,17 @@ int block_set_tlv(struct block_st *res, const struct string_st *tlv) {
     if (result < 0) return result;
     if (result != TLV_BLOCK) return ERR_TLV_TAG;
 
-    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    struct string_st _tlv, _tlv_data;
+    string_data_init(&_tlv_data);
+    string_data_init(&_tlv);
     if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
-    if ((result = list_set_tlv_self(&res->transactions, &_tlv_data, TRANSACTION_TYPE))) goto end;
+    if ((result = transaction_list_set_tlv(&res->transactions, &_tlv_data))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
-    if ((result = list_set_tlv_self(&res->nodes_done, &_tlv_data, STRING_TYPE))) goto end;
+    if ((result = address_list_set_tlv(&res->nodes_done, &_tlv_data))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
     if ((result = string_set_tlv(&res->address_outside, &_tlv_data))) goto end;
@@ -154,10 +172,11 @@ void block_get_tlv(const struct block_st *block, struct string_st *res) {
     if (res == NULL) return;
     if (block == NULL) return string_clear(res);
 
-    struct string_st _tlv_data = {NULL, 0, 0};
-    list_get_tlv(&block->transactions, res);
+    struct string_st _tlv_data;
+    string_data_init(&_tlv_data);
+    transaction_list_get_tlv(&block->transactions, res);
 
-    list_get_tlv(&block->nodes_done, &_tlv_data);
+    address_list_get_tlv(&block->nodes_done, &_tlv_data);
     string_concat(res, &_tlv_data);
 
     string_get_tlv(&block->address_outside, &_tlv_data);
@@ -198,8 +217,8 @@ struct object_st *block_attrib
 (struct error_st *err, const struct block_st *block, const struct string_st *str) {
     struct object_st *res = object_new();
     if (str->size == 12 && memcmp(str->data, "transactions", 12) == 0) {
-        object_set_type(res, LIST_TYPE);
-        list_set(res->data, &block->transactions);
+        object_set_type(res, TRANS_LIST_TYPE);
+        transaction_list_set(res->data, &block->transactions);
     }
     else if (str->size == 7 && memcmp(str->data, "benefit", 7) == 0) {
         object_set_type(res, INTEGER_TYPE);
@@ -222,8 +241,8 @@ struct object_st *block_attrib
         string_set(res->data, &block->smart_contract);
     }
     else if (str->size == 10 && memcmp(str->data, "nodes_done", 10) == 0) {
-        object_set_type(res, LIST_TYPE);
-        list_set(res->data, &block->nodes_done);
+        object_set_type(res, ADDRESS_LIST_TYPE);
+        address_list_set(res->data, &block->nodes_done);
     }
     else if (str->size == 11 && memcmp(str->data, "result_pros", 11) == 0) {
         object_set_type(res, INTEGER_TYPE);
@@ -234,7 +253,7 @@ struct object_st *block_attrib
         integer_set(res->data, &block->result_cons);
     }
     else {
-        object_free(res);
+        object_clear(res);
         error_set_msg(err, ErrorType_Math, "This Attribute does not exist");
         return NULL;
     }

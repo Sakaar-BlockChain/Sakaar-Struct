@@ -17,16 +17,16 @@ void bytecode_list_data_init(struct bytecode_list_st *res) {
 }
 void bytecode_list_data_free(struct bytecode_list_st *res) {
     bytecode_list_resize(res, 0);
-    if (res->bytecodes != NULL) skr_free(res->bytecodes);
+    if (res->bytecodes != NULL) free(res->bytecodes);
 }
 
 void bytecode_list_resize(struct bytecode_list_st *res, size_t size) {
     if (res->bytecodes == NULL && size != 0) {
         res->max_size = size;
-        res->bytecodes = skr_malloc(sizeof(struct bytecode_st *) * size);
+        res->bytecodes = malloc(sizeof(struct bytecode_st *) * size);
         for (size_t i = 0; i < size; i++) res->bytecodes[i] = NULL;
     } else if (res->max_size < size) {
-        res->bytecodes = skr_realloc(res->bytecodes, sizeof(struct bytecode_st *) * size * 2);
+        res->bytecodes = realloc(res->bytecodes, sizeof(struct bytecode_st *) * size * 2);
         for (size_t i = res->max_size, l = size * 2; i < l; i++) res->bytecodes[i] = NULL;
         res->max_size = size * 2;
     }
@@ -65,7 +65,9 @@ int bytecode_list_set_tlv(struct bytecode_list_st *res, const struct string_st *
     if (result < 0) return result;
     if (result != TLV_BYTECODE_LIST) return ERR_TLV_TAG;
 
-    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    struct string_st _tlv, _tlv_data;
+    string_data_init(&_tlv_data);
+    string_data_init(&_tlv);
     result = tlv_get_value(tlv, &_tlv);
 
     for (size_t pos; _tlv.size && result == 0;) {
@@ -83,7 +85,8 @@ void bytecode_list_get_tlv(const struct bytecode_list_st *res, struct string_st 
     string_clear(tlv);
     if (res == NULL) return;
 
-    struct string_st _tlv_data = {NULL, 0, 0};
+    struct string_st _tlv_data;
+    string_data_init(&_tlv_data);
     for (size_t i = 0, size = res->size; i < size; i++) {
         bytecode_get_tlv(res->bytecodes[i], &_tlv_data);
         string_concat(tlv, &_tlv_data);

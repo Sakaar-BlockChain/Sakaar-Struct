@@ -18,16 +18,16 @@ void variable_list_list_data_init(struct variable_list_list_st *res) {
 }
 void variable_list_list_data_free(struct variable_list_list_st *res) {
     variable_list_list_resize(res, 0);
-    if (res->variable_lists != NULL) skr_free(res->variable_lists);
+    if (res->variable_lists != NULL) free(res->variable_lists);
 }
 
 void variable_list_list_resize(struct variable_list_list_st *res, size_t size) {
     if (res->variable_lists == NULL && size != 0) {
         res->max_size = size;
-        res->variable_lists = skr_malloc(sizeof(struct variable_list_st *) * size);
+        res->variable_lists = malloc(sizeof(struct variable_list_st *) * size);
         for (size_t i = 0; i < size; i++) res->variable_lists[i] = NULL;
     } else if (res->max_size < size) {
-        res->variable_lists = skr_realloc(res->variable_lists, sizeof(struct variable_list_st *) * size * 2);
+        res->variable_lists = realloc(res->variable_lists, sizeof(struct variable_list_st *) * size * 2);
         for (size_t i = res->max_size, l = size * 2; i < l; i++) res->variable_lists[i] = NULL;
         res->max_size = size * 2;
     }
@@ -63,7 +63,9 @@ int variable_list_list_set_tlv(struct variable_list_list_st *res, const struct s
     if (result < 0) return result;
     if (result != TLV_VARIABLE_LIST_LIST) return ERR_TLV_TAG;
 
-    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    struct string_st _tlv, _tlv_data;
+    string_data_init(&_tlv_data);
+    string_data_init(&_tlv);
     result = tlv_get_value(tlv, &_tlv);
     
     for (size_t pos; _tlv.size && result == 0;) {
@@ -81,7 +83,8 @@ void variable_list_list_get_tlv(const struct variable_list_list_st *res, struct 
     string_clear(tlv);
     if (res == NULL) return;
 
-    struct string_st _tlv_data = {NULL, 0, 0};
+    struct string_st _tlv_data;
+    string_data_init(&_tlv_data);
     for (size_t i = 0, size = res->size; i < size; i++)  {
         variable_list_get_tlv(res->variable_lists[i], &_tlv_data);
         string_concat(tlv, &_tlv_data);

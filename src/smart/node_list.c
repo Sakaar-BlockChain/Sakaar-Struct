@@ -18,16 +18,16 @@ void node_list_data_init(struct node_list_st *res) {
 }
 void node_list_data_free(struct node_list_st *res) {
     node_list_resize(res, 0);
-    if (res->nodes != NULL) skr_free(res->nodes);
+    if (res->nodes != NULL) free(res->nodes);
 }
 
 void node_list_resize(struct node_list_st *res, size_t size) {
     if (res->nodes == NULL && size != 0) {
         res->max_size = size;
-        res->nodes = skr_malloc(sizeof(struct node_st *) * size);
+        res->nodes = malloc(sizeof(struct node_st *) * size);
         for (size_t i = 0; i < size; i++) res->nodes[i] = NULL;
     } else if (res->max_size < size) {
-        res->nodes = skr_realloc(res->nodes, sizeof(struct node_st *) * size * 2);
+        res->nodes = realloc(res->nodes, sizeof(struct node_st *) * size * 2);
         for (size_t i = res->max_size, l = size * 2; i < l; i++) res->nodes[i] = NULL;
         res->max_size = size * 2;
     }

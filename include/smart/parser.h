@@ -58,7 +58,7 @@ struct parser_st{
 
 void parser_clear(struct parser_st *);
 
-void parser_data_inti(struct parser_st *);
+void parser_data_init(struct parser_st *);
 void parser_data_free(struct parser_st *);
 
 void parser_set_file(struct parser_st *, char *);

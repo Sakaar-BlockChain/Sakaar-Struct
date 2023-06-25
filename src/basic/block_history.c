@@ -6,8 +6,8 @@ struct object_type block_history_type = {BLOCK_HISTORY_OP, &block_history_tlv, &
 
 // Standard operations
 struct block_history *block_history_new() {
-    struct block_history *res = skr_malloc(sizeof(struct block_history));
-    list_data_init(&res->transactions);
+    struct block_history *res = malloc(sizeof(struct block_history));
+    transaction_list_data_init(&res->transactions);
     string_data_init(&res->address_outside);
     string_data_init(&res->hash);
     string_data_init(&res->smart_contract);
@@ -18,20 +18,20 @@ struct block_history *block_history_new() {
 }
 void block_history_free(struct block_history *res) {
     if (res == NULL) return;
-    list_data_free(&res->transactions);
+    transaction_list_data_free(&res->transactions);
     string_data_free(&res->address_outside);
     string_data_free(&res->hash);
     string_data_free(&res->smart_contract);
     integer_data_free(&res->benefit);
     integer_data_free(&res->time);
     integer_data_free(&res->result);
-    skr_free(res);
+    free(res);
 }
 
 void block_history_set(struct block_history *res, const struct block_history *a) {
     if (a == NULL) return block_history_clear(res);
 
-    list_set(&res->transactions, &a->transactions);
+    transaction_list_set(&res->transactions, &a->transactions);
     string_set(&res->address_outside, &a->address_outside);
     string_set(&res->hash, &a->hash);
     string_set(&res->smart_contract, &a->smart_contract);
@@ -43,7 +43,7 @@ void block_history_copy(struct block_history *res, const struct block_history *a
     if (res == NULL) return;
     if (a == NULL) return block_history_clear(res);
 
-    list_copy(&res->transactions, &a->transactions);
+    transaction_list_copy(&res->transactions, &a->transactions);
     string_copy(&res->address_outside, &a->address_outside);
     string_copy(&res->hash, &a->hash);
     string_copy(&res->smart_contract, &a->smart_contract);
@@ -52,18 +52,9 @@ void block_history_copy(struct block_history *res, const struct block_history *a
     integer_copy(&res->result, &a->result);
 }
 
-void block_history_mark(struct block_history *res) {
-    if (res == NULL) return;
-    list_mark(&res->transactions);
-}
-void block_history_unmark(struct block_history *res) {
-    if (res == NULL) return;
-    list_unmark(&res->transactions);
-}
-
 void block_history_clear(struct block_history *res) {
     if (res == NULL) return;
-    list_clear(&res->transactions);
+    transaction_list_clear(&res->transactions);
     string_clear(&res->address_outside);
     string_clear(&res->hash);
     string_clear(&res->smart_contract);
@@ -76,6 +67,28 @@ int block_history_cmp(const struct block_history *obj1, const struct block_histo
     return CMP_EQ;
 }
 
+// Data Methods
+void block_history_data_init(struct block_history *res) {
+    if (res == NULL) return;
+    transaction_list_data_init(&res->transactions);
+    string_data_init(&res->address_outside);
+    string_data_init(&res->hash);
+    string_data_init(&res->smart_contract);
+    integer_data_init(&res->benefit);
+    integer_data_init(&res->time);
+    integer_data_init(&res->result);
+}
+void block_history_data_free(struct block_history *res) {
+    if (res == NULL) return;
+    transaction_list_data_free(&res->transactions);
+    string_data_free(&res->address_outside);
+    string_data_free(&res->hash);
+    string_data_free(&res->smart_contract);
+    integer_data_free(&res->benefit);
+    integer_data_free(&res->time);
+    integer_data_free(&res->result);
+}
+
 // TLV Methods
 int block_history_set_tlv(struct block_history *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
@@ -84,11 +97,13 @@ int block_history_set_tlv(struct block_history *res, const struct string_st *tlv
     if (result < 0) return result;
     if (result != TLV_BLOCK_HISTORY) return ERR_TLV_TAG;
 
-    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    struct string_st _tlv, _tlv_data;
+    string_data_init(&_tlv_data);
+    string_data_init(&_tlv);
     if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
-    if ((result = list_set_tlv_self(&res->transactions, &_tlv_data, TRANSACTION_TYPE))) goto end;
+    if ((result = transaction_list_set_tlv(&res->transactions, &_tlv_data))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
     if ((result = string_set_tlv(&res->address_outside, &_tlv_data))) goto end;
@@ -121,8 +136,9 @@ void block_history_get_tlv(const struct block_history *block, struct string_st *
     if (res == NULL) return;
     if (block == NULL) return string_clear(res);
 
-    struct string_st _tlv_data = {NULL, 0, 0};
-    list_get_tlv(&block->transactions, res);
+    struct string_st _tlv_data;
+    string_data_init(&_tlv_data);
+    transaction_list_get_tlv(&block->transactions, res);
 
     string_get_tlv(&block->address_outside, &_tlv_data);
     string_concat(res, &_tlv_data);
@@ -156,8 +172,8 @@ struct object_st *block_history_attrib
 (struct error_st *err, const struct block_history *block, const struct string_st *str) {
     struct object_st *res = object_new();
     if (str->size == 12 & memcmp(str->data, "transactions", 12) == 0) {
-        object_set_type(res, LIST_TYPE);
-        list_set(res->data, &block->transactions);
+        object_set_type(res, TRANS_LIST_TYPE);
+        transaction_list_set(res->data, &block->transactions);
     }
     else if (str->size == 7 & memcmp(str->data, "benefit", 7) == 0) {
         object_set_type(res, INTEGER_TYPE);

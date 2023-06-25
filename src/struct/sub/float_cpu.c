@@ -2,7 +2,7 @@
 #ifndef USE_GMP
 // Standard operations
 struct float_st *float_new() {
-    struct float_st *res = skr_malloc(sizeof(struct float_st));
+    struct float_st *res = malloc(sizeof(struct float_st));
 #ifdef USE_GMP
     mpf_init(res->mpz_int);
 #else
@@ -31,7 +31,7 @@ void float_free(struct float_st *res) {
 #else
     sub_float_free(res->data);
 #endif
-    skr_free(res);
+    free(res);
 }
 int float_cmp(const struct float_st *obj1, const struct float_st *obj2) {
 #ifdef USE_GMP

@@ -1,7 +1,7 @@
 #include "smart.h"
 
 struct node_st *node_new() {
-    struct node_st *res = skr_malloc(sizeof(struct node_st));
+    struct node_st *res = malloc(sizeof(struct node_st));
     res->type = MainType_None;
     res->sub_type = ExprType_None;
 
@@ -40,7 +40,7 @@ void node_clear(struct node_st *res) {
 void node_free(struct node_st *res) {
     token_list_data_free(&res->tokens);
     node_list_data_free(&res->nodes);
-    skr_free(res);
+    free(res);
 }
 
 void node_data_init(struct node_st *res) {

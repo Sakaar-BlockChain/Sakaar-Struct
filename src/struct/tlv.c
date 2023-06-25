@@ -7,7 +7,7 @@ struct object_type tlv_type = {TLV_OP, &tlv_tlv};
 // Class Methods
 void tlv_set_str(struct string_st *res, unsigned tag, const char *data, size_t size) {
     string_clear(res);
-    unsigned char *size_str = skr_malloc(256);
+    unsigned char *size_str = malloc(256);
     size_t size_len = 0;
     unsigned _tag = tag;
     size_t _size = size;
@@ -36,13 +36,13 @@ void tlv_set_str(struct string_st *res, unsigned tag, const char *data, size_t s
     for (size_t i = 0; i < size_len; i++)
         res->data[i] = (char) size_str[size_len - i - 1];
 
-    skr_free(size_str);
+    free(size_str);
 }
 void tlv_set_string(struct string_st *res, unsigned tag, const struct string_st *str) {
     if (res == NULL) return;
     if (str == NULL) return string_clear(res);
 
-    unsigned char *size_str = skr_malloc(256);
+    unsigned char *size_str = malloc(256);
     size_t size_len = 0;
     unsigned _tag = tag;
     size_t _size = str->size;
@@ -71,7 +71,7 @@ void tlv_set_string(struct string_st *res, unsigned tag, const struct string_st 
     for (size_t i = 0; i < size_len; i++)
         res->data[i] = (char) size_str[size_len - i - 1];
 
-    skr_free(size_str);
+    free(size_str);
 }
 
 size_t tlv_get_size_tag(const struct string_st *tlv) {

@@ -17,16 +17,16 @@ void token_list_data_init(struct token_list_st *res) {
 }
 void token_list_data_free(struct token_list_st *res) {
     token_list_resize(res, 0);
-    if (res->tokens != NULL) skr_free(res->tokens);
+    if (res->tokens != NULL) free(res->tokens);
 }
 
 void token_list_resize(struct token_list_st *res, size_t size) {
     if (res->tokens == NULL && size != 0) {
         res->max_size = size;
-        res->tokens = skr_malloc(sizeof(struct token_st *) * size);
+        res->tokens = malloc(sizeof(struct token_st *) * size);
         for (size_t i = 0; i < size; i++) res->tokens[i] = NULL;
     } else if (res->max_size < size) {
-        res->tokens = skr_realloc(res->tokens, sizeof(struct token_st *) * size * 2);
+        res->tokens = realloc(res->tokens, sizeof(struct token_st *) * size * 2);
         for (size_t i = res->max_size, l = size * 2; i < l; i++) res->tokens[i] = NULL;
         res->max_size = size * 2;
     }

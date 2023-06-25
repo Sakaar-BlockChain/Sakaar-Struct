@@ -7,7 +7,7 @@
 void parser_clear(struct parser_st *res) {
     string_clear(&res->file_name);
     string_clear(&res->file_path);
-    if(res->data_str != NULL) skr_free(res->data_str);
+    if(res->data_str != NULL) free(res->data_str);
     res->data_str = NULL;
     res->data_size = 0;
     res->data_pos = 0;
@@ -37,7 +37,7 @@ void parser_clear(struct parser_st *res) {
     list_clear(res->var_stack);
 }
 
-void parser_data_inti(struct parser_st *res) {
+void parser_data_init(struct parser_st *res) {
     string_data_init(&res->file_name);
     string_data_init(&res->file_path);
     res->data_str = NULL;
@@ -76,7 +76,7 @@ void parser_data_inti(struct parser_st *res) {
 void parser_data_free(struct parser_st *res) {
     string_data_free(&res->file_name);
     string_data_free(&res->file_path);
-    if(res->data_str != NULL) skr_free(res->data_str);
+    if(res->data_str != NULL) free(res->data_str);
 
     error_free(res->error);
 
@@ -123,7 +123,7 @@ void parser_set_file(struct parser_st *res, char *file_path){
 
 
     fseek(fp, 0, SEEK_SET);
-    res->data_str = skr_malloc(res->data_size);
+    res->data_str = malloc(res->data_size);
 #ifdef WIN32
     char c;
     size_t i;
@@ -142,7 +142,7 @@ void parser_set_str(struct parser_st *res, const struct string_st *str) {
     parser_clear(res);
 
     res->data_size = str->size;
-    res->data_str = skr_malloc(res->data_size);
+    res->data_str = malloc(res->data_size);
     memcpy(res->data_str, str->data, str->size);
 }
 void parser_set_error_token(struct parser_st *parser, char *type, char *msg, size_t token_pos) {
@@ -257,7 +257,9 @@ int parser_set_tlv(struct parser_st *res, const struct string_st *tlv) {
     if (result < 0) return result;
     if (result != TLV_PARSER) return ERR_TLV_TAG;
 
-    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    struct string_st _tlv, _tlv_data;
+    string_data_init(&_tlv_data);
+    string_data_init(&_tlv);
     if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
@@ -292,7 +294,8 @@ void parser_get_tlv(const struct parser_st *res, struct string_st *tlv) {
     if (tlv == NULL) return;
     if (res == NULL) return string_clear(tlv);
 
-    struct string_st _tlv_data = {NULL, 0, 0};
+    struct string_st _tlv_data;
+    string_data_init(&_tlv_data);
     bytecode_list_get_tlv(&res->codes, tlv);
 
     closure_list_get_tlv(&res->closures, &_tlv_data);

@@ -1,7 +1,7 @@
 #include "smart.h"
 
 struct bytecode_st *bytecode_new() {
-    struct bytecode_st *res = skr_malloc(sizeof (struct bytecode_st));
+    struct bytecode_st *res = malloc(sizeof (struct bytecode_st));
     res->data = NULL;
     res->command = NULL;
 
@@ -19,21 +19,21 @@ void bytecode_clear(struct bytecode_st *res) {
     res->variable = 0;
 }
 void bytecode_free(struct bytecode_st *res) {
-    if(res->data != NULL) skr_free(res->data);
-    if(res->command != NULL) skr_free(res->command);
-    skr_free(res);
+    if(res->data != NULL) free(res->data);
+    if(res->command != NULL) free(res->command);
+    free(res);
 }
 
 void bytecode_resize(struct bytecode_st *res, size_t size) {
     if (res->data == NULL && size != 0) {
         res->max_size = size;
-        res->data = skr_malloc(size * sizeof(void *));
-        res->command = skr_malloc(size);
+        res->data = malloc(size * sizeof(void *));
+        res->command = malloc(size);
         if (res->data != NULL) for (size_t i = 0; i < size; i++) res->data[i] = 0;
         if (res->command != NULL) for (size_t i = 0; i < size; i++) res->command[i] = 0;
     } else if (res->max_size < size) {
-        res->data = skr_realloc(res->data, size * 2 * sizeof(void *));
-        res->command = skr_realloc(res->command, size * 2);
+        res->data = realloc(res->data, size * 2 * sizeof(void *));
+        res->command = realloc(res->command, size * 2);
         if (res->data != NULL) for (size_t i = res->max_size, l = size * 2; i < l; i++) res->data[i] = 0;
         if (res->command != NULL) for (size_t i = res->max_size, l = size * 2; i < l; i++) res->command[i] = 0;
         res->max_size = size * 2;
@@ -59,7 +59,9 @@ int bytecode_set_tlv(struct bytecode_st *res, const struct string_st *tlv) {
     if (result < 0) return result;
     if (result != TLV_BYTECODE) return ERR_TLV_TAG;
 
-    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    struct string_st _tlv, _tlv_data;
+    string_data_init(&_tlv_data);
+    string_data_init(&_tlv);
     struct integer_st position;
     integer_data_init(&position);
     if ((result = tlv_get_value(tlv, &_tlv))) goto end;
@@ -95,7 +97,8 @@ void bytecode_get_tlv(const struct bytecode_st *res, struct string_st *tlv) {
     string_clear(tlv);
     if (res == NULL) return;
 
-    struct string_st _tlv_data = {NULL, 0, 0};
+    struct string_st _tlv_data;
+    string_data_init(&_tlv_data);
     struct integer_st position;
     integer_data_init(&position);
 

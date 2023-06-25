@@ -7,7 +7,7 @@ struct object_tlv op_class_tlv = {METHOD_GET_TLV &op_class_get_tlv, METHOD_SET_T
 struct object_type op_class_type = {OP_CLASS_OP, &op_class_tlv, &op_class_sub};
 
 struct op_class *op_class_new() {
-    struct op_class *res = skr_malloc(OP_CLASS_SIZE);
+    struct op_class *res = malloc(OP_CLASS_SIZE);
     res->attr = NULL;
 
     res->closure = NULL;
@@ -21,7 +21,7 @@ void op_class_free(struct op_class *res) {
     if(res->closure != NULL) frame_free(res->closure);
     if(res->attr != NULL) frame_free(res->attr);
 
-    skr_free(res);
+    free(res);
 }
 
 void op_class_set(struct op_class *res, const struct op_class *a) {
@@ -125,7 +125,9 @@ int op_class_set_tlv(struct op_class *res, const struct string_st *tlv) {
     struct integer_st position;
     integer_data_init(&position);
 
-    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    struct string_st _tlv, _tlv_data;
+    string_data_init(&_tlv_data);
+    string_data_init(&_tlv);
     if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
@@ -154,7 +156,8 @@ void op_class_get_tlv(const struct op_class *res, struct string_st *tlv) {
 
     struct integer_st position;
     integer_data_init(&position);
-    struct string_st _tlv_data = {NULL, 0, 0};
+    struct string_st _tlv_data;
+    string_data_init(&_tlv_data);
     frame_get_tlv(res->attr, tlv);
 
     frame_get_tlv(res->closure, &_tlv_data);

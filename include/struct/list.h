@@ -34,12 +34,9 @@ void list_concat(struct list_st *, const struct list_st *);
 void list_add_new(struct list_st *, struct object_type *);
 struct object_st *list_pop(struct list_st *);
 
-void list_sort(struct list_st *);
-
 // TLV Methods
 int list_set_tlv(struct list_st *, const struct string_st *);
 void list_get_tlv(const struct list_st *, struct string_st *);
-int list_set_tlv_self(struct list_st *, const struct string_st *, struct object_type *);
 
 void list__mul(struct object_st *, struct error_st *, const struct list_st *, const struct object_st *);
 void list__add(struct object_st *, struct error_st *, const struct list_st *, struct object_st *);

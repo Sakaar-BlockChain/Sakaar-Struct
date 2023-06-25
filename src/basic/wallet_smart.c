@@ -6,7 +6,7 @@ struct object_type wallet_smart_type = {WALLET_SMART_OP, &wallet_smart_tlv, &wal
 
 // Standard operations
 struct wallet_smart *wallet_smart_new() {
-    struct wallet_smart *res = skr_malloc(sizeof(struct wallet_smart));
+    struct wallet_smart *res = malloc(sizeof(struct wallet_smart));
     string_data_init(&res->address);
     string_data_init(&res->currency);
     string_data_init(&res->private_key);
@@ -29,7 +29,7 @@ void wallet_smart_free(struct wallet_smart *res) {
     string_data_free(&res->owner);
 
     integer_data_free(&res->freeze);
-    skr_free(res);
+    free(res);
 }
 
 void wallet_smart_set(struct wallet_smart *res, const struct wallet_smart *a) {
@@ -78,6 +78,32 @@ int wallet_smart_cmp(const struct wallet_smart *obj1, const struct wallet_smart 
     return CMP_EQ;
 }
 
+// Data Methods
+void wallet_smart_data_init(struct wallet_smart *res) {
+    if (res == NULL) return;
+    string_data_init(&res->address);
+    string_data_init(&res->currency);
+    string_data_init(&res->private_key);
+    string_data_init(&res->smart_private);
+    string_data_init(&res->smart_contract);
+    string_data_init(&res->name);
+    string_data_init(&res->owner);
+
+    integer_data_init(&res->freeze);
+}
+void wallet_smart_data_free(struct wallet_smart *res) {
+    if (res == NULL) return;
+    string_data_free(&res->address);
+    string_data_free(&res->currency);
+    string_data_free(&res->private_key);
+    string_data_free(&res->smart_private);
+    string_data_free(&res->smart_contract);
+    string_data_free(&res->name);
+    string_data_free(&res->owner);
+
+    integer_data_free(&res->freeze);
+}
+
 // TLV Methods
 int wallet_smart_set_tlv(struct wallet_smart *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
@@ -86,7 +112,9 @@ int wallet_smart_set_tlv(struct wallet_smart *res, const struct string_st *tlv) 
     if (result < 0) return result;
     if (result != TLV_WALLET_SMART) return ERR_TLV_TAG;
 
-    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    struct string_st _tlv, _tlv_data;
+    string_data_init(&_tlv_data);
+    string_data_init(&_tlv);
     if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
@@ -121,7 +149,8 @@ void wallet_smart_get_tlv(const struct wallet_smart *smart, struct string_st *re
     if (res == NULL) return;
     if (smart == NULL) return string_clear(res);
 
-    struct string_st _tlv_data = {NULL, 0, 0};
+    struct string_st _tlv_data;
+    string_data_init(&_tlv_data);
     string_get_tlv(&smart->address, res);
 
     string_get_tlv(&smart->currency, &_tlv_data);
@@ -186,7 +215,7 @@ struct object_st *wallet_smart_attrib
         integer_set(res->data, &smart->freeze);
     }
     else {
-        object_free(res);
+        object_clear(res);
         error_set_msg(err, ErrorType_Math, "This Attribute does not exist");
         return NULL;
     }

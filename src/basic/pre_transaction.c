@@ -4,7 +4,7 @@ struct object_type pre_transaction_type = {PRE_TRANSACTION_OP};
 
 // Standard operations
 struct pre_transaction *pre_transaction_new() {
-    struct pre_transaction *res = skr_malloc(sizeof(struct currency_st));
+    struct pre_transaction *res = malloc(sizeof(struct currency_st));
     string_data_init(&res->address_from);
     string_data_init(&res->address_to);
     string_data_init(&res->currency);
@@ -25,7 +25,7 @@ void pre_transaction_free(struct pre_transaction *res) {
     integer_data_free(&res->fee);
 
     string_data_free(&res->private_key);
-    skr_free(res);
+    free(res);
 }
 
 void pre_transaction_set(struct pre_transaction *res, const struct pre_transaction *a) {
@@ -77,4 +77,28 @@ int pre_transaction_cmp(const struct pre_transaction *obj1, const struct pre_tra
 
     if (string_cmp(&obj1->private_key, &obj2->private_key)) return CMP_NEQ;
     return CMP_EQ;
+}
+
+// Data Methods
+void pre_transaction_data_init(struct pre_transaction *res) {
+    if (res == NULL) return;
+    string_data_init(&res->address_from);
+    string_data_init(&res->address_to);
+    string_data_init(&res->currency);
+
+    integer_data_init(&res->balance);
+    integer_data_init(&res->fee);
+
+    string_data_init(&res->private_key);
+}
+void pre_transaction_data_free(struct pre_transaction *res) {
+    if (res == NULL) return;
+    string_data_free(&res->address_from);
+    string_data_free(&res->address_to);
+    string_data_free(&res->currency);
+
+    integer_data_free(&res->balance);
+    integer_data_free(&res->fee);
+
+    string_data_free(&res->private_key);
 }

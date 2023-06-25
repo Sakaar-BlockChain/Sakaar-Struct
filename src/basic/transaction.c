@@ -6,7 +6,7 @@ struct object_type transaction_type = {TRANSACTION_OP, &transaction_tlv, &transa
 
 // Standard operations
 struct transaction_st *transaction_new() {
-    struct transaction_st *res = skr_malloc(sizeof(struct transaction_st));
+    struct transaction_st *res = malloc(sizeof(struct transaction_st));
     string_data_init(&res->address_from);
     string_data_init(&res->address_to);
     string_data_init(&res->currency);
@@ -33,7 +33,7 @@ void transaction_free(struct transaction_st *res) {
     string_data_free(&res->hash_from);
 
     string_data_free(&res->signature);
-    skr_free(res);
+    free(res);
 }
 
 void transaction_set(struct transaction_st *res, const struct transaction_st *a) {
@@ -99,6 +99,36 @@ int transaction_cmp(const struct transaction_st *obj1, const struct transaction_
     return CMP_EQ;
 }
 
+// Data Methods
+void transaction_data_init(struct transaction_st *res) {
+    if (res == NULL) return;
+    string_data_init(&res->address_from);
+    string_data_init(&res->address_to);
+    string_data_init(&res->currency);
+
+    integer_data_init(&res->balance);
+    integer_data_init(&res->fee);
+
+    integer_data_init(&res->balance_from);
+    string_data_init(&res->hash_from);
+
+    string_data_init(&res->signature);
+}
+void transaction_data_free(struct transaction_st *res) {
+    if (res == NULL) return;
+    string_data_free(&res->address_from);
+    string_data_free(&res->address_to);
+    string_data_free(&res->currency);
+
+    integer_data_free(&res->balance);
+    integer_data_free(&res->fee);
+
+    integer_data_free(&res->balance_from);
+    string_data_free(&res->hash_from);
+
+    string_data_free(&res->signature);
+}
+
 // TLV Methods
 int transaction_set_tlv(struct transaction_st *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
@@ -107,7 +137,9 @@ int transaction_set_tlv(struct transaction_st *res, const struct string_st *tlv)
     if (result < 0) return result;
     if (result != TLV_TRANSACTION) return ERR_TLV_TAG;
 
-    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    struct string_st _tlv, _tlv_data;
+    string_data_init(&_tlv_data);
+    string_data_init(&_tlv);
     if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
@@ -147,7 +179,8 @@ void transaction_get_tlv(const struct transaction_st *transaction, struct string
     if (res == NULL) return;
     if (transaction == NULL) return string_clear(res);
 
-    struct string_st _tlv_data = {NULL, 0, 0};
+    struct string_st _tlv_data;
+    string_data_init(&_tlv_data);
     string_get_tlv(&transaction->address_from, res);
 
     string_get_tlv(&transaction->address_to, &_tlv_data);
@@ -217,7 +250,7 @@ struct object_st *transaction_attrib
         string_set(res->data, &transaction->signature);
     }
     else {
-        object_free(res);
+        object_clear(res);
         error_set_msg(err, ErrorType_Math, "This Attribute does not exist");
         return NULL;
     }

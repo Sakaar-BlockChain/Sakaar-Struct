@@ -25,6 +25,10 @@ void currency_copy(struct currency_st *, const struct currency_st *);
 void currency_clear(struct currency_st *);
 int currency_cmp(const struct currency_st *, const struct currency_st *);
 
+// Data Methods
+void currency_data_init(struct currency_st *);
+void currency_data_free(struct currency_st *);
+
 // TLV Methods
 int currency_set_tlv(struct currency_st *, const struct string_st *);
 void currency_get_tlv(const struct currency_st *, struct string_st *);

@@ -1,7 +1,7 @@
 #include "smart.h"
 
 struct variable_st *variable_new(size_t position) {
-    struct variable_st *res = skr_malloc(sizeof(struct variable_st));
+    struct variable_st *res = malloc(sizeof(struct variable_st));
     string_data_init(&res->name);
     res->position = position;
     return res;
@@ -16,7 +16,7 @@ void variable_clear(struct variable_st *res) {
 }
 void variable_free(struct variable_st *res) {
     string_data_free(&res->name);
-    skr_free(res);
+    free(res);
 }
 
 void variable_data_init(struct variable_st *res) {
@@ -35,7 +35,9 @@ int variable_set_tlv(struct variable_st *res, const struct string_st *tlv) {
     if (result < 0) return result;
     if (result != TLV_VARIABLE) return ERR_TLV_TAG;
 
-    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    struct string_st _tlv, _tlv_data;
+    string_data_init(&_tlv_data);
+    string_data_init(&_tlv);
     if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
@@ -58,7 +60,8 @@ void variable_get_tlv(const struct variable_st *res, struct string_st *tlv) {
     if (tlv == NULL) return;
     if (res == NULL) return string_clear(tlv);
 
-    struct string_st _tlv_data = {NULL, 0, 0};
+    struct string_st _tlv_data;
+    string_data_init(&_tlv_data);
     string_get_tlv(&res->name, tlv);
 
     {

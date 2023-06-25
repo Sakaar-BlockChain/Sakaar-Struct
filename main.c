@@ -13,10 +13,12 @@ void print_int(const struct integer_st *res) {
 #ifdef USE_GMP
     gmp_printf("%Zd", res->mpz_int);
 #else
-    struct string_st *str = string_new();
-    integer_get_str(res, str);
-    for(int i=0;i<str->size;i++)printf("%c", str->data[i]);
-    string_free(str);
+    struct string_st str;
+    string_data_init(&str);
+
+    integer_get_str(res, &str);
+    for(int i=0;i<str.size;i++)printf("%c", str.data[i]);
+    string_data_free(&str);
 #endif
     printf("\n");
 }

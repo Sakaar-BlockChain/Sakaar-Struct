@@ -6,8 +6,8 @@
 #include "wallet_smart.h"
 
 struct wallet_st {
-    struct wallet_data *data;
-    struct wallet_smart *smart;
+    struct wallet_data data;
+    struct wallet_smart smart;
 };
 // Standard operations
 struct wallet_st *wallet_new();
@@ -18,6 +18,10 @@ void wallet_copy(struct wallet_st *, const struct wallet_st *);
 
 void wallet_clear(struct wallet_st *);
 int wallet_cmp(const struct wallet_st *, const struct wallet_st *);
+
+// Data Methods
+void wallet__data_init(struct wallet_st *);
+void wallet__data_free(struct wallet_st *);
 
 // TLV Methods
 int wallet_set_tlv(struct wallet_st *, const struct string_st *);

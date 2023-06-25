@@ -2,9 +2,10 @@
 
 
 struct variable_list_st *variable_list_new() {
-    struct variable_list_st *res = skr_malloc(sizeof(struct variable_list_st));
+    struct variable_list_st *res = malloc(sizeof(struct variable_list_st));
     res->variables = NULL;
-    res->max_size = 0;res->size = 0;
+    res->max_size = 0;
+    res->size = 0;
     res->type = 0;
     return res;
 }
@@ -18,8 +19,8 @@ void variable_list_clear(struct variable_list_st *res) {
 }
 void variable_list_free(struct variable_list_st *res) {
     variable_list_resize(res, 0);
-    if (res->variables != NULL) skr_free(res->variables);
-    skr_free(res);
+    if (res->variables != NULL) free(res->variables);
+    free(res);
 }
 
 void variable_list_data_init(struct variable_list_st *res) {
@@ -30,16 +31,16 @@ void variable_list_data_init(struct variable_list_st *res) {
 }
 void variable_list_data_free(struct variable_list_st *res) {
     variable_list_resize(res, 0);
-    if (res->variables != NULL) skr_free(res->variables);
+    if (res->variables != NULL) free(res->variables);
 }
 
 void variable_list_resize(struct variable_list_st *res, size_t size) {
     if (res->variables == NULL && size != 0) {
         res->max_size = size;
-        res->variables = skr_malloc(sizeof(struct variable_st *) * size);
+        res->variables = malloc(sizeof(struct variable_st *) * size);
         for (size_t i = 0; i < size; i++) res->variables[i] = NULL;
     } else if (res->max_size < size) {
-        res->variables = skr_realloc(res->variables, sizeof(struct variable_st *) * size * 2);
+        res->variables = realloc(res->variables, sizeof(struct variable_st *) * size * 2);
         for (size_t i = res->max_size, l = size * 2; i < l; i++) res->variables[i] = NULL;
         res->max_size = size * 2;
     }
@@ -74,7 +75,9 @@ int variable_list_set_tlv(struct variable_list_st *res, const struct string_st *
     if (result < 0) return result;
     if (result != TLV_VARIABLE_LIST) return ERR_TLV_TAG;
 
-    struct string_st _tlv = {NULL, 0, 0}, _tlv_data  = {NULL, 0, 0};
+    struct string_st _tlv, _tlv_data;
+    string_data_init(&_tlv_data);
+    string_data_init(&_tlv);
     result = tlv_get_value(tlv, &_tlv);
 
     for (size_t pos; _tlv.size && result == 0;) {
@@ -92,7 +95,8 @@ void variable_list_get_tlv(const struct variable_list_st *res, struct string_st 
     string_clear(tlv);
     if (res == NULL) return;
 
-    struct string_st _tlv_data = {NULL, 0, 0};
+    struct string_st _tlv_data;
+    string_data_init(&_tlv_data);
     for (size_t i = 0, size = res->size; i < size; i++)  {
         variable_get_tlv(res->variables[i], &_tlv_data);
         string_concat(tlv, &_tlv_data);
