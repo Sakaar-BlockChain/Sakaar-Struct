@@ -182,6 +182,10 @@ void wallet_smart_get_tlv(const struct wallet_smart *smart, struct string_st *re
 struct object_st *wallet_smart_attrib
 (struct error_st *err, const struct wallet_smart *smart, const struct string_st *str) {
     struct object_st *res = object_new();
+    if (res == NULL) {
+        error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+        return NULL;
+    }
     if (str->size == 7 && memcmp(str->data, "address", 7) == 0) {
         object_set_type(res, STRING_TYPE);
         string_set(res->data, &smart->address);

@@ -7,6 +7,7 @@
 #define ErrorType_Tokenizer "Tokenizer Error\0"
 #define ErrorType_Syntax    "Syntax Error\0"
 #define ErrorType_Semantic  "Semantic Error\0"
+#define ErrorType_RunTime   "Semantic Error\0"
 #define ErrorType_Math      "Semantic Error\0"
 #define ErrorType_Convert   "Semantic Error\0"
 #define ErrorType_SubScript "Semantic Error\0"

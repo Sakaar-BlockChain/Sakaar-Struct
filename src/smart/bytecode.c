@@ -13,14 +13,16 @@ struct bytecode_st *bytecode_new() {
     return res;
 }
 void bytecode_clear(struct bytecode_st *res) {
+    if (res == NULL) return;
     bytecode_resize(res, 0);
 
     res->closure = 0;
     res->variable = 0;
 }
 void bytecode_free(struct bytecode_st *res) {
-    if(res->data != NULL) free(res->data);
-    if(res->command != NULL) free(res->command);
+    if (res == NULL) return;
+    if (res->data != NULL) free(res->data);
+    if (res->command != NULL) free(res->command);
     free(res);
 }
 
@@ -46,6 +48,7 @@ void bytecode_resize(struct bytecode_st *res, size_t size) {
     res->size = size;
 }
 void bytecode_append(struct bytecode_st *res, char command, size_t data) {
+    if (res == NULL) return;
     bytecode_resize(res, res->size + 1);
     res->command[res->size - 1] = command;
     res->data[res->size - 1] = data;

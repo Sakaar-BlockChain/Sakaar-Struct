@@ -136,7 +136,7 @@ void block_list_sort_split(size_t st, size_t fn, struct block_list_st *data, str
     block_list_sort_merge(st, mid, mid, fn, data, temp);
 }
 void block_list_sort(struct block_list_st *res) {
-    if(res == NULL) return;
+    if (res == NULL) return;
 
     struct block_list_st temp;
     block_list_data_init(&temp);
@@ -202,10 +202,18 @@ struct object_st *block_list_subscript(struct error_st *err, struct block_list_s
     struct object_st *res = NULL;
     if (obj->type != INTEGER_TYPE) {
         struct object_st *temp = object_new();
+        if (temp == NULL) {
+            error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+            return NULL;
+        }
         object__int(temp, err, obj);
 
         if (err == NULL || !err->present) {
             res = object_new();
+            if (res == NULL) {
+                error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+                return NULL;
+            }
             object_set_type(res, STRING_TYPE);
             string_set(res->data, list->addresses[integer_get_ui(temp->data) % list->size]);
         }
@@ -213,6 +221,10 @@ struct object_st *block_list_subscript(struct error_st *err, struct block_list_s
         return res;
     }
     res = object_new();
+    if (res == NULL) {
+        error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+        return NULL;
+    }
     object_set_type(res, STRING_TYPE);
     string_set(res->data, list->addresses[integer_get_ui(obj->data) % list->size]);
     return res;

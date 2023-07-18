@@ -171,6 +171,10 @@ void block_history_get_tlv(const struct block_history *block, struct string_st *
 struct object_st *block_history_attrib
 (struct error_st *err, const struct block_history *block, const struct string_st *str) {
     struct object_st *res = object_new();
+    if (res == NULL) {
+        error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+        return NULL;
+    }
     if (str->size == 12 & memcmp(str->data, "transactions", 12) == 0) {
         object_set_type(res, TRANS_LIST_TYPE);
         transaction_list_set(res->data, &block->transactions);

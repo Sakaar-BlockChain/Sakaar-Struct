@@ -5,9 +5,10 @@
 
 
 void parser_clear(struct parser_st *res) {
+    if (res == NULL) return;
     string_clear(&res->file_name);
     string_clear(&res->file_path);
-    if(res->data_str != NULL) free(res->data_str);
+    if (res->data_str != NULL) free(res->data_str);
     res->data_str = NULL;
     res->data_size = 0;
     res->data_pos = 0;
@@ -38,6 +39,7 @@ void parser_clear(struct parser_st *res) {
 }
 
 void parser_data_init(struct parser_st *res) {
+    if (res == NULL) return;
     string_data_init(&res->file_name);
     string_data_init(&res->file_path);
     res->data_str = NULL;
@@ -74,9 +76,10 @@ void parser_data_init(struct parser_st *res) {
     res->var_stack = list_new();
 }
 void parser_data_free(struct parser_st *res) {
+    if (res == NULL) return;
     string_data_free(&res->file_name);
     string_data_free(&res->file_path);
-    if(res->data_str != NULL) free(res->data_str);
+    if (res->data_str != NULL) free(res->data_str);
 
     error_free(res->error);
 
@@ -95,7 +98,8 @@ void parser_data_free(struct parser_st *res) {
     list_free(res->var_stack);
 }
 
-void parser_set_file(struct parser_st *res, char *file_path){
+void parser_set_file(struct parser_st *res, char *file_path) {
+    if (res == NULL) return;
     parser_clear(res);
 
     if (memcmp(file_path + strlen(file_path) - 3, ".sc", 3) != 0)
@@ -139,6 +143,7 @@ void parser_set_file(struct parser_st *res, char *file_path){
     fclose(fp);
 }
 void parser_set_str(struct parser_st *res, const struct string_st *str) {
+    if (res == NULL) return;
     parser_clear(res);
 
     res->data_size = str->size;
@@ -146,6 +151,7 @@ void parser_set_str(struct parser_st *res, const struct string_st *str) {
     memcpy(res->data_str, str->data, str->size);
 }
 void parser_set_error_token(struct parser_st *parser, char *type, char *msg, size_t token_pos) {
+    if (parser == NULL) return;
     error_set_msg(parser->error, type, msg);
     error_set_pos(parser->error,
                      parser->tokens.tokens[token_pos]->line_num,
@@ -155,6 +161,7 @@ void parser_set_error_token(struct parser_st *parser, char *type, char *msg, siz
 
 
 size_t parser_new_ident(struct parser_st *res, struct string_st *name) {
+    if (res == NULL) return 0;
     struct variable_list_st *list = variable_list_list_last(&res->variables_stack);
     for (size_t i = 0, size = list->size; i < size; i++) {
         if (string_cmp(&list->variables[i]->name, name) == 0) {
@@ -166,6 +173,7 @@ size_t parser_new_ident(struct parser_st *res, struct string_st *name) {
     return list->size;
 }
 size_t parser_get_ident(struct parser_st *res, struct string_st *name) {
+    if (res == NULL) return 0;
     struct variable_list_st *list;
     struct closure_st *closure;
 
@@ -204,30 +212,38 @@ size_t parser_get_ident(struct parser_st *res, struct string_st *name) {
     return pos;
 }
 size_t parser_const_obj(struct parser_st *res, struct object_st *obj) {
+    if (res == NULL) return 0;
     for(size_t i=0, size = res->const_objects->size; i < size; i++) {
         if (object_cmp(res->const_objects->data[i], obj) == 0) {
-            object_free(obj);
             return i;
         }
     }
     list_append(res->const_objects, obj);
-    object_free(obj);
     return res->const_objects->size - 1;
 }
 size_t parser_codespace(struct parser_st *res) {
+    if (res == NULL) return 0;
     bytecode_list_add_new(&res->codes);
     return res->codes.size - 1;
 }
 
 void parser_store_vars(struct parser_st *res, size_t size, size_t position) {
+    if (res == NULL) return;
     list_add_new(res->var_stack, INTEGER_TYPE);
+    if (res->var_stack->data[res->var_stack->size-1] == NULL) {
+        return error_set_msg(res->error, ErrorType_RunTime, "Memory Over Flow");
+    }
     integer_set_ui(res->var_stack->data[res->var_stack->size-1]->data, res->var_start_pos);
     list_add_new(res->var_stack, INTEGER_TYPE);
+    if (res->var_stack->data[res->var_stack->size-1] == NULL) {
+        return error_set_msg(res->error, ErrorType_RunTime, "Memory Over Flow");
+    }
     integer_set_ui(res->var_stack->data[res->var_stack->size-1]->data, position);
     res->var_start_pos = res->var_stack->size - 1;
     list_resize(res->var_stack, res->var_start_pos + 1 + size);
 }
 size_t parser_restore_vars(struct parser_st *res) {
+    if (res == NULL) return 0;
     size_t size = res->var_start_pos;
     size_t position = integer_get_ui(res->var_stack->data[res->var_start_pos]->data);
     res->var_start_pos = integer_get_ui(res->var_stack->data[res->var_start_pos - 1]->data);
@@ -236,7 +252,7 @@ size_t parser_restore_vars(struct parser_st *res) {
 }
 
 struct object_st *parser_get_var(struct parser_st *res, struct string_st *name) {
-    if (res->variables.size == 0 || res->var_stack->size <= 2) return NULL;
+    if (res == NULL || res->variables.size == 0 || res->var_stack->size <= 2) return NULL;
     struct variable_list_st *list = res->variables.variable_lists[0];
     struct object_st *result = NULL;
 

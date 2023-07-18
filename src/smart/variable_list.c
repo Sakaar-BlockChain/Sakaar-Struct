@@ -10,26 +10,30 @@ struct variable_list_st *variable_list_new() {
     return res;
 }
 void variable_list_set(struct variable_list_st *res, const struct variable_list_st *a) {
-    if(res->type) return;
+    if (res == NULL || res->type) return;
     variable_list_resize(res, a->size);
     for (size_t i = 0, size = a->size; i < size; i++) res->variables[i] = a->variables[i];
 }
 void variable_list_clear(struct variable_list_st *res) {
+    if (res == NULL) return;
     variable_list_resize(res, 0);
 }
 void variable_list_free(struct variable_list_st *res) {
+    if (res == NULL) return;
     variable_list_resize(res, 0);
     if (res->variables != NULL) free(res->variables);
     free(res);
 }
 
 void variable_list_data_init(struct variable_list_st *res) {
+    if (res == NULL) return;
     res->variables = NULL;
     res->max_size = 0;
     res->size = 0;
     res->type = 0;
 }
 void variable_list_data_free(struct variable_list_st *res) {
+    if (res == NULL) return;
     variable_list_resize(res, 0);
     if (res->variables != NULL) free(res->variables);
 }
@@ -53,17 +57,18 @@ void variable_list_resize(struct variable_list_st *res, size_t size) {
     res->size = size;
 }
 void variable_list_append(struct variable_list_st *res, struct variable_st *data) {
+    if (res == NULL) return;
     variable_list_resize(res, res->size + 1);
     res->variables[res->size - 1] = data;
 }
 size_t variable_list_add_new(struct variable_list_st *res) {
-    if(!res->type) return 0;
+    if (res == NULL || !res->type) return 0;
     variable_list_resize(res, res->size + 1);
     res->variables[res->size - 1] = variable_new(res->size);
     return res->size - 1;
 }
 struct variable_st *variable_list_last(struct variable_list_st *res) {
-    if (res->variables == NULL || res->size == 0) return NULL;
+    if (res == NULL || res->variables == NULL || res->size == 0) return NULL;
     return res->variables[res->size - 1];
 }
 

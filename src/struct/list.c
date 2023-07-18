@@ -51,7 +51,7 @@ void list_unmark(struct list_st *res) {
 }
 
 void list_clear(struct list_st *res) {
-    if(res == NULL) return;
+    if (res == NULL) return;
     list_resize(res, 0);
 }
 int list_cmp(const struct list_st *obj1, const struct list_st *obj2) {
@@ -126,7 +126,7 @@ void list_add_new(struct list_st *res, struct object_type *type) {
     object_set_type(res->data[res->size - 1], type);
 }
 struct object_st *list_pop(struct list_st *res) {
-    if(res == NULL || res->size == 0) return NULL;
+    if (res == NULL || res->size == 0) return NULL;
 
     struct object_st *ret = res->data[--res->size];
     res->data[res->size] = NULL;
@@ -185,6 +185,10 @@ struct object_st *list_subscript(struct error_st *err, struct list_st *list, con
     }
     if (obj->type != INTEGER_TYPE) {
         struct object_st *temp = object_new();
+        if (temp == NULL) {
+            error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+            return NULL;
+        }
         object__int(temp, err, obj);
         struct object_st *res = NULL;
 
@@ -202,7 +206,10 @@ void list__str(struct object_st *res, struct error_st *err, const struct list_st
     object_set_type(res, STRING_TYPE);
     string_set_str(res->data, "[", 1);
     struct object_st *temp = object_new();
-    for(size_t i = 0, size = obj->size; i < size; i++){
+    if (temp == NULL) {
+        return error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+    }
+    for(size_t i = 0, size = obj->size; i < size; i++) {
         object__str(temp, err, obj->data[i]);
         if (err != NULL && err->present) {
             object_free(temp);
@@ -225,6 +232,9 @@ void list__mul(struct object_st *res, struct error_st *err, const struct list_st
     if (obj2 == NULL) return error_set_msg(err, ErrorType_Math, "Can not make operation with object None");
     if (obj2->type != INTEGER_TYPE) {
         struct object_st *temp = object_new();
+        if (temp == NULL) {
+            return error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+        }
         object__int(temp, err, obj2);
 
         if (err == NULL || !err->present) {

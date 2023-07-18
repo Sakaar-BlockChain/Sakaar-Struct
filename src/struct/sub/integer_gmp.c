@@ -136,21 +136,21 @@ signed integer_get_si(const struct integer_st *res) {
 // String Methods
 void integer_set_str_(struct integer_st *res, const char *str, size_t size) {
     if (str == NULL) integer_clear(res);
-    if(str == NULL) return mpz_set_ui(res->mpz_int, 0);
+    if (str == NULL) return mpz_set_ui(res->mpz_int, 0);
     struct string_st *temp = string_new();
     string_set_str(temp, str, size);
     if (string_is_null(temp)) integer_clear(res);
-    if(temp->data != NULL) mpz_set_str(res->mpz_int, temp->data, 16);
+    if (temp->data != NULL) mpz_set_str(res->mpz_int, temp->data, 16);
     else mpz_set_ui(res->mpz_int, 0);
     string_free(temp);
 }
 void integer_set_str(struct integer_st *res, const struct string_st *str) {
     if (string_is_null(str)) integer_clear(res);
-    if(str->data != NULL) mpz_set_str(res->mpz_int, str->data, 16);
+    if (str->data != NULL) mpz_set_str(res->mpz_int, str->data, 16);
     else mpz_set_ui(res->mpz_int, 0);
 }
 void integer_get_str(const struct integer_st *res, struct string_st *str) {
-    if(str == NULL || res == NULL) return;
+    if (str == NULL || res == NULL) return;
     size_t str_len = mpz_sizeinbase(res->mpz_int, 16);
     size_t is_neg = (mpz_sgn(res->mpz_int) < 0);
 
@@ -173,7 +173,7 @@ void integer_set_str_dec_(struct integer_st *res, const char *str, size_t size) 
     struct string_st *temp = string_new();
     string_set_str(temp, str, size);
     if (string_is_null(temp)) integer_clear(res);
-    if(temp->data != NULL) mpz_set_str(res->mpz_int, temp->data, 10);
+    if (temp->data != NULL) mpz_set_str(res->mpz_int, temp->data, 10);
     else mpz_set_ui(res->mpz_int, 0);
     string_free(temp);
 }
@@ -182,7 +182,7 @@ void integer_set_str_oct_(struct integer_st *res, const char *str, size_t size) 
     struct string_st *temp = string_new();
     string_set_str(temp, str, size);
     if (string_is_null(temp)) integer_clear(res);
-    if(temp->data != NULL) mpz_set_str(res->mpz_int, temp->data, 8);
+    if (temp->data != NULL) mpz_set_str(res->mpz_int, temp->data, 8);
     else mpz_set_ui(res->mpz_int, 0);
     string_free(temp);
 
@@ -192,18 +192,18 @@ void integer_set_str_bin_(struct integer_st *res, const char *str, size_t size) 
     struct string_st *temp = string_new();
     string_set_str(temp, str, size);
     if (string_is_null(temp)) integer_clear(res);
-    if(temp->data != NULL) mpz_set_str(res->mpz_int, temp->data, 2);
+    if (temp->data != NULL) mpz_set_str(res->mpz_int, temp->data, 2);
     else mpz_set_ui(res->mpz_int, 0);
     string_free(temp);
 }
 
 void integer_set_dec(struct integer_st *res, const struct string_st *str) {
     if (str == NULL) integer_clear(res);
-    if(str->data != NULL) mpz_set_str(res->mpz_int, str->data, 10);
+    if (str->data != NULL) mpz_set_str(res->mpz_int, str->data, 10);
     else mpz_set_ui(res->mpz_int, 0);
 }
 void integer_get_dec(const struct integer_st *res, struct string_st *str) {
-    if(str == NULL) return;
+    if (str == NULL) return;
     size_t str_len = mpz_sizeinbase(res->mpz_int, 10);
     size_t is_neg = (mpz_sgn(res->mpz_int) < 0);
 
@@ -252,7 +252,7 @@ void integer_get_tlv_(const struct integer_st *res, struct string_st *tlv, unsig
 
     string_resize(tlv, tlv_len + is_neg);
 
-    for (size_t i = 0; i < num_len; i++){
+    for (size_t i = 0; i < num_len; i++) {
         size_t id = tlv_len - (num_len - i - 1)/ 2 - 1 + is_neg;
         tlv->data[id] = (char)((tlv->data[id] << 4) | set_char_16(temp[is_neg + i]));
     }

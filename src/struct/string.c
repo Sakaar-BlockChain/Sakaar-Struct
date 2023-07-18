@@ -45,18 +45,20 @@ int string_cmp(const struct string_st *obj1, const struct string_st *obj2) {
 }
 
 // Cmp Methods
-int string_is_null(const struct string_st *res){
+int string_is_null(const struct string_st *res) {
     return (res == NULL || res->size == 0);
 }
 
 // Data Methods
 void string_data_init(struct string_st *res) {
+    if (res == NULL) return;
     res->data = NULL;
     res->mx_size = 0;
     res->size = 0;
 }
 void string_data_free(struct string_st *res) {
-    if(res->data != NULL) free(res->data);
+    if (res == NULL) return;
+    if (res->data != NULL) free(res->data);
 }
 
 // Class Methods
@@ -101,8 +103,8 @@ int string_set_tlv(struct string_st *res, const struct string_st *tlv) {
     return tlv_get_value(tlv, res);
 }
 void string_get_tlv(const struct string_st *res, struct string_st *tlv) {
-    if(tlv == NULL) return;
-    if(res == NULL) return string_clear(tlv);
+    if (tlv == NULL) return;
+    if (res == NULL) return string_clear(tlv);
 
     tlv_set_string(tlv, TLV_STRING, res);
 }
@@ -117,6 +119,10 @@ struct object_st *string_subscript(struct error_st *err, struct string_st *str, 
     struct object_st *res = NULL;
     if (obj->type != INTEGER_TYPE) {
         struct object_st *temp = object_new();
+        if (temp == NULL) {
+            error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+            return NULL;
+        }
         object__int(temp, err, obj);
 
         if (err == NULL || !err->present) {
@@ -137,7 +143,7 @@ struct object_st *string_subscript(struct error_st *err, struct string_st *str, 
 // Convert Methods
 void string__bool(struct object_st *res, struct error_st *err, const struct string_st *obj) {
     object_set_type(res, INTEGER_TYPE);
-    if(obj->size == 0) integer_set_ui(res->data, 0);
+    if (obj->size == 0) integer_set_ui(res->data, 0);
     else integer_set_ui(res->data, 1);
 }
 void string__int(struct object_st *res, struct error_st *err, const struct string_st *obj) {
@@ -159,6 +165,9 @@ void string__mul(struct object_st *res, struct error_st *err, const struct strin
     if (obj2 == NULL) return error_set_msg(err, ErrorType_Math, "Can not make operation with object None");
     if (obj2->type != INTEGER_TYPE) {
         struct object_st *temp = object_new();
+        if (temp == NULL) {
+            return error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+        }
         object__int(temp, err, obj2);
 
         if (err == NULL || !err->present) {
@@ -179,6 +188,9 @@ void string__add(struct object_st *res, struct error_st *err, const struct strin
     if (obj2 == NULL) return error_set_msg(err, ErrorType_Math, "Can not make operation with object None");
     if (obj2->type != STRING_TYPE) {
         struct object_st *temp = object_new();
+        if (temp == NULL) {
+            return error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+        }
         object__str(temp, err, obj2);
 
         if (err == NULL || !err->present) {

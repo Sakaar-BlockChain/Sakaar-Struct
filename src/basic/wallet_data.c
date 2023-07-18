@@ -197,6 +197,10 @@ void wallet_data_get_tlv(const struct wallet_data *data, struct string_st *res) 
 struct object_st *wallet_data_attrib
 (struct error_st *err, const struct wallet_data *data, const struct string_st *str) {
     struct object_st *res = object_new();
+    if (res == NULL) {
+        error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+        return NULL;
+    }
     if (str->size == 7 && memcmp(str->data, "address", 7) == 0) {
         object_set_type(res, STRING_TYPE);
         string_set(res->data, &data->address);

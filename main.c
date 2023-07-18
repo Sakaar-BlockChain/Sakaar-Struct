@@ -1,7 +1,7 @@
 #include "struct.h"
 
 #define PRINT_PREF for(int _i=0;_i<size;_i++)printf("%c",prefix[_i]);
-#define PRINT_NEXT(expr) if(expr){printf("\t├- ");prefix[size + 1] = '|';}else{printf("\t└- ");prefix[size + 1] = ' ';}prefix[size] = '\t';
+#define PRINT_NEXT(expr) if (expr) {printf("\t├- ");prefix[size + 1] = '|';}else{printf("\t└- ");prefix[size + 1] = ' ';}prefix[size] = '\t';
 
 char prefix[100];
 void *printing[100];
@@ -65,37 +65,4 @@ void print_obj(const struct object_st *res, int size) {
 }
 
 int main() {
-//    struct object_st *obj = object_new();
-//    struct object_st *obj1 = object_new();
-//    object_set_type(obj, LIST_TYPE);
-//    list_append(obj->data, obj);
-//    list_append(obj->data, obj);
-//
-//    print_obj(obj, 1);
-//
-//    struct string_st *str = string_new();
-//    object_get_tlv(obj, str);
-//    print_tlv(str);
-//    printf("Stat : %d\n", object_set_tlv(obj1, str));
-//    string_free(str);
-//
-//    print_obj(obj1, 1);
-//
-//    printf("Pos : %d\n", obj->flag);
-//    printf("Pos : %d\n", obj1->flag);
-//
-//    printf("%zu\n", mem_ctx.filled);
-//    object_free(obj);
-//    printf("%zu\n", mem_ctx.filled);
-//    object_free(obj1);
-//    printf("%zu\n", mem_ctx.filled);
-    struct object_st *obj = object_new();
-    struct object_st *obj1 = object_new();
-    object_set_type(obj, LIST_TYPE);
-    list_append(obj->data, obj);
-    list_append(obj->data, obj);
-
-    object_free(obj);
-    object_free(obj1);
-    printf("%zu\n", mem_ctx.filled);
 }

@@ -18,7 +18,7 @@ struct op_function *op_function_new() {
 }
 void op_function_free(struct op_function *res) {
     if (res == NULL) return;
-    if(res->closure != NULL) frame_free(res->closure);
+    if (res->closure != NULL) frame_free(res->closure);
 
     free(res);
 }
@@ -66,7 +66,7 @@ void op_function_unmark(struct op_function *res) {
 void op_function_clear(struct op_function *res) {
     if (res == NULL) return;
 
-    if(res->closure != NULL) frame_free(res->closure);
+    if (res->closure != NULL) frame_free(res->closure);
     res->closure = NULL;
     res->argument = 0;
     res->function_body = 0;

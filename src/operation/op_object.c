@@ -18,8 +18,8 @@ struct op_object *op_object_new() {
 }
 void op_object_free(struct op_object *res) {
     if (res == NULL) return;
-    if(res->closure != NULL) frame_free(res->closure);
-    if(res->attr != NULL) frame_free(res->attr);
+    if (res->closure != NULL) frame_free(res->closure);
+    if (res->attr != NULL) frame_free(res->attr);
 
     free(res);
 }
@@ -70,8 +70,8 @@ void op_object_unmark(struct op_object *res) {
 
 void op_object_clear(struct op_object *res) {
     if (res == NULL) return;
-    if(res->attr != NULL) frame_free(res->attr);
-    if(res->closure != NULL) frame_free(res->closure);
+    if (res->attr != NULL) frame_free(res->attr);
+    if (res->closure != NULL) frame_free(res->closure);
     res->attr = NULL;
     res->closure = NULL;
     res->argument = 0;
@@ -170,6 +170,10 @@ struct object_st *op_object_subscript(struct error_st *err, struct op_object *ob
     struct object_st *res = NULL;
     if (obj2->type != STRING_TYPE) {
         struct object_st *temp = object_new();
+        if (temp == NULL) {
+            error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+            return NULL;
+        }
         object__int(temp, err, obj2);
 
         if (err == NULL || !err->present) {

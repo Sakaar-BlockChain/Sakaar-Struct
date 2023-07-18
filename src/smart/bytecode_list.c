@@ -1,21 +1,25 @@
 #include "smart.h"
 
 void bytecode_list_set(struct bytecode_list_st *res, const struct bytecode_list_st *a) {
-    if(res->type) return;
+    if (res == NULL) return;
+    if (res->type) return;
     bytecode_list_resize(res, a->size);
     for (size_t i = 0, size = a->size; i < size; i++) res->bytecodes[i] = a->bytecodes[i];
 }
 void bytecode_list_clear(struct bytecode_list_st *res) {
+    if (res == NULL) return;
     bytecode_list_resize(res, 0);
 }
 
 void bytecode_list_data_init(struct bytecode_list_st *res) {
+    if (res == NULL) return;
     res->bytecodes = NULL;
     res->max_size = 0;
     res->size = 0;
     res->type = 0;
 }
 void bytecode_list_data_free(struct bytecode_list_st *res) {
+    if (res == NULL) return;
     bytecode_list_resize(res, 0);
     if (res->bytecodes != NULL) free(res->bytecodes);
 }
@@ -39,21 +43,22 @@ void bytecode_list_resize(struct bytecode_list_st *res, size_t size) {
     res->size = size;
 }
 void bytecode_list_append(struct bytecode_list_st *res, struct bytecode_st *data) {
+    if (res == NULL) return;
     bytecode_list_resize(res, res->size + 1);
     res->bytecodes[res->size - 1] = data;
 }
 size_t bytecode_list_add_new(struct bytecode_list_st *res) {
-    if(!res->type) return 0;
+    if (res == NULL || !res->type) return 0;
     bytecode_list_resize(res, res->size + 1);
     res->bytecodes[res->size - 1] = bytecode_new();
     return res->size - 1;
 }
 struct bytecode_st *bytecode_list_last(struct bytecode_list_st *res) {
-    if (res->bytecodes == NULL || res->size == 0) return NULL;
+    if (res == NULL || res->bytecodes == NULL || res->size == 0) return NULL;
     return res->bytecodes[res->size - 1];
 }
 struct bytecode_st *bytecode_list_pop(struct bytecode_list_st *res) {
-    if (res->type || res->bytecodes == NULL || res->size == 0) return NULL;
+    if (res == NULL || res->type || res->bytecodes == NULL || res->size == 0) return NULL;
     return res->bytecodes[--res->size];
 }
 

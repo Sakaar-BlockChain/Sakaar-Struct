@@ -11,7 +11,8 @@ struct object_type object_type = {OBJECT_OP, &object_tlv, &object_sub, &object_c
 int marked = 0;
 // Standard operations
 struct object_st *object_new() {
-    struct object_st *res = skr_malloc(sizeof(struct object_st));
+    struct object_st *res = memory_malloc();
+    if (res == NULL) return NULL;
     res->type = NULL;
     res->data = NULL;
     res->counter = 1;
@@ -21,11 +22,14 @@ struct object_st *object_new() {
 void object_free(struct object_st *res) {
     if (res == NULL || --res->counter > 0) return;
     if (res->data != NULL) {
-        if (res->type != NULL && res->type->self._free != NULL)
-            res->type->self._free(res->data);
+        if (res->type != NULL && res->type->self._free != NULL) {
+            struct object_type *type = res->type;
+            res->type = NULL;
+            type->self._free(res->data);
+        }
         res->data = NULL;
     }
-    skr_free(res);
+    memory_free(res);
 }
 
 void object_set(struct object_st *res, const struct object_st *a) {
@@ -75,8 +79,11 @@ void object_set_type(struct object_st *res, struct object_type *type) {
     if (res->type == type) return;
     if (res->type != NULL) {
         if (res->data != NULL) {
-            if (res->type != NULL && res->type->self._free != NULL)
-                res->type->self._free(res->data);
+            if (res->type != NULL && res->type->self._free != NULL) {
+                struct object_type *type_ = res->type;
+                res->type = NONE_TYPE;
+                type_->self._free(res->data);
+            }
             res->data = NULL;
         }
     }

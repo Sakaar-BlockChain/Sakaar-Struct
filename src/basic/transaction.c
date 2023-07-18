@@ -217,6 +217,10 @@ void transaction_get_tlv(const struct transaction_st *transaction, struct string
 struct object_st *transaction_attrib
 (struct error_st *err, const struct transaction_st *transaction, const struct string_st *str) {
     struct object_st *res = object_new();
+    if (res == NULL) {
+        error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+        return NULL;
+    }
     if (str->size == 12 && memcmp(str->data, "address_from", 12) == 0) {
         object_set_type(res, STRING_TYPE);
         string_set(res->data, &transaction->address_from);

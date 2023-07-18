@@ -30,6 +30,9 @@ void integer__mod(struct object_st *res, struct error_st *err, const struct inte
     if (obj2 == NULL) return error_set_msg(err, ErrorType_Math, "Can not make operation with object None");
     if (obj2->type != INTEGER_TYPE) {
         struct object_st *temp = object_new();
+        if (temp == NULL) {
+            return error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+        }
         object__int(temp, err, obj2);
 
         if (integer_is_null(temp->data)) error_set_msg(err, ErrorType_Math, "Division by zero");
@@ -50,6 +53,9 @@ void integer__and(struct object_st *res, struct error_st *err, const struct inte
     if (obj2 == NULL) return error_set_msg(err, ErrorType_Math, "Can not make operation with object None");
     if (obj2->type != INTEGER_TYPE) {
         struct object_st *temp = object_new();
+        if (temp == NULL) {
+            return error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+        }
         object__int(temp, err, obj2);
 
         if (err == NULL || !err->present) {
@@ -66,6 +72,9 @@ void integer__mul(struct object_st *res, struct error_st *err, const struct inte
     if (obj2 == NULL) return error_set_msg(err, ErrorType_Math, "Can not make operation with object None");
     if (obj2->type != INTEGER_TYPE) {
         struct object_st *temp = object_new();
+        if (temp == NULL) {
+            return error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+        }
         object__int(temp, err, obj2);
 
         if (err == NULL || !err->present) {
@@ -82,6 +91,9 @@ void integer__add(struct object_st *res, struct error_st *err, const struct inte
     if (obj2 == NULL) return error_set_msg(err, ErrorType_Math, "Can not make operation with object None");
     if (obj2->type != INTEGER_TYPE) {
         struct object_st *temp = object_new();
+        if (temp == NULL) {
+            return error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+        }
         object__int(temp, err, obj2);
 
         if (err == NULL || !err->present) {
@@ -98,6 +110,9 @@ void integer__sub(struct object_st *res, struct error_st *err, const struct inte
     if (obj2 == NULL) return error_set_msg(err, ErrorType_Math, "Can not make operation with object None");
     if (obj2->type != INTEGER_TYPE) {
         struct object_st *temp = object_new();
+        if (temp == NULL) {
+            return error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+        }
         object__int(temp, err, obj2);
 
         if (err == NULL || !err->present) {
@@ -114,6 +129,9 @@ void integer__div(struct object_st *res, struct error_st *err, const struct inte
     if (obj2 == NULL) return error_set_msg(err, ErrorType_Math, "Can not make operation with object None");
     if (obj2->type != INTEGER_TYPE) {
         struct object_st *temp = object_new();
+        if (temp == NULL) {
+            return error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+        }
         object__int(temp, err, obj2);
 
         if (integer_is_null(temp->data)) error_set_msg(err, ErrorType_Math, "Division by zero");
@@ -134,6 +152,9 @@ void integer__xor(struct object_st *res, struct error_st *err, const struct inte
     if (obj2 == NULL) return error_set_msg(err, ErrorType_Math, "Can not make operation with object None");
     if (obj2->type != INTEGER_TYPE) {
         struct object_st *temp = object_new();
+        if (temp == NULL) {
+            return error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+        }
         object__int(temp, err, obj2);
 
         if (err == NULL || !err->present) {
@@ -150,6 +171,9 @@ void integer__or(struct object_st *res, struct error_st *err, const struct integ
     if (obj2 == NULL) return error_set_msg(err, ErrorType_Math, "Can not make operation with object None");
     if (obj2->type != INTEGER_TYPE) {
         struct object_st *temp = object_new();
+        if (temp == NULL) {
+            return error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+        }
         object__int(temp, err, obj2);
 
         if (err == NULL || !err->present) {
@@ -166,6 +190,9 @@ void integer__ls(struct object_st *res, struct error_st *err, const struct integ
     if (obj2 == NULL) return error_set_msg(err, ErrorType_Math, "Can not make operation with object None");
     if (obj2->type != INTEGER_TYPE) {
         struct object_st *temp = object_new();
+        if (temp == NULL) {
+            return error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+        }
         object__int(temp, err, obj2);
 
         if (err == NULL || !err->present) {
@@ -186,6 +213,9 @@ void integer__rs(struct object_st *res, struct error_st *err, const struct integ
     if (obj2 == NULL) return error_set_msg(err, ErrorType_Math, "Can not make operation with object None");
     if (obj2->type != INTEGER_TYPE) {
         struct object_st *temp = object_new();
+        if (temp == NULL) {
+            return error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+        }
         object__int(temp, err, obj2);
 
         if (err == NULL || !err->present) {

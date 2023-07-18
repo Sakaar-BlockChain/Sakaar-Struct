@@ -14,8 +14,8 @@ int smartcontract_set_tlv(struct string_st *res, const struct string_st *tlv) {
     return tlv_get_value(tlv, res);
 }
 void smartcontract_get_tlv(const struct string_st *res, struct string_st *tlv) {
-    if(tlv == NULL) return;
-    if(res == NULL) return string_clear(tlv);
+    if (tlv == NULL) return;
+    if (res == NULL) return string_clear(tlv);
 
     tlv_set_string(tlv, TLV_SMARTCONTRACT, res);
 }

@@ -2,21 +2,24 @@
 
 
 void closure_list_set(struct closure_list_st *res, const struct closure_list_st *a) {
-    if(res->type) return;
+    if (res == NULL || res->type) return;
     closure_list_resize(res, a->size);
     for (size_t i = 0, size = a->size; i < size; i++) res->closures[i] = a->closures[i];
 }
 void closure_list_clear(struct closure_list_st *res) {
+    if (res == NULL) return;
     closure_list_resize(res, 0);
 }
 
 void closure_list_data_init(struct closure_list_st *res) {
+    if (res == NULL) return;
     res->closures = NULL;
     res->max_size = 0;
     res->size = 0;
     res->type = 0;
 }
 void closure_list_data_free(struct closure_list_st *res) {
+    if (res == NULL) return;
     closure_list_resize(res, 0);
     if (res->closures != NULL) free(res->closures);
 }
@@ -40,17 +43,18 @@ void closure_list_resize(struct closure_list_st *res, size_t size) {
     res->size = size;
 }
 void closure_list_append(struct closure_list_st *res, struct closure_st *data) {
+    if (res == NULL) return;
     closure_list_resize(res, res->size + 1);
     res->closures[res->size - 1] = data;
 }
 size_t closure_list_add_new(struct closure_list_st *res) {
-    if(!res->type) return 0;
+    if (res == NULL || !res->type) return 0;
     closure_list_resize(res, res->size + 1);
     res->closures[res->size - 1] = closure_new();
     return res->size - 1;
 }
 struct closure_st *closure_list_last(struct closure_list_st *res) {
-    if (res->closures == NULL || res->size == 0) return NULL;
+    if (res == NULL || res->closures == NULL || res->size == 0) return NULL;
     return res->closures[res->size - 1];
 }
 

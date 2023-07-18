@@ -18,7 +18,6 @@ target_include_directories(${PROJECT_NAME}_lib PUBLIC
         PRIVATE src)
 MESSAGE(STATUS "Created: ${PROJECT_NAME}_lib")
 
-target_link_libraries(${PROJECT_NAME}_lib PUBLIC Sakaar_Memory_lib)
 target_link_libraries(${PROJECT_NAME}_lib PUBLIC gmp gmpxx)
 
 add_executable(${PROJECT_NAME} main.c)

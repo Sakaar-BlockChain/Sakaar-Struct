@@ -7,6 +7,7 @@
 struct object_st {
     struct object_type *type;
     size_t counter;
+    size_t pos;
     int flag;
     void *data;
 };

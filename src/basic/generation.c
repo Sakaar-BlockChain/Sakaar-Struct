@@ -124,6 +124,10 @@ void generation_get_tlv(const struct generation_st *gen, struct string_st *res) 
 struct object_st *generation_attrib
 (struct error_st *err, const struct generation_st *gen, const struct string_st *str) {
     struct object_st *res = object_new();
+    if (res == NULL) {
+        error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+        return NULL;
+    }
     if (str->size == 4 && memcmp(str->data, "time", 4) == 0) {
         object_set_type(res, INTEGER_TYPE);
         integer_set(res->data, &gen->time);

@@ -1,6 +1,6 @@
 #include "smart.h"
 
-struct token_st *token_new(){
+struct token_st *token_new() {
     struct token_st *res = malloc(sizeof(struct token_st));
     res->type = TokenType_None;
     res->sub_type = TokenType_None;
@@ -10,7 +10,8 @@ struct token_st *token_new(){
     res->line_num = res->line_pos = res->pos = 0;
     return res;
 }
-void token_set(struct token_st *res, const struct token_st *a){
+void token_set(struct token_st *res, const struct token_st *a) {
+    if (res == NULL) return;
     res->type = a->type;
     res->sub_type = a->sub_type;
 
@@ -20,7 +21,8 @@ void token_set(struct token_st *res, const struct token_st *a){
     res->line_pos = a->line_pos;
     res->pos = a->pos;
 }
-void token_clear(struct token_st *res){
+void token_clear(struct token_st *res) {
+    if (res == NULL) return;
     res->type = TokenType_None;
     res->sub_type = TokenType_None;
 
@@ -28,12 +30,14 @@ void token_clear(struct token_st *res){
 
     res->line_num = res->line_pos = res->pos = 0;
 }
-void token_free(struct token_st *res){
+void token_free(struct token_st *res) {
+    if (res == NULL) return;
     string_data_free(&res->data);
     free(res);
 }
 
-void token_data_init(struct token_st *res){
+void token_data_init(struct token_st *res) {
+    if (res == NULL) return;
     res->type = TokenType_None;
     res->sub_type = TokenType_None;
 
@@ -42,10 +46,12 @@ void token_data_init(struct token_st *res){
     res->line_num = res->line_pos = res->pos = 0;
 }
 void token_data_free(struct token_st *res) {
+    if (res == NULL) return;
     string_data_free(&res->data);
 }
 
 void token_set_pos(struct token_st *res, struct parser_st *parser) {
+    if (res == NULL) return;
     res->line_num = parser->line_num;
     res->line_pos = parser->line_pos;
     res->pos = parser->data_pos;

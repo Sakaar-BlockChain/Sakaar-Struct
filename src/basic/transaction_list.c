@@ -136,10 +136,18 @@ struct object_st *transaction_list_subscript(struct error_st *err, struct transa
     struct object_st *res = NULL;
     if (obj->type != INTEGER_TYPE) {
         struct object_st *temp = object_new();
+        if (temp == NULL) {
+            error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+            return NULL;
+        }
         object__int(temp, err, obj);
 
         if (err == NULL || !err->present) {
             res = object_new();
+            if (res == NULL) {
+                error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+                return NULL;
+            }
             object_set_type(res, TRANSACTION_TYPE);
             transaction_set(res->data, list->transactions[integer_get_ui(temp->data) % list->size]);
         }
@@ -147,6 +155,10 @@ struct object_st *transaction_list_subscript(struct error_st *err, struct transa
         return res;
     }
     res = object_new();
+    if (res == NULL) {
+        error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
+        return NULL;
+    }
     object_set_type(res, STRING_TYPE);
     transaction_set(res->data, list->transactions[integer_get_ui(obj->data) % list->size]);
     return res;
