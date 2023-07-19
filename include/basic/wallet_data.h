@@ -13,6 +13,9 @@ struct wallet_data {
 
     struct integer_st balance;
     struct integer_st pre_balance;
+
+    struct string_st last_block_hash;
+    struct integer_st last_block_time;
 };
 // Standard operations
 struct wallet_data *wallet_data_new();

@@ -17,6 +17,9 @@ struct wallet_data *wallet_data_new() {
 
     integer_data_init(&res->balance);
     integer_data_init(&res->pre_balance);
+
+    string_data_init(&res->last_block_hash);
+    integer_data_init(&res->last_block_time);
     return res;
 }
 void wallet_data_free(struct wallet_data *res) {
@@ -30,6 +33,9 @@ void wallet_data_free(struct wallet_data *res) {
 
     integer_data_free(&res->balance);
     integer_data_free(&res->pre_balance);
+
+    string_data_free(&res->last_block_hash);
+    integer_data_free(&res->last_block_time);
     free(res);
 }
 
@@ -46,6 +52,9 @@ void wallet_data_set(struct wallet_data *res, const struct wallet_data *a) {
 
     integer_set(&res->balance, &a->balance);
     integer_set(&res->pre_balance, &a->pre_balance);
+
+    string_set(&res->last_block_hash, &a->last_block_hash);
+    integer_set(&res->last_block_time, &a->last_block_time);
 }
 void wallet_data_copy(struct wallet_data *res, const struct wallet_data *a) {
     if (res == NULL) return;
@@ -60,6 +69,9 @@ void wallet_data_copy(struct wallet_data *res, const struct wallet_data *a) {
 
     integer_copy(&res->balance, &a->balance);
     integer_copy(&res->pre_balance, &a->pre_balance);
+
+    string_copy(&res->last_block_hash, &a->last_block_hash);
+    integer_copy(&res->last_block_time, &a->last_block_time);
 }
 
 void wallet_data_clear(struct wallet_data *res) {
@@ -73,6 +85,9 @@ void wallet_data_clear(struct wallet_data *res) {
 
     integer_clear(&res->balance);
     integer_clear(&res->pre_balance);
+
+    string_clear(&res->last_block_hash);
+    integer_clear(&res->last_block_time);
 }
 int wallet_data_cmp(const struct wallet_data *obj1, const struct wallet_data *obj2) {
     if (obj1 == NULL || obj2 == NULL || string_cmp(&obj1->address, &obj2->address) || string_cmp(&obj1->currency, &obj2->currency)) return CMP_NEQ;
@@ -91,6 +106,9 @@ void wallet_data_data_init(struct wallet_data *res) {
 
     integer_data_init(&res->balance);
     integer_data_init(&res->pre_balance);
+
+    string_data_init(&res->last_block_hash);
+    integer_data_init(&res->last_block_time);
 }
 void wallet_data_data_free(struct wallet_data *res) {
     if (res == NULL) return;
@@ -103,6 +121,9 @@ void wallet_data_data_free(struct wallet_data *res) {
 
     integer_data_free(&res->balance);
     integer_data_free(&res->pre_balance);
+
+    string_data_free(&res->last_block_hash);
+    integer_data_free(&res->last_block_time);
 }
 
 // TLV Methods
@@ -148,6 +169,12 @@ int wallet_data_set_tlv(struct wallet_data *res, const struct string_st *tlv) {
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
     if ((result = integer_set_tlv(&res->pre_balance, &_tlv_data))) goto end;
+
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = string_set_tlv(&res->last_block_hash, &_tlv_data))) goto end;
+
+    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
+    if ((result = integer_set_tlv(&res->last_block_time, &_tlv_data))) goto end;
     end:
     string_data_free(&_tlv);
     string_data_free(&_tlv_data);
@@ -189,6 +216,12 @@ void wallet_data_get_tlv(const struct wallet_data *data, struct string_st *res) 
     integer_get_tlv(&data->pre_balance, &_tlv_data);
     string_concat(res, &_tlv_data);
 
+    string_get_tlv(&data->last_block_hash, &_tlv_data);
+    string_concat(res, &_tlv_data);
+
+    integer_get_tlv(&data->last_block_time, &_tlv_data);
+    string_concat(res, &_tlv_data);
+
     tlv_set_string(res, TLV_WALLET_DATA, res);
     string_data_free(&_tlv_data);
 }
@@ -228,6 +261,14 @@ struct object_st *wallet_data_attrib
     else if (str->size == 11 && memcmp(str->data, "pre_balance", 11) == 0) {
         object_set_type(res, INTEGER_TYPE);
         integer_set(res->data, &data->pre_balance);
+    }
+    else if (str->size == 15 && memcmp(str->data, "last_block_hash", 15) == 0) {
+        object_set_type(res, STRING_TYPE);
+        string_set(res->data, &data->last_block_hash);
+    }
+    else if (str->size == 15 && memcmp(str->data, "last_block_time", 15) == 0) {
+        object_set_type(res, INTEGER_TYPE);
+        integer_set(res->data, &data->last_block_time);
     }
     else {
         object_clear(res);

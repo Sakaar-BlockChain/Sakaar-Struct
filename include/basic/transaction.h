@@ -16,6 +16,9 @@ struct transaction_st {
     struct string_st hash_from;
 
     struct string_st signature;
+
+    struct string_st priv_block_hash;
+    struct integer_st priv_block_time;
 };
 // Standard operations
 struct transaction_st *transaction_new();

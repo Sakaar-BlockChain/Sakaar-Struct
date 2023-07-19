@@ -32,7 +32,7 @@ void address_list_copy(struct address_list_st *res, const struct address_list_st
     if (a == NULL) return address_list_clear(res);
 
     address_list_resize(res, a->size);
-    for (size_t i = 0, size = a->size; i < size; i ++) string_set(res->addresses[i], a->addresses[i]);
+    for (size_t i = 0, size = a->size; i < size; i ++) string_copy(res->addresses[i], a->addresses[i]);
 }
 
 void address_list_clear(struct address_list_st *res) {

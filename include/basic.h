@@ -12,6 +12,7 @@
 #include "basic/block_list.h"
 #include "basic/currency.h"
 #include "basic/generation.h"
+#include "basic/packet_list.h"
 #include "basic/pre_transaction.h"
 #include "basic/transaction.h"
 #include "basic/transaction_list.h"
@@ -30,6 +31,7 @@
 #define TLV_BLOCK_LIST      0x1F42
 #define TLV_CURRENCY        0x1F10
 #define TLV_GENERATION      0x1F50
+#define TLV_PACKET_LIST     0x1F54
 #define TLV_TRANSACTION     0x1F51
 #define TLV_TRANS_LIST      0x1F52
 #define TLV_SMARTCONTRACT   0x1F53
@@ -47,6 +49,7 @@
 #define BLOCK_LIST_OP       (struct object_op) {METHOD_NEW &block_list_new, METHOD_FREE &block_list_free, METHOD_SET &block_list_set, METHOD_SET &block_list_copy, NULL, NULL, METHOD_CLEAR &block_list_clear, METHOD_CMP &block_list_cmp}
 #define CURRENCY_OP         (struct object_op) {METHOD_NEW &currency_new, METHOD_FREE &currency_free, METHOD_SET &currency_set, METHOD_SET &currency_copy, NULL, NULL, METHOD_CLEAR &currency_clear, METHOD_CMP &currency_cmp}
 #define GENERATION_OP       (struct object_op) {METHOD_NEW &generation_new, METHOD_FREE &generation_free, METHOD_SET &generation_set, METHOD_SET &generation_copy, NULL, NULL, METHOD_CLEAR &generation_clear, METHOD_CMP &generation_cmp}
+#define PACKET_LIST_OP      (struct object_op) {METHOD_NEW &packet_list_new, METHOD_FREE &packet_list_free, METHOD_SET &packet_list_set, METHOD_SET &packet_list_copy, NULL, NULL, METHOD_CLEAR &packet_list_clear, METHOD_CMP &packet_list_cmp}
 #define PRE_TRANSACTION_OP  (struct object_op) {METHOD_NEW &pre_transaction_new, METHOD_FREE &pre_transaction_free, METHOD_SET &pre_transaction_set, METHOD_SET &pre_transaction_copy, NULL, NULL, METHOD_CLEAR &pre_transaction_clear, METHOD_CMP &pre_transaction_cmp}
 #define TRANSACTION_OP      (struct object_op) {METHOD_NEW &transaction_new, METHOD_FREE &transaction_free, METHOD_SET &transaction_set, METHOD_SET &transaction_copy, NULL, NULL, METHOD_CLEAR &transaction_clear, METHOD_CMP &transaction_cmp}
 #define TRANS_LIST_OP       (struct object_op) {METHOD_NEW &transaction_list_new, METHOD_FREE &transaction_list_free, METHOD_SET &transaction_list_set, METHOD_SET &transaction_list_copy, NULL, NULL, METHOD_CLEAR &transaction_list_clear, METHOD_CMP &transaction_list_cmp}
@@ -65,6 +68,7 @@ extern struct object_type block_history_type;
 extern struct object_type block_list_type;
 extern struct object_type currency_type;
 extern struct object_type generation_type;
+extern struct object_type packet_list_type;
 extern struct object_type pre_transaction_type;
 extern struct object_type transaction_type;
 extern struct object_type transaction_list_type;
@@ -83,6 +87,7 @@ extern struct object_type wallet_smart_type;
 #define BLOCK_LIST_TYPE         &block_list_type
 #define CURRENCY_TYPE           &currency_type
 #define GENERATION_TYPE         &generation_type
+#define PACKET_LIST_TYPE       &packet_list_type
 #define PRE_TRANSACTION_TYPE    &pre_transaction_type
 #define TRANSACTION_TYPE        &transaction_type
 #define TRANS_LIST_TYPE         &transaction_list_type

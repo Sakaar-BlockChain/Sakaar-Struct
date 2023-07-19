@@ -31,7 +31,7 @@ void transaction_list_copy(struct transaction_list_st *res, const struct transac
     if (a == NULL) return transaction_list_clear(res);
 
     transaction_list_resize(res, a->size);
-    for (size_t i = 0, size = a->size; i < size; i ++) transaction_set(res->transactions[i], a->transactions[i]);
+    for (size_t i = 0, size = a->size; i < size; i ++) transaction_copy(res->transactions[i], a->transactions[i]);
 }
 
 void transaction_list_clear(struct transaction_list_st *res) {
