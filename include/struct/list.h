@@ -18,10 +18,10 @@ void list_mark(struct list_st *);
 void list_unmark(struct list_st *);
 
 void list_clear(struct list_st *);
-int list_cmp(const struct list_st *, const struct list_st *);
+int8_t list_cmp(const struct list_st *, const struct list_st *);
 
 // Cmp Methods
-int list_is_null(const struct list_st *);
+int8_t list_is_null(const struct list_st *);
 
 // Data Methods
 void list_data_init(struct list_st *);
@@ -35,7 +35,7 @@ void list_add_new(struct list_st *, struct object_type *);
 struct object_st *list_pop(struct list_st *);
 
 // TLV Methods
-int list_set_tlv(struct list_st *, const struct string_st *);
+int8_t list_set_tlv(struct list_st *, const struct string_st *);
 void list_get_tlv(const struct list_st *, struct string_st *);
 
 void list__mul(struct object_st *, struct error_st *, const struct list_st *, const struct object_st *);

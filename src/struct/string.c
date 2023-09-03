@@ -37,16 +37,16 @@ void string_clear(struct string_st *res) {
     if (res == NULL) return;
     string_resize(res, 0);
 }
-int string_cmp(const struct string_st *obj1, const struct string_st *obj2) {
+int8_t string_cmp(const struct string_st *obj1, const struct string_st *obj2) {
     if (obj1 == NULL || obj2 == NULL) return CMP_NEQ;
     if (obj1->size > obj2->size) return CMP_GRET;
     if (obj1->size < obj2->size) return CMP_LESS;
-    return memcmp(obj1->data, obj2->data, obj1->size);
+    return (int8_t) memcmp(obj1->data, obj2->data, obj1->size);
 }
 
 // Cmp Methods
-int string_is_null(const struct string_st *res) {
-    return (res == NULL || res->size == 0);
+int8_t string_is_null(const struct string_st *res) {
+    return (int8_t) (res == NULL || res->size == 0);
 }
 
 // Data Methods
@@ -94,12 +94,12 @@ void string_concat(struct string_st *res, const struct string_st *a) {
 }
 
 // TLV Methods
-int string_set_tlv(struct string_st *res, const struct string_st *tlv) {
+int8_t string_set_tlv(struct string_st *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
     string_clear(res);
-    int result = tlv_get_tag(tlv);
-    if (result < 0) return result;
-    if (result != TLV_STRING) return ERR_TLV_TAG;
+    int32_t tag = tlv_get_tag(tlv);
+    if (tag < 0) return (int8_t) tag;
+    if (tag != TLV_STRING) return ERR_TLV_TAG;
     return tlv_get_value(tlv, res);
 }
 void string_get_tlv(const struct string_st *res, struct string_st *tlv) {

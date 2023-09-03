@@ -4,7 +4,7 @@
 #include "struct.h"
 
 // TLV Methods
-int smartcontract_set_tlv(struct string_st *, const struct string_st *);
+int8_t smartcontract_set_tlv(struct string_st *, const struct string_st *);
 void smartcontract_get_tlv(const struct string_st *, struct string_st *);
 
 // Print

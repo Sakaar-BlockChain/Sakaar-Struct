@@ -7,7 +7,7 @@ struct variable_list_st{
     struct variable_st **variables;
     size_t size;
     size_t max_size;
-    int type;
+    int8_t type;
 };
 
 struct variable_list_st *variable_list_new();
@@ -24,7 +24,7 @@ size_t variable_list_add_new(struct variable_list_st *);
 struct variable_st *variable_list_last(struct variable_list_st *);
 
 // TLV Methods
-int variable_list_set_tlv(struct variable_list_st *, const struct string_st *);
+int8_t variable_list_set_tlv(struct variable_list_st *, const struct string_st *);
 void variable_list_get_tlv(const struct variable_list_st *, struct string_st *);
 
 void print_variable_list(const struct variable_list_st *, int);

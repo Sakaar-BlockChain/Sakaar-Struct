@@ -39,11 +39,11 @@ void address_list_clear(struct address_list_st *res) {
     if (res == NULL) return;
     address_list_resize(res, 0);
 }
-int address_list_cmp(const struct address_list_st *obj1, const struct address_list_st *obj2) {
+int8_t address_list_cmp(const struct address_list_st *obj1, const struct address_list_st *obj2) {
     if (obj1 == NULL || obj2 == NULL) return CMP_NEQ;
     if (obj1->size > obj2->size) return CMP_GRET;
     if (obj1->size < obj2->size) return CMP_LESS;
-    int res_cmp_sub;
+    int8_t res_cmp_sub;
     for (size_t i = 0, size = obj1->size; i < size; i++) {
         res_cmp_sub = string_cmp(obj1->addresses[i], obj2->addresses[i]);
         if (res_cmp_sub != CMP_EQ) return res_cmp_sub;
@@ -65,8 +65,8 @@ void address_list_data_free(struct address_list_st *res) {
 }
 
 // Cmp Methods
-int address_list_is_null(const struct address_list_st *res) {
-    return (res == NULL || res->size == 0);
+int8_t address_list_is_null(const struct address_list_st *res) {
+    return (int8_t) (res == NULL || res->size == 0);
 }
 void address_list_resize(struct address_list_st *res, size_t size) {
     if (res->addresses == NULL && size != 0) {
@@ -89,16 +89,17 @@ void address_list_resize(struct address_list_st *res, size_t size) {
 }
 
 // TLV Methods
-int address_list_set_tlv(struct address_list_st *res, const struct string_st *tlv) {
+int8_t address_list_set_tlv(struct address_list_st *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
     address_list_clear(res);
-    int result = tlv_get_tag(tlv);
-    if (result < 0) return result;
-    if (result != TLV_ADDRESS_LIST) return ERR_TLV_TAG;
+    int32_t tag = tlv_get_tag(tlv);
+    if (tag < 0) return (int8_t) tag;
+    if (tag != TLV_ADDRESS_LIST) return ERR_TLV_TAG;
 
     struct string_st _tlv, _tlv_data;
     string_data_init(&_tlv_data);
     string_data_init(&_tlv);
+    int8_t result;
     result = tlv_get_value(tlv, &_tlv);
 
     for (size_t pos; _tlv.size && result == 0;) {

@@ -57,7 +57,7 @@ void object_clear(struct object_st *res) {
     if (res == NULL) return;
     object_set_type(res, NONE_TYPE);
 }
-int object_cmp(const struct object_st *obj1, const struct object_st *obj2) {
+int8_t object_cmp(const struct object_st *obj1, const struct object_st *obj2) {
     while (obj1 != NULL && obj1->type == OBJECT_TYPE) obj1 = obj1->data;
     while (obj2 != NULL && obj2->type == OBJECT_TYPE) obj2 = obj2->data;
 
@@ -100,12 +100,12 @@ void object_set_pointer(struct object_st *res, struct object_st *obj) {
 // TLV method
 struct list_st *tlv_objects = NULL;
 
-int object_set_tlv(struct object_st *res, const struct string_st *tlv) {
+int8_t object_set_tlv(struct object_st *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
     object_clear(res);
-    int result = tlv_get_tag(tlv);
-    if (result < 0) return result;
-    switch (result) {
+    int32_t tag = tlv_get_tag(tlv);
+    if (tag < 0) return (int8_t) tag;
+    switch (tag) {
         // struct
         case TLV_INTEGER:
             object_set_type(res, INTEGER_TYPE);
@@ -135,15 +135,18 @@ int object_set_tlv(struct object_st *res, const struct string_st *tlv) {
         case TLV_BLOCK_HISTORY:
             object_set_type(res, BLOCK_HISTORY_TYPE);
             return block_history_set_tlv(res->data, tlv);
-        case TLV_BLOCK_LIST:
-            object_set_type(res, BLOCK_LIST_TYPE);
-            return block_list_set_tlv(res->data, tlv);
         case TLV_CURRENCY:
             object_set_type(res, CURRENCY_TYPE);
             return currency_set_tlv(res->data, tlv);
         case TLV_GENERATION:
             object_set_type(res, GENERATION_TYPE);
             return generation_set_tlv(res->data, tlv);
+        case TLV_HASH_TIME:
+            object_set_type(res, HASH_TIME_TYPE);
+            return hash_time_set_tlv(res->data, tlv);
+        case TLV_HASH_TIME_LIST:
+            object_set_type(res, HASH_TIME_LIST_TYPE);
+            return hash_time_list_set_tlv(res->data, tlv);
         case TLV_TRANSACTION:
             object_set_type(res, TRANSACTION_TYPE);
             return transaction_set_tlv(res->data, tlv);
@@ -176,16 +179,15 @@ int object_set_tlv(struct object_st *res, const struct string_st *tlv) {
         // pointer
         case TLV_POINTER_DEF:{
             struct string_st _tlv, _tlv_data;
-    string_data_init(&_tlv_data);
-    string_data_init(&_tlv);
-            struct integer_st position;
-            integer_data_init(&position);
+            string_data_init(&_tlv_data);
+            string_data_init(&_tlv);
+            size_t pos;
+            int8_t result;
+
             if ((result = tlv_get_value(tlv, &_tlv))) goto end_def;
 
             if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end_def;
-            if ((result = integer_set_tlv(&position, &_tlv_data))) goto end_def;
-
-            size_t pos = integer_get_si(&position);
+            if ((result = size_set_tlv(&pos, &_tlv_data))) goto end_def;
 
             if (tlv_objects == NULL)
                 tlv_objects = list_new();
@@ -199,31 +201,25 @@ int object_set_tlv(struct object_st *res, const struct string_st *tlv) {
             if ((result = object_type.tlv->_set_tlv(res, &_tlv_data))) goto end_def;
 
             end_def:
-            integer_data_free(&position);
             string_data_free(&_tlv);
             string_data_free(&_tlv_data);
             return result;
         }
         case TLV_POINTER: {
-            struct integer_st position;
-            integer_data_init(&position);
-
-            if ((result = integer_set_tlv_(&position, tlv))) goto end_ptr;
-            size_t pos = integer_get_si(&position);
+            size_t pos;
+            int8_t result;
+            if ((result = size_set_tlv(&pos, tlv))) goto end_ptr;
 
             if (tlv_objects->data[pos] != NULL) object_set_pointer(res, tlv_objects->data[pos]);
             else result = ERR_TLV_VALUE;
 
             end_ptr:
-            integer_data_free(&position);
             return result;
         }
         case TLV_POINTER_END: {
-            struct integer_st position;
-            integer_data_init(&position);
-
-            if ((result = integer_set_tlv_(&position, tlv))) goto end_end;
-            size_t pos = integer_get_si(&position);
+            size_t pos;
+            int8_t result;
+            if ((result = size_set_tlv(&pos, tlv))) goto end_end;
 
             if (tlv_objects->data[pos] != NULL) object_set_pointer(res, tlv_objects->data[pos]);
             else result = ERR_TLV_VALUE;
@@ -231,7 +227,6 @@ int object_set_tlv(struct object_st *res, const struct string_st *tlv) {
             tlv_objects->data[pos] = NULL;
 
             end_end:
-            integer_data_free(&position);
             return result;
         }
 
@@ -252,7 +247,7 @@ void object_get_tlv(struct object_st *res, struct string_st *tlv) {
     }
     if (res->flag > 0) {
         if (res->flag-- != 1) {
-            res->flag = -res->flag;
+            res->flag = (int8_t) -res->flag;
             if (tlv_objects == NULL)
                 tlv_objects = list_new();
 
@@ -262,23 +257,19 @@ void object_get_tlv(struct object_st *res, struct string_st *tlv) {
             if (pos == tlv_objects->size) list_resize(tlv_objects, tlv_objects->size + 1);
             tlv_objects->data[pos] = res;
 
-            struct string_st _tlv_data;
-    string_data_init(&_tlv_data);
-            struct integer_st position;
-            integer_data_init(&position);
+            {
+                struct string_st _tlv_data;
+                string_data_init(&_tlv_data);
 
-            integer_set_ui(&position, pos);
-            integer_get_tlv(&position, tlv);
+                size_get_tlv(pos, tlv);
 
-            if (res->type != NULL && res->type->tlv != NULL && res->type->tlv->_get_tlv != NULL)
-                res->type->tlv->_get_tlv(res->data, &_tlv_data);
-            string_concat(tlv, &_tlv_data);
+                if (res->type != NULL && res->type->tlv != NULL && res->type->tlv->_get_tlv != NULL)
+                    res->type->tlv->_get_tlv(res->data, &_tlv_data);
+                string_concat(tlv, &_tlv_data);
 
-
-            tlv_set_string(tlv, TLV_POINTER_DEF, tlv);
-
-            integer_data_free(&position);
-            string_data_free(&_tlv_data);
+                tlv_set_string(tlv, TLV_POINTER_DEF, tlv);
+                string_data_free(&_tlv_data);
+            }
         } else {
             if (res->type != NULL && res->type->tlv != NULL && res->type->tlv->_get_tlv != NULL)
                 return res->type->tlv->_get_tlv(res->data, tlv);
@@ -288,17 +279,15 @@ void object_get_tlv(struct object_st *res, struct string_st *tlv) {
         for (size_t i = 0; i < pos; i++)
             if (res == tlv_objects->data[i]) pos = i;
 
-        struct integer_st position;
-        integer_data_init(&position);
-
-        integer_set_ui(&position, pos);
-        if (++res->flag != 0) integer_get_tlv_(&position, tlv, TLV_POINTER);
+        struct string_st _tlv_data;
+        string_data_init(&_tlv_data);
+        size_get_tlv(pos, tlv);
+        if (++res->flag != 0) tlv_set_string(tlv, TLV_POINTER, tlv);
         else {
-            integer_get_tlv_(&position, tlv, TLV_POINTER_END);
+            tlv_set_string(tlv, TLV_POINTER_END, tlv);
             tlv_objects->data[pos] = NULL;
         }
-
-        integer_data_free(&position);
+        string_data_free(&_tlv_data);
     }
     if (marked_) marked = !marked;
 }

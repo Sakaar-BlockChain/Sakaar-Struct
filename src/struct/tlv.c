@@ -121,7 +121,7 @@ size_t tlv_get_size_value(const struct string_st *tlv) {
     exit(-1);
 }
 
-int tlv_get_tag(const struct string_st *tlv) {
+int32_t tlv_get_tag(const struct string_st *tlv) {
     size_t tag_size = tlv_get_size_tag(tlv);
     int _res = 0;
     for (size_t i = 0; i < tag_size; i++) {
@@ -130,14 +130,14 @@ int tlv_get_tag(const struct string_st *tlv) {
     }
     return _res;
 }
-int tlv_get_value(const struct string_st *tlv, struct string_st *res) {
+int8_t tlv_get_value(const struct string_st *tlv, struct string_st *res) {
     size_t head_size = tlv_get_size_head(tlv);
     size_t value_size = tlv_get_size_value(tlv);
     string_set_str(res, tlv->data + head_size, value_size);
     return ERR_SUCCESS;
 }
 
-int tlv_get_next_tlv(struct string_st *tlv, struct string_st *res) {
+int8_t tlv_get_next_tlv(struct string_st *tlv, struct string_st *res) {
     size_t size = tlv_get_size_head(tlv) + tlv_get_size_value(tlv);
     string_set_str(res, tlv->data, size);
 
@@ -167,7 +167,7 @@ void tlv_from_beautify(const struct string_st *beaut, struct string_st *res) {
 }
 
 // TLV Methods
-int tlv_set_tlv(struct string_st *res, const struct string_st *tlv) {
+int8_t tlv_set_tlv(struct string_st *res, const struct string_st *tlv) {
     string_set(res, tlv);
     return ERR_SUCCESS;
 }

@@ -23,12 +23,12 @@ void op_object_mark(struct op_object *);
 void op_object_unmark(struct op_object *);
 
 void op_object_clear(struct op_object *);
-int op_object_cmp(const struct op_object *, const struct op_object *);
+int8_t op_object_cmp(const struct op_object *, const struct op_object *);
 
 void op_object_define(struct op_object *, struct op_class *);
 
 // TLV Methods
-int op_object_set_tlv(struct op_object *, const struct string_st *);
+int8_t op_object_set_tlv(struct op_object *, const struct string_st *);
 void op_object_get_tlv(const struct op_object *, struct string_st *);
 
 // Sub method

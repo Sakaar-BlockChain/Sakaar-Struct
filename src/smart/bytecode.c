@@ -55,42 +55,37 @@ void bytecode_append(struct bytecode_st *res, char command, size_t data) {
 }
 
 // TLV Methods
-int bytecode_set_tlv(struct bytecode_st *res, const struct string_st *tlv) {
+int8_t bytecode_set_tlv(struct bytecode_st *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
     bytecode_clear(res);
-    int result = tlv_get_tag(tlv);
-    if (result < 0) return result;
-    if (result != TLV_BYTECODE) return ERR_TLV_TAG;
+    int32_t tag = tlv_get_tag(tlv);
+    if (tag < 0) return (int8_t) tag;
+    if (tag != TLV_BYTECODE) return ERR_TLV_TAG;
 
     struct string_st _tlv, _tlv_data;
     string_data_init(&_tlv_data);
     string_data_init(&_tlv);
-    struct integer_st position;
-    integer_data_init(&position);
+    int8_t result;
     if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
-    if ((result = integer_set_tlv(&position, &_tlv_data))) goto end;
-    res->closure = integer_get_si(&position);
+    if ((result = size_set_tlv(&res->closure, &_tlv_data))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
-    if ((result = integer_set_tlv(&position, &_tlv_data))) goto end;
-    res->variable = integer_get_si(&position);
+    if ((result = size_set_tlv(&res->variable, &_tlv_data))) goto end;
 
+    size_t _tag, _data;
     for (; _tlv.size;) {
         if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) break;
-        if ((result = integer_set_tlv(&position, &_tlv_data))) break;
-        char tag = (char) integer_get_si(&position);
+        if ((result = size_set_tlv(&_tag, &_tlv_data))) break;
 
         if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) break;
-        if ((result = integer_set_tlv(&position, &_tlv_data))) break;
-        size_t data = integer_get_si(&position);
+        if ((result = size_set_tlv(&_data, &_tlv_data))) break;
 
-        bytecode_append(res, tag, data);
+        bytecode_append(res, (char) tag, _data);
     }
 
     end:
-    integer_data_free(&position);
     string_data_free(&_tlv);
     string_data_free(&_tlv_data);
     return result;
@@ -102,27 +97,20 @@ void bytecode_get_tlv(const struct bytecode_st *res, struct string_st *tlv) {
 
     struct string_st _tlv_data;
     string_data_init(&_tlv_data);
-    struct integer_st position;
-    integer_data_init(&position);
 
-    integer_set_ui(&position, res->closure);
-    integer_get_tlv(&position, &_tlv_data);
+    size_get_tlv(res->closure, &_tlv_data);
     string_concat(tlv, &_tlv_data);
 
-    integer_set_ui(&position, res->variable);
-    integer_get_tlv(&position, &_tlv_data);
+    size_get_tlv(res->variable, &_tlv_data);
     string_concat(tlv, &_tlv_data);
 
     for (size_t i = 0, size = res->size; i < size; i++) {
-        integer_set_ui(&position, res->command[i]);
-        integer_get_tlv(&position, &_tlv_data);
+        size_get_tlv(res->command[i], &_tlv_data);
         string_concat(tlv, &_tlv_data);
 
-        integer_set_ui(&position, res->data[i]);
-        integer_get_tlv(&position, &_tlv_data);
+        size_get_tlv(res->data[i], &_tlv_data);
         string_concat(tlv, &_tlv_data);
     }
     tlv_set_string(tlv, TLV_BYTECODE, tlv);
     string_data_free(&_tlv_data);
-    integer_data_free(&position);
 }

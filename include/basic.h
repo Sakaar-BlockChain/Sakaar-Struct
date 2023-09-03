@@ -24,9 +24,9 @@
 
 
 #define TLV_ACCOUNT         0x1F30
-#define TLV_ACCOUNT_CONN    0x5F31
-#define TLV_ACTIVE_ACC      0x5F32
-#define TLV_ADDRESS_LIST    0x5F33
+#define TLV_ACCOUNT_CONN    0x1F31
+#define TLV_ACTIVE_ACC      0x1F32
+#define TLV_ADDRESS_LIST    0x1F33
 #define TLV_BLOCK           0x1F40
 #define TLV_BLOCK_HISTORY   0x1F41
 #define TLV_CURRENCY        0x1F10

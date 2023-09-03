@@ -43,7 +43,7 @@ void account_connections_clear(struct account_connections *res) {
     string_clear(&res->currency);
     address_list_clear(&res->addresses);
 }
-int account_connections_cmp(const struct account_connections *obj1, const struct account_connections *obj2) {
+int8_t account_connections_cmp(const struct account_connections *obj1, const struct account_connections *obj2) {
     if (obj1 == NULL || obj2 == NULL || string_cmp(&obj1->address, &obj2->address) || string_cmp(&obj1->currency, &obj2->currency)) return CMP_NEQ;
     return CMP_EQ;
 }
@@ -63,16 +63,17 @@ void account_connections_data_free(struct account_connections *res) {
 }
 
 // TLV Methods
-int account_connections_set_tlv(struct account_connections *res, const struct string_st *tlv) {
+int8_t account_connections_set_tlv(struct account_connections *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
     account_connections_clear(res);
-    int result = tlv_get_tag(tlv);
-    if (result < 0) return result;
-    if (result != TLV_ACCOUNT_CONN) return ERR_TLV_TAG;
+    int32_t tag = tlv_get_tag(tlv);
+    if (tag < 0) return (int8_t) tag;
+    if (tag != TLV_ACCOUNT_CONN) return ERR_TLV_TAG;
 
     struct string_st _tlv, _tlv_data;
     string_data_init(&_tlv_data);
     string_data_init(&_tlv);
+    int8_t result;
     if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;

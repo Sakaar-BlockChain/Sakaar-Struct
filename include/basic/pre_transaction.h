@@ -25,7 +25,7 @@ void pre_transaction_data_init(struct pre_transaction *);
 void pre_transaction_data_free(struct pre_transaction *);
 
 void pre_transaction_clear(struct pre_transaction *);
-int pre_transaction_cmp(const struct pre_transaction *, const struct pre_transaction *);
+int8_t pre_transaction_cmp(const struct pre_transaction *, const struct pre_transaction *);
 
 
 #endif //STRUCT_PRE_TRANSACTION_H

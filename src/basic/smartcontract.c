@@ -5,12 +5,12 @@ struct object_type smartcontract_type = {SMARTCONTRACT_OP, &smartcontract_tlv};
 
 
 // TLV Methods
-int smartcontract_set_tlv(struct string_st *res, const struct string_st *tlv) {
+int8_t smartcontract_set_tlv(struct string_st *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
     string_clear(res);
-    int result = tlv_get_tag(tlv);
-    if (result < 0) return result;
-    if (result != TLV_SMARTCONTRACT) return ERR_TLV_TAG;
+    int32_t tag = tlv_get_tag(tlv);
+    if (tag < 0) return (int8_t) tag;
+    if (tag != TLV_SMARTCONTRACT) return ERR_TLV_TAG;
     return tlv_get_value(tlv, res);
 }
 void smartcontract_get_tlv(const struct string_st *res, struct string_st *tlv) {

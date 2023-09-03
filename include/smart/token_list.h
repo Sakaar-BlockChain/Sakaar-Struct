@@ -7,7 +7,7 @@ struct token_list_st{
     struct token_st** tokens;
     size_t size;
     size_t max_size;
-    int type;
+    int8_t type;
 };
 
 void token_list_set(struct token_list_st *, const struct token_list_st *);

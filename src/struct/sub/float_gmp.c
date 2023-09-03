@@ -27,15 +27,15 @@ void float_clear(struct float_st *res) {
     if (res == NULL) return;
     mpf_set_ui(res->mpz_int, 0);
 }
-int float_cmp(const struct float_st *obj1, const struct float_st *obj2) {
+int8_t float_cmp(const struct float_st *obj1, const struct float_st *obj2) {
     if (obj1 == NULL || obj2 == NULL) return CMP_NEQ;
     return mpf_cmp(obj1->mpz_int, obj2->mpz_int);
 }
 
 // Cmp Methods
-int float_is_null(const struct float_st *res) {
+int8_t float_is_null(const struct float_st *res) {
     if (res == NULL) return 1;
-    return (mpf_cmp_ui(res->mpz_int, 0) == 0);
+    return (int8_t) (mpf_cmp_ui(res->mpz_int, 0) == 0);
 }
 
 // Class Methods

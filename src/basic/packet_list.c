@@ -39,11 +39,11 @@ void packet_list_clear(struct packet_list_st *res) {
     if (res == NULL) return;
     packet_list_resize(res, 0);
 }
-int packet_list_cmp(const struct packet_list_st *obj1, const struct packet_list_st *obj2) {
+int8_t packet_list_cmp(const struct packet_list_st *obj1, const struct packet_list_st *obj2) {
     if (obj1 == NULL || obj2 == NULL) return CMP_NEQ;
     if (obj1->size > obj2->size) return CMP_GRET;
     if (obj1->size < obj2->size) return CMP_LESS;
-    int res_cmp_sub;
+    int8_t res_cmp_sub;
     for (size_t i = 0, size = obj1->size; i < size; i++) {
         res_cmp_sub = integer_cmp(obj1->packets[i], obj2->packets[i]);
         if (res_cmp_sub != CMP_EQ) return res_cmp_sub;
@@ -65,16 +65,16 @@ void packet_list_data_free(struct packet_list_st *res) {
 }
 
 // Cmp Methods
-int packet_list_is_null(const struct packet_list_st *res) {
-    return (res == NULL || res->size == 0);
+int8_t packet_list_is_null(const struct packet_list_st *res) {
+    return (int8_t) (res == NULL || res->size == 0);
 }
 void packet_list_resize(struct packet_list_st *res, size_t size) {
     if (res->packets == NULL && size != 0) {
         res->max_size = size;
-        res->packets = malloc(sizeof(struct string_st *) * size);
+        res->packets = malloc(sizeof(struct integer_st *) * size);
         for (size_t i = 0; i < size; i++) res->packets[i] = NULL;
     } else if (res->max_size < size) {
-        res->packets = realloc(res->packets, sizeof(struct string_st *) * size * 2);
+        res->packets = realloc(res->packets, sizeof(struct integer_st *) * size * 2);
         for (size_t i = res->max_size, l = size * 2; i < l; i++) res->packets[i] = NULL;
         res->max_size = size * 2;
     }
@@ -89,16 +89,17 @@ void packet_list_resize(struct packet_list_st *res, size_t size) {
 }
 
 // TLV Methods
-int packet_list_set_tlv(struct packet_list_st *res, const struct string_st *tlv) {
+int8_t packet_list_set_tlv(struct packet_list_st *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
     packet_list_clear(res);
-    int result = tlv_get_tag(tlv);
-    if (result < 0) return result;
-    if (result != TLV_PACKET_LIST) return ERR_TLV_TAG;
+    int32_t tag = tlv_get_tag(tlv);
+    if (tag < 0) return (int8_t) tag;
+    if (tag != TLV_PACKET_LIST) return ERR_TLV_TAG;
 
     struct string_st _tlv, _tlv_data;
     string_data_init(&_tlv_data);
     string_data_init(&_tlv);
+    int8_t result;
     result = tlv_get_value(tlv, &_tlv);
 
     for (size_t pos; _tlv.size && result == 0;) {

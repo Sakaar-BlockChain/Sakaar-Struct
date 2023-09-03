@@ -20,7 +20,7 @@ void closure_data_free(struct closure_st *);
 void closure_append(struct closure_st *, struct variable_st *, struct variable_st *);
 
 // TLV Methods
-int closure_set_tlv(struct closure_st *, const struct string_st *);
+int8_t closure_set_tlv(struct closure_st *, const struct string_st *);
 void closure_get_tlv(const struct closure_st *, struct string_st *);
 
 void print_closure(const struct closure_st *, int);

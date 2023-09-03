@@ -29,19 +29,19 @@ void integer_clear(struct integer_st *res) {
     if (res == NULL) return;
     mpz_set_ui(res->mpz_int, 0);
 }
-int integer_cmp(const struct integer_st *obj1, const struct integer_st *obj2) {
+int8_t integer_cmp(const struct integer_st *obj1, const struct integer_st *obj2) {
     if (obj1 == NULL || obj2 == NULL) return CMP_NEQ;
     return mpz_cmp(obj1->mpz_int, obj2->mpz_int);
 }
 
 // Cmp Methods
-int integer_is_null(const struct integer_st *res) {
+int8_t integer_is_null(const struct integer_st *res) {
     if (res == NULL) return 1;
-    return (mpz_cmp_ui(res->mpz_int, 0) == 0);
+    return (int8_t) (mpz_cmp_ui(res->mpz_int, 0) == 0);
 }
-int integer_is_neg(const struct integer_st *res) {
+int8_t integer_is_neg(const struct integer_st *res) {
     if (res == NULL) return 1;
-    return (mpz_cmp_ui(res->mpz_int, 0) < 0);
+    return (int8_t) (mpz_cmp_ui(res->mpz_int, 0) < 0);
 }
 void integer_random(struct integer_st *res, const struct integer_st *a) {
     if (res == NULL) return;
@@ -212,14 +212,14 @@ void integer_get_dec(const struct integer_st *res, struct string_st *str) {
 }
 
 // TLV Methods
-int integer_set_tlv_(struct integer_st *res, const struct string_st *tlv) {
+int8_t integer_set_tlv_(struct integer_st *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
     integer_clear(res);
 
 
     struct string_st _tlv;
     string_data_init(&_tlv);
-    int result = tlv_get_value(tlv, &_tlv);
+    int8_t result = tlv_get_value(tlv, &_tlv);
     if (result == 0 && _tlv.data != NULL) {
         size_t is_neg = (_tlv.data[0] == 0x00);
         size_t num_len = (_tlv.size - is_neg) * 2;
@@ -260,17 +260,17 @@ void integer_get_tlv_(const struct integer_st *res, struct string_st *tlv, unsig
     free(temp);
     tlv_set_string(tlv, tag, tlv);
 }
-int integer_set_tlv(struct integer_st *res, const struct string_st *tlv) {
+int8_t integer_set_tlv(struct integer_st *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
     integer_clear(res);
-    int result = tlv_get_tag(tlv);
-    if (result < 0) return result;
-    if (result != TLV_INTEGER) return ERR_TLV_TAG;
+    int32_t tag = tlv_get_tag(tlv);
+    if (tag < 0) return (int8_t) tag;
+    if (tag != TLV_INTEGER) return ERR_TLV_TAG;
 
 
     struct string_st _tlv;
     string_data_init(&_tlv);
-    result = tlv_get_value(tlv, &_tlv);
+    int8_t result = tlv_get_value(tlv, &_tlv);
     if (result == 0 && _tlv.data != NULL) {
         size_t is_neg = (_tlv.data[0] == 0x00);
         size_t num_len = (_tlv.size - is_neg) * 2;

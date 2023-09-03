@@ -63,7 +63,7 @@ void bytecode_resize(struct bytecode_st *, size_t);
 void bytecode_append(struct bytecode_st *, char , size_t);
 
 // TLV Methods
-int bytecode_set_tlv(struct bytecode_st *, const struct string_st *);
+int8_t bytecode_set_tlv(struct bytecode_st *, const struct string_st *);
 void bytecode_get_tlv(const struct bytecode_st *, struct string_st *);
 
 void print_code(char command, size_t data);

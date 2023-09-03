@@ -37,8 +37,8 @@ void error_copy(struct error_st *res, const struct error_st *a) {
     res->line_pos = a->line_pos;
     res->pos = a->pos;
 
-    string_set(&res->type, &a->type);
-    string_set(&res->msg, &a->msg);
+    string_copy(&res->type, &a->type);
+    string_copy(&res->msg, &a->msg);
 }
 
 void error_clear(struct error_st *res) {
@@ -50,7 +50,7 @@ void error_clear(struct error_st *res) {
     string_clear(&res->type);
     string_clear(&res->msg);
 }
-int error_cmp(const struct error_st *obj1, const struct error_st *obj2) {
+int8_t error_cmp(const struct error_st *obj1, const struct error_st *obj2) {
     if (obj1 == NULL || obj2 == NULL || string_cmp(&obj1->type, &obj2->type) || string_cmp(&obj1->msg, &obj2->msg)) return CMP_NEQ;
     return CMP_EQ;
 }

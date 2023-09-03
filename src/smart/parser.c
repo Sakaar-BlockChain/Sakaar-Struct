@@ -266,16 +266,17 @@ struct object_st *parser_get_var(struct parser_st *res, struct string_st *name) 
 }
 
 // TLV Methods
-int parser_set_tlv(struct parser_st *res, const struct string_st *tlv) {
+int8_t parser_set_tlv(struct parser_st *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
     parser_clear(res);
-    int result = tlv_get_tag(tlv);
-    if (result < 0) return result;
-    if (result != TLV_PARSER) return ERR_TLV_TAG;
+    int32_t tag = tlv_get_tag(tlv);
+    if (tag < 0) return (int8_t) tag;
+    if (tag != TLV_PARSER) return ERR_TLV_TAG;
 
     struct string_st _tlv, _tlv_data;
     string_data_init(&_tlv_data);
     string_data_init(&_tlv);
+    int8_t result;
     if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
@@ -294,13 +295,7 @@ int parser_set_tlv(struct parser_st *res, const struct string_st *tlv) {
     if ((result = list_set_tlv(res->var_stack, &_tlv_data))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
-    {
-        struct integer_st position;
-        integer_data_init(&position);
-        result = integer_set_tlv(&position, &_tlv_data);
-        if (!result) res->var_start_pos = integer_get_si(&position);
-        integer_data_free(&position);
-    }
+    if ((result = size_set_tlv(&res->var_start_pos, &_tlv_data))) goto end;
     end:
     string_data_free(&_tlv);
     string_data_free(&_tlv_data);
@@ -326,13 +321,7 @@ void parser_get_tlv(const struct parser_st *res, struct string_st *tlv) {
     list_get_tlv(res->var_stack, &_tlv_data);
     string_concat(tlv, &_tlv_data);
 
-    {
-        struct integer_st position;
-        integer_data_init(&position);
-        integer_set_ui(&position, res->var_start_pos);
-        integer_get_tlv(&position, &_tlv_data);
-        integer_data_free(&position);
-    }
+    size_get_tlv(res->var_start_pos, &_tlv_data);
     string_concat(tlv, &_tlv_data);
 
     tlv_set_string(tlv, TLV_PARSER, tlv);

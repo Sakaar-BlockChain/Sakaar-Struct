@@ -38,11 +38,11 @@ void transaction_list_clear(struct transaction_list_st *res) {
     if (res == NULL) return;
     transaction_list_resize(res, 0);
 }
-int transaction_list_cmp(const struct transaction_list_st *obj1, const struct transaction_list_st *obj2) {
+int8_t transaction_list_cmp(const struct transaction_list_st *obj1, const struct transaction_list_st *obj2) {
     if (obj1 == NULL || obj2 == NULL) return CMP_NEQ;
     if (obj1->size > obj2->size) return CMP_GRET;
     if (obj1->size < obj2->size) return CMP_LESS;
-    int res_cmp_sub;
+    int8_t res_cmp_sub;
     for (size_t i = 0, size = obj1->size; i < size; i++) {
         res_cmp_sub = transaction_cmp(obj1->transactions[i], obj2->transactions[i]);
         if (res_cmp_sub != CMP_EQ) return res_cmp_sub;
@@ -64,16 +64,16 @@ void transaction_list_data_free(struct transaction_list_st *res) {
 }
 
 // Cmp Methods
-int transaction_list_is_null(const struct transaction_list_st *res) {
-    return (res == NULL || res->size == 0);
+int8_t transaction_list_is_null(const struct transaction_list_st *res) {
+    return (int8_t) (res == NULL || res->size == 0);
 }
 void transaction_list_resize(struct transaction_list_st *res, size_t size) {
     if (res->transactions == NULL && size != 0) {
         res->max_size = size;
-        res->transactions = malloc(sizeof(struct string_st *) * size);
+        res->transactions = malloc(sizeof(struct transaction_st *) * size);
         for (size_t i = 0; i < size; i++) res->transactions[i] = NULL;
     } else if (res->max_size < size) {
-        res->transactions = realloc(res->transactions, sizeof(struct string_st *) * size * 2);
+        res->transactions = realloc(res->transactions, sizeof(struct transaction_st *) * size * 2);
         for (size_t i = res->max_size, l = size * 2; i < l; i++) res->transactions[i] = NULL;
         res->max_size = size * 2;
     }
@@ -88,16 +88,17 @@ void transaction_list_resize(struct transaction_list_st *res, size_t size) {
 }
 
 // TLV Methods
-int transaction_list_set_tlv(struct transaction_list_st *res, const struct string_st *tlv) {
+int8_t transaction_list_set_tlv(struct transaction_list_st *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
     transaction_list_clear(res);
-    int result = tlv_get_tag(tlv);
-    if (result < 0) return result;
-    if (result != TLV_TRANS_LIST) return ERR_TLV_TAG;
+    int32_t tag = tlv_get_tag(tlv);
+    if (tag < 0) return (int8_t) tag;
+    if (tag != TLV_TRANS_LIST) return ERR_TLV_TAG;
 
     struct string_st _tlv, _tlv_data;
     string_data_init(&_tlv_data);
     string_data_init(&_tlv);
+    int8_t result;
     result = tlv_get_value(tlv, &_tlv);
 
     for (size_t pos; _tlv.size && result == 0;) {

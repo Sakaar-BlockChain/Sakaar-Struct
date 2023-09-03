@@ -12,7 +12,7 @@ struct object_st;
 #define METHOD_SET        (void (*)(void *, const void *))
 #define METHOD_MARK       (void (*)(void *))
 #define METHOD_CLEAR      (void (*)(void *))
-#define METHOD_CMP        (int (*)(const void *, const void *))
+#define METHOD_CMP        (int8_t (*)(const void *, const void *))
 
 struct object_op {
     void *(*_new)();
@@ -25,16 +25,16 @@ struct object_op {
     void (*_unmark)(void *);
 
     void (*_clear)(void *);
-    int (*_cmp)(const void *, const void *);
+    int8_t (*_cmp)(const void *, const void *);
 };
 
 
 #define METHOD_GET_TLV    (void (*)(const void *, struct string_st *))
-#define METHOD_SET_TLV    (int (*)(void *, const struct string_st *))
+#define METHOD_SET_TLV    (int8_t (*)(void *, const struct string_st *))
 
 struct object_tlv {
     void (*_get_tlv)(const void *, struct string_st *);
-    int (*_set_tlv)(void *, const struct string_st *);
+    int8_t (*_set_tlv)(void *, const struct string_st *);
 };
 
 

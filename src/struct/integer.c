@@ -5,6 +5,34 @@ struct object_math_op integer_math = {METHOD_MATH &integer__mod, METHOD_MATH &in
 struct object_convert integer_convert = {METHOD_CONVERT &integer__bool, METHOD_CONVERT &integer__int, METHOD_CONVERT &integer__float, METHOD_CONVERT &integer__str};
 struct object_type integer_type = {INTEGER_OP, &integer_tlv, NULL, &integer_convert, &integer_math};
 
+
+int8_t size_set_tlv(size_t *res, const struct string_st *tlv) {
+    if (res == NULL) return ERR_DATA_NULL;
+    *res = 0;
+    int32_t tag = tlv_get_tag(tlv);
+    if (tag < 0) return (int8_t) tag;
+    if (tag != TLV_INTEGER) return ERR_TLV_TAG;
+
+
+    struct string_st _tlv;
+    string_data_init(&_tlv);
+    int8_t result = tlv_get_value(tlv, &_tlv);
+    if (result == 0 && _tlv.data != NULL) {
+        sscanf(_tlv.data, "%zd", res);
+    }
+    string_data_free(&_tlv);
+    return result;
+}
+void size_get_tlv(size_t res, struct string_st *tlv) {
+    if (tlv == NULL) return;
+    string_clear(tlv);
+
+    char buffer[256] = "";
+    snprintf(buffer, 256, "%zd", res);
+    string_set_str(tlv, buffer, strlen(buffer));
+    tlv_set_string(tlv, TLV_INTEGER, tlv);
+}
+
 // Convert Methods
 void integer__bool(struct object_st *res, struct error_st *err, const struct integer_st *obj) {
     object_set_type(res, INTEGER_TYPE);

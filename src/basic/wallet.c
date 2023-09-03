@@ -38,7 +38,7 @@ void wallet_clear(struct wallet_st *res) {
     wallet_data_clear(&res->data);
     wallet_smart_clear(&res->smart);
 }
-int wallet_cmp(const struct wallet_st *obj1, const struct wallet_st *obj2) {
+int8_t wallet_cmp(const struct wallet_st *obj1, const struct wallet_st *obj2) {
     if (obj1 == NULL || obj2 == NULL || wallet_data_cmp(&obj1->data, &obj2->data) || wallet_smart_cmp(&obj1->smart, &obj2->smart)) return CMP_NEQ;
     return CMP_EQ;
 }
@@ -55,16 +55,17 @@ void wallet__data_free(struct wallet_st *res) {
 
 
 // TLV Methods
-int wallet_set_tlv(struct wallet_st *res, const struct string_st *tlv) {
+int8_t wallet_set_tlv(struct wallet_st *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
     wallet_clear(res);
-    int result = tlv_get_tag(tlv);
-    if (result < 0) return result;
-    if (result != TLV_WALLET) return ERR_TLV_TAG;
+    int32_t tag = tlv_get_tag(tlv);
+    if (tag < 0) return (int8_t) tag;
+    if (tag != TLV_WALLET) return ERR_TLV_TAG;
 
     struct string_st _tlv, _tlv_data;
     string_data_init(&_tlv_data);
     string_data_init(&_tlv);
+    int8_t result;
     if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;

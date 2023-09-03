@@ -74,7 +74,7 @@ void op_function_clear(struct op_function *res) {
 
     res->func = NULL;
 }
-int op_function_cmp(const struct op_function *obj1, const struct op_function *obj2) {
+int8_t op_function_cmp(const struct op_function *obj1, const struct op_function *obj2) {
     if (obj1 == NULL || obj2 == NULL || obj1->function_body != obj2->function_body ||
         obj1->func != obj2->func) return CMP_NEQ;
     return CMP_EQ;
@@ -97,41 +97,36 @@ void op_function_define(struct op_function *res, size_t function_body, struct pa
 }
 
 // TLV Methods
-int op_function_set_tlv(struct op_function *res, const struct string_st *tlv) {
+int8_t op_function_set_tlv(struct op_function *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
     op_function_clear(res);
-    int result = tlv_get_tag(tlv);
-    if (result < 0) return result;
-    if (result != TLV_OP_FUNCTION) return ERR_TLV_TAG;
+    int32_t tag = tlv_get_tag(tlv);
+    if (tag < 0) return (int8_t) tag;
+    if (tag != TLV_OP_FUNCTION) return ERR_TLV_TAG;
 
     res->closure = frame_new();
-    struct integer_st position;
-    integer_data_init(&position);
 
     struct string_st _tlv, _tlv_data;
     string_data_init(&_tlv_data);
     string_data_init(&_tlv);
+    int8_t result;
     if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
     if ((result = frame_set_tlv(res->closure, &_tlv_data))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
-    if ((result = integer_set_tlv(&position, &_tlv_data))) goto end;
-    res->argument = integer_get_si(&position);
+    if ((result = size_set_tlv(&res->argument, &_tlv_data))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
-    if ((result = integer_set_tlv(&position, &_tlv_data))) goto end;
-    res->function_body = integer_get_si(&position);
+    if ((result = size_set_tlv(&res->function_body, &_tlv_data))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
-    if ((result = integer_set_tlv(&position, &_tlv_data))) goto end;
-    res->argument_size = integer_get_si(&position);
+    if ((result = size_set_tlv(&res->argument_size, &_tlv_data))) goto end;
 
     end:
     string_data_free(&_tlv);
     string_data_free(&_tlv_data);
-    integer_data_free(&position);
     return result;
 
 }
@@ -139,25 +134,19 @@ void op_function_get_tlv(const struct op_function *res, struct string_st *tlv) {
     if (tlv == NULL) return;
     if (res == NULL) return string_clear(tlv);
 
-    struct integer_st position;
-    integer_data_init(&position);
     struct string_st _tlv_data;
     string_data_init(&_tlv_data);
     frame_get_tlv(res->closure, tlv);
 
-    integer_set_ui(&position, res->argument);
-    integer_get_tlv(&position, &_tlv_data);
+    size_get_tlv(res->argument, &_tlv_data);
     string_concat(tlv, &_tlv_data);
 
-    integer_set_ui(&position, res->function_body);
-    integer_get_tlv(&position, &_tlv_data);
+    size_get_tlv(res->function_body, &_tlv_data);
     string_concat(tlv, &_tlv_data);
 
-    integer_set_ui(&position, res->argument_size);
-    integer_get_tlv(&position, &_tlv_data);
+    size_get_tlv(res->argument_size, &_tlv_data);
     string_concat(tlv, &_tlv_data);
 
     tlv_set_string(tlv, TLV_OP_FUNCTION, tlv);
     string_data_free(&_tlv_data);
-    integer_data_free(&position);
 }

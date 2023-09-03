@@ -16,10 +16,10 @@ void string_set(struct string_st *, const struct string_st *);
 void string_copy(struct string_st *, const struct string_st *);
 
 void string_clear(struct string_st *);
-int string_cmp(const struct string_st *, const struct string_st *);
+int8_t string_cmp(const struct string_st *, const struct string_st *);
 
 // Cmp Methods
-int string_is_null(const struct string_st *);
+int8_t string_is_null(const struct string_st *);
 
 // Data Methods
 void string_data_init(struct string_st *);
@@ -31,7 +31,7 @@ void string_set_str(struct string_st *, const char *, size_t);
 void string_concat(struct string_st *, const struct string_st *);
 
 // TLV Methods
-int string_set_tlv(struct string_st *, const struct string_st *);
+int8_t string_set_tlv(struct string_st *, const struct string_st *);
 void string_get_tlv(const struct string_st *, struct string_st *);
 
 // Convert Methods

@@ -36,19 +36,19 @@ void activated_accounts_copy(struct activated_accounts *res, const struct activa
     if (a == NULL) return activated_accounts_clear(res);
 
     activated_accounts_resize(res, a->size);
-    for (size_t i = 0, size = a->size; i < size; i ++) string_set(res->addresses[i], a->addresses[i]);
-    for (size_t i = 0, size = a->size; i < size; i ++) integer_set(res->freeze[i], a->freeze[i]);
+    for (size_t i = 0, size = a->size; i < size; i ++) string_copy(res->addresses[i], a->addresses[i]);
+    for (size_t i = 0, size = a->size; i < size; i ++) integer_copy(res->freeze[i], a->freeze[i]);
 }
 
 void activated_accounts_clear(struct activated_accounts *res) {
     if (res == NULL) return;
     activated_accounts_resize(res, 0);
 }
-int activated_accounts_cmp(const struct activated_accounts *obj1, const struct activated_accounts *obj2) {
+int8_t activated_accounts_cmp(const struct activated_accounts *obj1, const struct activated_accounts *obj2) {
     if (obj1 == NULL || obj2 == NULL) return CMP_NEQ;
     if (obj1->size > obj2->size) return CMP_GRET;
     if (obj1->size < obj2->size) return CMP_LESS;
-    int res_cmp_sub;
+    int8_t res_cmp_sub;
     for (size_t i = 0, size = obj1->size; i < size; i++) {
         res_cmp_sub = string_cmp(obj1->addresses[i], obj2->addresses[i]);
         if (res_cmp_sub != CMP_EQ) return res_cmp_sub;
@@ -74,8 +74,8 @@ void activated_accounts_data_free(struct activated_accounts *res) {
 }
 
 // Cmp Methods
-int activated_accounts_is_null(const struct activated_accounts *res) {
-    return (res == NULL || res->size == 0);
+int8_t activated_accounts_is_null(const struct activated_accounts *res) {
+    return (int8_t) (res == NULL || res->size == 0);
 }
 void activated_accounts_resize(struct activated_accounts *res, size_t size) {
     if (res->addresses == NULL && size != 0) {
@@ -105,16 +105,17 @@ void activated_accounts_resize(struct activated_accounts *res, size_t size) {
 }
 
 // TLV Methods
-int activated_accounts_set_tlv(struct activated_accounts *res, const struct string_st *tlv) {
+int8_t activated_accounts_set_tlv(struct activated_accounts *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
     activated_accounts_clear(res);
-    int result = tlv_get_tag(tlv);
-    if (result < 0) return result;
-    if (result != TLV_ACTIVE_ACC) return ERR_TLV_TAG;
+    int32_t tag = tlv_get_tag(tlv);
+    if (tag < 0) return (int8_t) tag;
+    if (tag != TLV_ACTIVE_ACC) return ERR_TLV_TAG;
 
     struct string_st _tlv, _tlv_data;
     string_data_init(&_tlv_data);
     string_data_init(&_tlv);
+    int8_t result;
     result = tlv_get_value(tlv, &_tlv);
 
     for (size_t pos; _tlv.size && result == 0;) {

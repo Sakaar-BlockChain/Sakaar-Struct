@@ -18,10 +18,10 @@ void float_set(struct float_st *, const struct float_st *);
 void float_copy(struct float_st *, const struct float_st *);
 
 void float_clear(struct float_st *);
-int float_cmp(const struct float_st *, const struct float_st *);
+int8_t float_cmp(const struct float_st *, const struct float_st *);
 
 // Cmp Methods
-int float_is_null(const struct float_st *);
+int8_t float_is_null(const struct float_st *);
 
 // Class Methods
 void float_ls(struct float_st *, const struct float_st *, size_t );

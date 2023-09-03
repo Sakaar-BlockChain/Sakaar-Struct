@@ -7,7 +7,7 @@ struct node_list_st{
     struct node_st **nodes;
     size_t size;
     size_t max_size;
-    int type;
+    int8_t type;
 };
 
 void node_list_set(struct node_list_st *, const struct node_list_st *);

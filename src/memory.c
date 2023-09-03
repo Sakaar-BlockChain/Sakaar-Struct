@@ -52,4 +52,5 @@ void memory_clear() {
 
     free(pool->data);
     free(pool);
+    pool = NULL;
 }

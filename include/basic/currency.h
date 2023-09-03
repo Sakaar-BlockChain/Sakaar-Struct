@@ -8,9 +8,9 @@ struct currency_st {
     struct string_st smart_contract;
     struct string_st info;
 
-    struct integer_st hash_type;
-    struct integer_st crypto_type;
-    struct integer_st crypto_base;
+    size_t hash_type;
+    size_t crypto_type;
+    size_t crypto_base;
 
     struct integer_st our;
     struct integer_st product;
@@ -23,14 +23,14 @@ void currency_set(struct currency_st *, const struct currency_st *);
 void currency_copy(struct currency_st *, const struct currency_st *);
 
 void currency_clear(struct currency_st *);
-int currency_cmp(const struct currency_st *, const struct currency_st *);
+int8_t currency_cmp(const struct currency_st *, const struct currency_st *);
 
 // Data Methods
 void currency_data_init(struct currency_st *);
 void currency_data_free(struct currency_st *);
 
 // TLV Methods
-int currency_set_tlv(struct currency_st *, const struct string_st *);
+int8_t currency_set_tlv(struct currency_st *, const struct string_st *);
 void currency_get_tlv(const struct currency_st *, struct string_st *);
 
 // Attrib Methods

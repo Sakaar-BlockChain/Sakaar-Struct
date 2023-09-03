@@ -17,14 +17,14 @@ void wallet_set(struct wallet_st *, const struct wallet_st *);
 void wallet_copy(struct wallet_st *, const struct wallet_st *);
 
 void wallet_clear(struct wallet_st *);
-int wallet_cmp(const struct wallet_st *, const struct wallet_st *);
+int8_t wallet_cmp(const struct wallet_st *, const struct wallet_st *);
 
 // Data Methods
 void wallet__data_init(struct wallet_st *);
 void wallet__data_free(struct wallet_st *);
 
 // TLV Methods
-int wallet_set_tlv(struct wallet_st *, const struct string_st *);
+int8_t wallet_set_tlv(struct wallet_st *, const struct string_st *);
 void wallet_get_tlv(const struct wallet_st *, struct string_st *);
 
 // Attrib Methods

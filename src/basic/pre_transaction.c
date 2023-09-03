@@ -66,7 +66,7 @@ void pre_transaction_clear(struct pre_transaction *res) {
 
     string_clear(&res->private_key);
 }
-int pre_transaction_cmp(const struct pre_transaction *obj1, const struct pre_transaction *obj2) {
+int8_t pre_transaction_cmp(const struct pre_transaction *obj1, const struct pre_transaction *obj2) {
     if (obj1 == NULL || obj2 == NULL) return CMP_NEQ;
     if (string_cmp(&obj1->address_from, &obj2->address_from)) return CMP_NEQ;
     if (string_cmp(&obj1->address_to, &obj2->address_to)) return CMP_NEQ;

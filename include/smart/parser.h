@@ -34,9 +34,9 @@ struct parser_st{
     size_t line_num;
     size_t line_pos;
 
-    int   scope_buf[MaxBracketNesting];
+    int8_t   scope_buf[MaxBracketNesting];
     size_t scope_pos;
-    int scope_type;
+    int8_t scope_type;
 
     struct error_st *error;
 
@@ -76,7 +76,7 @@ size_t parser_restore_vars(struct parser_st *);
 struct object_st *parser_get_var(struct parser_st *, struct string_st *);
 
 // TLV Methods
-int parser_set_tlv(struct parser_st *, const struct string_st *);
+int8_t parser_set_tlv(struct parser_st *, const struct string_st *);
 void parser_get_tlv(const struct parser_st *, struct string_st *);
 
 

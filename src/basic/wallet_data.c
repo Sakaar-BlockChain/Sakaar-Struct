@@ -89,7 +89,7 @@ void wallet_data_clear(struct wallet_data *res) {
     string_clear(&res->last_block_hash);
     integer_clear(&res->last_block_time);
 }
-int wallet_data_cmp(const struct wallet_data *obj1, const struct wallet_data *obj2) {
+int8_t wallet_data_cmp(const struct wallet_data *obj1, const struct wallet_data *obj2) {
     if (obj1 == NULL || obj2 == NULL || string_cmp(&obj1->address, &obj2->address) || string_cmp(&obj1->currency, &obj2->currency)) return CMP_NEQ;
     return CMP_EQ;
 }
@@ -127,16 +127,17 @@ void wallet_data_data_free(struct wallet_data *res) {
 }
 
 // TLV Methods
-int wallet_data_set_tlv(struct wallet_data *res, const struct string_st *tlv) {
+int8_t wallet_data_set_tlv(struct wallet_data *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
     wallet_data_clear(res);
-    int result = tlv_get_tag(tlv);
-    if (result < 0) return result;
-    if (result != TLV_WALLET_DATA) return ERR_TLV_TAG;
+    int32_t tag = tlv_get_tag(tlv);
+    if (tag < 0) return (int8_t) tag;
+    if (tag != TLV_WALLET_DATA) return ERR_TLV_TAG;
 
     struct string_st _tlv, _tlv_data;
     string_data_init(&_tlv_data);
     string_data_init(&_tlv);
+    int8_t result;
     if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
@@ -149,20 +150,10 @@ int wallet_data_set_tlv(struct wallet_data *res, const struct string_st *tlv) {
     if ((result = string_set_tlv(&res->address_outside, &_tlv_data))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
-    {
-        struct integer_st *num = integer_new();
-        if ((result = integer_set_tlv(num, &_tlv_data))) goto end;
-        integer_get_str(num, &res->hash);
-        integer_free(num);
-    }
+    if ((result = string_set_tlv(&res->hash, &_tlv_data))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
-    {
-        struct integer_st *num = integer_new();
-        if ((result = integer_set_tlv(num, &_tlv_data))) goto end;
-        integer_get_str(num, &res->pre_hash);
-        integer_free(num);
-    }
+    if ((result = string_set_tlv(&res->pre_hash, &_tlv_data))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
     if ((result = integer_set_tlv(&res->balance, &_tlv_data))) goto end;
@@ -194,20 +185,10 @@ void wallet_data_get_tlv(const struct wallet_data *data, struct string_st *res) 
     string_get_tlv(&data->address_outside, &_tlv_data);
     string_concat(res, &_tlv_data);
 
-    {
-        struct integer_st *num = integer_new();
-        integer_set_str(num, &data->hash);
-        integer_get_tlv(num, &_tlv_data);
-        integer_free(num);
-    }
+    string_get_tlv(&data->hash, &_tlv_data);
     string_concat(res, &_tlv_data);
 
-    {
-        struct integer_st *num = integer_new();
-        integer_set_str(num, &data->pre_hash);
-        integer_get_tlv(num, &_tlv_data);
-        integer_free(num);
-    }
+    string_get_tlv(&data->pre_hash, &_tlv_data);
     string_concat(res, &_tlv_data);
 
     integer_get_tlv(&data->balance, &_tlv_data);

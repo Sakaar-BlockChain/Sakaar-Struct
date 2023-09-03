@@ -41,16 +41,17 @@ void closure_append(struct closure_st *res, struct variable_st *data, struct var
 }
 
 // TLV Methods
-int closure_set_tlv(struct closure_st *res, const struct string_st *tlv) {
+int8_t closure_set_tlv(struct closure_st *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
     closure_clear(res);
-    int result = tlv_get_tag(tlv);
-    if (result < 0) return result;
-    if (result != TLV_CLOSURE) return ERR_TLV_TAG;
+    int32_t tag = tlv_get_tag(tlv);
+    if (tag < 0) return (int8_t) tag;
+    if (tag != TLV_CLOSURE) return ERR_TLV_TAG;
 
     struct string_st _tlv, _tlv_data;
     string_data_init(&_tlv_data);
     string_data_init(&_tlv);
+    int8_t result;
     if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;

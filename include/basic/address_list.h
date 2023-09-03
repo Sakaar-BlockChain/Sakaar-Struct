@@ -16,18 +16,18 @@ void address_list_set(struct address_list_st *, const struct address_list_st *);
 void address_list_copy(struct address_list_st *, const struct address_list_st *);
 
 void address_list_clear(struct address_list_st *);
-int address_list_cmp(const struct address_list_st *, const struct address_list_st *);
+int8_t address_list_cmp(const struct address_list_st *, const struct address_list_st *);
 
 // Data Methods
 void address_list_data_init(struct address_list_st *);
 void address_list_data_free(struct address_list_st *);
 
 // Cmp Methods
-int address_list_is_null(const struct address_list_st *);
+int8_t address_list_is_null(const struct address_list_st *);
 void address_list_resize(struct address_list_st *, size_t);
 
 // TLV Methods
-int address_list_set_tlv(struct address_list_st *, const struct string_st *);
+int8_t address_list_set_tlv(struct address_list_st *, const struct string_st *);
 void address_list_get_tlv(const struct address_list_st *, struct string_st *);
 
 // Attrib Methods

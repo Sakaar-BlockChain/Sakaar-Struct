@@ -18,7 +18,7 @@ void frame_mark(struct frame_st *);
 void frame_unmark(struct frame_st *);
 
 // TLV Methods
-int frame_set_tlv(struct frame_st *, const struct string_st *);
+int8_t frame_set_tlv(struct frame_st *, const struct string_st *);
 void frame_get_tlv(const struct frame_st *, struct string_st *);
 
 void print_frame(const struct frame_st *, int);

@@ -7,17 +7,15 @@ struct object_type generation_type = {GENERATION_OP, &generation_tlv, &generatio
 // Standard operations
 struct generation_st *generation_new() {
     struct generation_st *res = malloc(sizeof(struct currency_st));
-    integer_data_init(&res->time);
-    string_data_init(&res->hash);
+    hash_time_data_init(&res->hash_time);
     string_data_init(&res->data);
 
-    integer_set_time(&res->time);
+    integer_set_time(&res->hash_time.time);
     return res;
 }
 void generation_free(struct generation_st *res) {
     if (res == NULL) return;
-    integer_data_free(&res->time);
-    string_data_free(&res->hash);
+    hash_time_data_free(&res->hash_time);
     string_data_free(&res->data);
     free(res);
 }
@@ -26,69 +24,57 @@ void generation_set(struct generation_st *res, const struct generation_st *a) {
     if (res == NULL) return;
     if (a == NULL) return generation_clear(res);
 
-    integer_set(&res->time, &a->time);
-    string_set(&res->hash, &a->hash);
+    hash_time_set(&res->hash_time, &a->hash_time);
     string_set(&res->data, &a->data);
 }
 void generation_copy(struct generation_st *res, const struct generation_st *a) {
     if (res == NULL) return;
     if (a == NULL) return generation_clear(res);
 
-    integer_copy(&res->time, &a->time);
-    string_copy(&res->hash, &a->hash);
+    hash_time_copy(&res->hash_time, &a->hash_time);
     string_copy(&res->data, &a->data);
 }
 
 void generation_clear(struct generation_st *res) {
     if (res == NULL) return;
-    integer_clear(&res->time);
-    string_clear(&res->hash);
+    hash_time_clear(&res->hash_time);
     string_clear(&res->data);
 }
-int generation_cmp(const struct generation_st *obj1, const struct generation_st *obj2) {
-    if (obj1 == NULL || obj2 == NULL || string_cmp(&obj1->hash, &obj2->hash) || integer_cmp(&obj1->time, &obj2->time)) return CMP_NEQ;
+int8_t generation_cmp(const struct generation_st *obj1, const struct generation_st *obj2) {
+    if (obj1 == NULL || obj2 == NULL || hash_time_cmp(&obj1->hash_time, &obj2->hash_time)) return CMP_NEQ;
     return CMP_EQ;
 }
 
 // Data Methods
 void generation_data_init(struct generation_st *res) {
     if (res == NULL) return;
-    integer_data_init(&res->time);
-    string_data_init(&res->hash);
+    hash_time_data_init(&res->hash_time);
     string_data_init(&res->data);
 
-    integer_set_time(&res->time);
+    integer_set_time(&res->hash_time.time);
 }
 void generation_data_free(struct generation_st *res) {
     if (res == NULL) return;
-    integer_data_free(&res->time);
-    string_data_free(&res->hash);
+    hash_time_data_free(&res->hash_time);
     string_data_free(&res->data);
 }
 
 // TLV Methods
-int generation_set_tlv(struct generation_st *res, const struct string_st *tlv) {
+int8_t generation_set_tlv(struct generation_st *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
     generation_clear(res);
-    int result = tlv_get_tag(tlv);
-    if (result < 0) return result;
-    if (result != TLV_GENERATION) return ERR_TLV_TAG;
+    int32_t tag = tlv_get_tag(tlv);
+    if (tag < 0) return (int8_t) tag;
+    if (tag != TLV_GENERATION) return ERR_TLV_TAG;
 
     struct string_st _tlv, _tlv_data;
     string_data_init(&_tlv_data);
     string_data_init(&_tlv);
+    int8_t result;
     if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
-    if ((result = integer_set_tlv(&res->time, &_tlv_data))) goto end;
-
-    if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
-    {
-        struct integer_st *num = integer_new();
-        if ((result = integer_set_tlv(num, &_tlv_data))) goto end;
-        integer_get_str(num, &res->hash);
-        integer_free(num);
-    }
+    if ((result = hash_time_set_tlv(&res->hash_time, &_tlv_data))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
     if ((result = string_set_tlv(&res->data, &_tlv_data))) goto end;
@@ -103,15 +89,7 @@ void generation_get_tlv(const struct generation_st *gen, struct string_st *res) 
 
     struct string_st _tlv_data;
     string_data_init(&_tlv_data);
-    integer_get_tlv(&gen->time, res);
-
-    {
-        struct integer_st *num = integer_new();
-        integer_set_str(num, &gen->hash);
-        integer_get_tlv(num, &_tlv_data);
-        integer_free(num);
-    }
-    string_concat(res, &_tlv_data);
+    hash_time_get_tlv(&gen->hash_time, res);
 
     string_get_tlv(&gen->data, &_tlv_data);
     string_concat(res, &_tlv_data);
@@ -128,17 +106,13 @@ struct object_st *generation_attrib
         error_set_msg(err, ErrorType_RunTime, "Memory Over Flow");
         return NULL;
     }
-    if (str->size == 4 && memcmp(str->data, "time", 4) == 0) {
-        object_set_type(res, INTEGER_TYPE);
-        integer_set(res->data, &gen->time);
+    if (str->size == 4 && memcmp(str->data, "hash_time", 9) == 0) {
+        object_set_type(res, HASH_TIME_TYPE);
+        hash_time_set(res->data, &gen->hash_time);
     }
     else if (str->size == 4 && memcmp(str->data, "data", 4) == 0) {
         object_set_type(res, STRING_TYPE);
         string_set(res->data, &gen->data);
-    }
-    else if (str->size == 4 && memcmp(str->data, "hash", 4) == 0) {
-        object_set_type(res, STRING_TYPE);
-        string_set(res->data, &gen->hash);
     }
     else {
         object_clear(res);

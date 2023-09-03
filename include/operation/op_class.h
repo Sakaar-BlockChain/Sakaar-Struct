@@ -22,13 +22,13 @@ void op_class_mark(struct op_class *);
 void op_class_unmark(struct op_class *);
 
 void op_class_clear(struct op_class *);
-int op_class_cmp(const struct op_class *, const struct op_class *);
+int8_t op_class_cmp(const struct op_class *, const struct op_class *);
 
 void op_class_define(struct op_class *, size_t, struct parser_st *);
 struct object_st *op_class_save_value(struct op_class *, struct parser_st *);
 
 // TLV Methods
-int op_class_set_tlv(struct op_class *, const struct string_st *);
+int8_t op_class_set_tlv(struct op_class *, const struct string_st *);
 void op_class_get_tlv(const struct op_class *, struct string_st *);
 
 // Sub method

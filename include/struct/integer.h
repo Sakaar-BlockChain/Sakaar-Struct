@@ -18,11 +18,11 @@ void integer_set(struct integer_st *, const struct integer_st *);
 void integer_copy(struct integer_st *, const struct integer_st *);
 
 void integer_clear(struct integer_st *);
-int integer_cmp(const struct integer_st *, const struct integer_st *);
+int8_t integer_cmp(const struct integer_st *, const struct integer_st *);
 
 // Cmp Methods
-int integer_is_null(const struct integer_st *);
-int integer_is_neg(const struct integer_st *);
+int8_t integer_is_null(const struct integer_st *);
+int8_t integer_is_neg(const struct integer_st *);
 void integer_random(struct integer_st *, const struct integer_st *);
 
 // Data Methods
@@ -64,10 +64,12 @@ void integer_set_dec(struct integer_st *, const struct string_st *);
 void integer_get_dec(const struct integer_st *, struct string_st *);
 
 // TLV Methods
-int integer_set_tlv_(struct integer_st *, const struct string_st *);
+int8_t integer_set_tlv_(struct integer_st *, const struct string_st *);
 void integer_get_tlv_(const struct integer_st *, struct string_st *, unsigned);
-int integer_set_tlv(struct integer_st *, const struct string_st *);
+int8_t integer_set_tlv(struct integer_st *, const struct string_st *);
 void integer_get_tlv(const struct integer_st *, struct string_st *);
+int8_t size_set_tlv(size_t *, const struct string_st *);
+void size_get_tlv(size_t , struct string_st *);
 
 // Math Methods
 void integer__mod(struct object_st *, struct error_st *, const struct integer_st *, const struct object_st *);

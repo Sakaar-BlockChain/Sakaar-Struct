@@ -28,13 +28,13 @@ void error_set(struct error_st *, const struct error_st *);
 void error_copy(struct error_st *, const struct error_st *);
 
 void error_clear(struct error_st *);
-int error_cmp(const struct error_st *, const struct error_st *);
+int8_t error_cmp(const struct error_st *, const struct error_st *);
 
 void error_set_pos(struct error_st *, size_t, size_t, size_t);
 void error_set_msg(struct error_st *, char *, char *);
 
 // TLV Methods
-int error_set_tlv(struct string_st *, const struct string_st *);
+int8_t error_set_tlv(struct string_st *, const struct string_st *);
 void error_get_tlv(const struct string_st *, struct string_st *);
 
 // Convert Methods

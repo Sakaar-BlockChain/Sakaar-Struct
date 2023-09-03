@@ -28,14 +28,14 @@ void transaction_set(struct transaction_st *, const struct transaction_st *a);
 void transaction_copy(struct transaction_st *, const struct transaction_st *a);
 
 void transaction_clear(struct transaction_st *);
-int transaction_cmp(const struct transaction_st *, const struct transaction_st *);
+int8_t transaction_cmp(const struct transaction_st *, const struct transaction_st *);
 
 // Data Methods
 void transaction_data_init(struct transaction_st *);
 void transaction_data_free(struct transaction_st *);
 
 // TLV Methods
-int transaction_set_tlv(struct transaction_st *, const struct string_st *);
+int8_t transaction_set_tlv(struct transaction_st *, const struct string_st *);
 void transaction_get_tlv(const struct transaction_st *, struct string_st *);
 
 // Attrib Methods

@@ -8,7 +8,7 @@ struct object_st {
     struct object_type *type;
     size_t counter;
     size_t pos;
-    int flag;
+    int8_t flag;
     void *data;
 };
 // Standard operations
@@ -22,7 +22,7 @@ void object_mark(struct object_st *);
 void object_unmark(struct object_st *);
 
 void object_clear(struct object_st *);
-int object_cmp(const struct object_st *, const struct object_st *);
+int8_t object_cmp(const struct object_st *, const struct object_st *);
 
 // Pointer Methods
 struct object_st *object_copy_obj(struct object_st *);
@@ -30,7 +30,7 @@ void object_set_type(struct object_st *, struct object_type *);
 void object_set_pointer(struct object_st *, struct object_st *);
 
 // TLV Methods
-int object_set_tlv(struct object_st *, const struct string_st *);
+int8_t object_set_tlv(struct object_st *, const struct string_st *);
 void object_get_tlv(struct object_st *, struct string_st *);
 
 // Sub method

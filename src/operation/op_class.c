@@ -77,7 +77,7 @@ void op_class_clear(struct op_class *res) {
     res->argument = 0;
     res->class_body = 0;
 }
-int op_class_cmp(const struct op_class *obj1, const struct op_class *obj2) {
+int8_t op_class_cmp(const struct op_class *obj1, const struct op_class *obj2) {
     if (obj1 == NULL || obj2 == NULL || obj1->class_body != obj2->class_body) return CMP_NEQ;
     return CMP_EQ;
 }
@@ -113,21 +113,20 @@ struct object_st *op_class_save_value(struct op_class *res, struct parser_st* pa
 }
 
 // TLV Methods
-int op_class_set_tlv(struct op_class *res, const struct string_st *tlv) {
+int8_t op_class_set_tlv(struct op_class *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
     op_class_clear(res);
-    int result = tlv_get_tag(tlv);
-    if (result < 0) return result;
-    if (result != TLV_OP_CLASS) return ERR_TLV_TAG;
+    int32_t tag = tlv_get_tag(tlv);
+    if (tag < 0) return (int8_t) tag;
+    if (tag != TLV_OP_CLASS) return ERR_TLV_TAG;
 
     res->attr = frame_new();
     res->closure = frame_new();
-    struct integer_st position;
-    integer_data_init(&position);
 
     struct string_st _tlv, _tlv_data;
     string_data_init(&_tlv_data);
     string_data_init(&_tlv);
+    int8_t result;
     if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
@@ -137,25 +136,20 @@ int op_class_set_tlv(struct op_class *res, const struct string_st *tlv) {
     if ((result = frame_set_tlv(res->closure, &_tlv_data))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
-    if ((result = integer_set_tlv(&position, &_tlv_data))) goto end;
-    res->argument = integer_get_si(&position);
+    if ((result = size_set_tlv(&res->argument, &_tlv_data))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
-    if ((result = integer_set_tlv(&position, &_tlv_data))) goto end;
-    res->class_body = integer_get_si(&position);
+    if ((result = size_set_tlv(&res->class_body, &_tlv_data))) goto end;
 
     end:
     string_data_free(&_tlv);
     string_data_free(&_tlv_data);
-    integer_data_free(&position);
     return result;
 }
 void op_class_get_tlv(const struct op_class *res, struct string_st *tlv) {
     if (tlv == NULL) return;
     if (res == NULL) return string_clear(tlv);
 
-    struct integer_st position;
-    integer_data_init(&position);
     struct string_st _tlv_data;
     string_data_init(&_tlv_data);
     frame_get_tlv(res->attr, tlv);
@@ -163,17 +157,14 @@ void op_class_get_tlv(const struct op_class *res, struct string_st *tlv) {
     frame_get_tlv(res->closure, &_tlv_data);
     string_concat(tlv, &_tlv_data);
 
-    integer_set_ui(&position, res->argument);
-    integer_get_tlv(&position, &_tlv_data);
+    size_get_tlv(res->argument, &_tlv_data);
     string_concat(tlv, &_tlv_data);
 
-    integer_set_ui(&position, res->class_body);
-    integer_get_tlv(&position, &_tlv_data);
+    size_get_tlv(res->class_body, &_tlv_data);
     string_concat(tlv, &_tlv_data);
 
     tlv_set_string(tlv, TLV_OP_CLASS, tlv);
     string_data_free(&_tlv_data);
-    integer_data_free(&position);
 }
 
 // Sub method

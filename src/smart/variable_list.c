@@ -73,16 +73,17 @@ struct variable_st *variable_list_last(struct variable_list_st *res) {
 }
 
 // TLV Methods
-int variable_list_set_tlv(struct variable_list_st *res, const struct string_st *tlv) {
+int8_t variable_list_set_tlv(struct variable_list_st *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
     variable_list_clear(res);
-    int result = tlv_get_tag(tlv);
-    if (result < 0) return result;
-    if (result != TLV_VARIABLE_LIST) return ERR_TLV_TAG;
+    int32_t tag = tlv_get_tag(tlv);
+    if (tag < 0) return (int8_t) tag;
+    if (tag != TLV_VARIABLE_LIST) return ERR_TLV_TAG;
 
     struct string_st _tlv, _tlv_data;
     string_data_init(&_tlv_data);
     string_data_init(&_tlv);
+    int8_t result;
     result = tlv_get_value(tlv, &_tlv);
 
     for (size_t pos; _tlv.size && result == 0;) {

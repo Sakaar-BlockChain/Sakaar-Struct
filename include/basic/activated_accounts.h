@@ -17,18 +17,18 @@ void activated_accounts_set(struct activated_accounts *, const struct activated_
 void activated_accounts_copy(struct activated_accounts *, const struct activated_accounts *);
 
 void activated_accounts_clear(struct activated_accounts *);
-int activated_accounts_cmp(const struct activated_accounts *, const struct activated_accounts *);
+int8_t activated_accounts_cmp(const struct activated_accounts *, const struct activated_accounts *);
 
 // Data Methods
 void activated_accounts_data_init(struct activated_accounts *);
 void activated_accounts_data_free(struct activated_accounts *);
 
 // Cmp Methods
-int activated_accounts_is_null(const struct activated_accounts *);
+int8_t activated_accounts_is_null(const struct activated_accounts *);
 void activated_accounts_resize(struct activated_accounts *, size_t);
 
 // TLV Methods
-int activated_accounts_set_tlv(struct activated_accounts *, const struct string_st *);
+int8_t activated_accounts_set_tlv(struct activated_accounts *, const struct string_st *);
 void activated_accounts_get_tlv(const struct activated_accounts *, struct string_st *);
 
 // Attrib Methods

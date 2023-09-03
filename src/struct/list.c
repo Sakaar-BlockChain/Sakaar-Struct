@@ -31,7 +31,7 @@ void list_set(struct list_st *res, const struct list_st *a) {
 void list_copy(struct list_st *res, const struct list_st *a) {
     if (res == NULL) return;
     list_clear(res);
-    if (a == NULL) return list_clear(res);
+    if (a == NULL) return;
     list_resize(res, a->size);
     for (size_t i = 0, size = a->size; i < size; i++) {
         res->data[i] = object_new();
@@ -54,11 +54,11 @@ void list_clear(struct list_st *res) {
     if (res == NULL) return;
     list_resize(res, 0);
 }
-int list_cmp(const struct list_st *obj1, const struct list_st *obj2) {
+int8_t list_cmp(const struct list_st *obj1, const struct list_st *obj2) {
     if (obj1 == NULL || obj2 == NULL) return CMP_NEQ;
     if (obj1->size > obj2->size) return CMP_GRET;
     if (obj1->size < obj2->size) return CMP_LESS;
-    int res_cmp_sub;
+    int8_t res_cmp_sub;
     for (size_t i = 0, size = obj1->size; i < size; i++) {
         res_cmp_sub = object_cmp(obj1->data[i], obj2->data[i]);
         if (res_cmp_sub != CMP_EQ) return res_cmp_sub;
@@ -67,8 +67,8 @@ int list_cmp(const struct list_st *obj1, const struct list_st *obj2) {
 }
 
 // Cmp Methods
-int list_is_null(const struct list_st *res) {
-    return (res == NULL || res->size == 0);
+int8_t list_is_null(const struct list_st *res) {
+    return (int8_t) (res == NULL || res->size == 0);
 }
 
 // Data Methods
@@ -134,17 +134,18 @@ struct object_st *list_pop(struct list_st *res) {
 }
 
 // TLV Methods
-int list_set_tlv(struct list_st *res, const struct string_st *tlv) {
+int8_t list_set_tlv(struct list_st *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
     list_clear(res);
-    int result = tlv_get_tag(tlv);
-    if (result < 0) return result;
-    if (result != TLV_LIST) return ERR_TLV_TAG;
+    int32_t tag = tlv_get_tag(tlv);
+    if (tag < 0) return (int8_t) tag;
+    if (tag != TLV_LIST) return ERR_TLV_TAG;
 
     struct object_st *obj = NULL, *obj_ = NULL;
     struct string_st _tlv, _tlv_data;
     string_data_init(&_tlv_data);
     string_data_init(&_tlv);
+    int8_t result;
     result = tlv_get_value(tlv, &_tlv);
 
     for (; _tlv.size && result == 0;) {

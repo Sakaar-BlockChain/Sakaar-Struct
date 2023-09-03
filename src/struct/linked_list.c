@@ -106,11 +106,11 @@ void linked_list_clear(struct linked_list_st *res) {
     res->front = NULL;
     res->back = NULL;
 }
-int linked_list_cmp(const struct linked_list_st *obj1, const struct linked_list_st *obj2) {
+int8_t linked_list_cmp(const struct linked_list_st *obj1, const struct linked_list_st *obj2) {
     if (obj1 == NULL || obj2 == NULL) return CMP_NEQ;
     if (obj1->size > obj2->size) return CMP_GRET;
     if (obj1->size < obj2->size) return CMP_LESS;
-    int res_cmp_sub;
+    int8_t res_cmp_sub;
     struct linked_list_elm *elm1 = obj1->front;
     struct linked_list_elm *elm2 = obj2->front;
     while (elm1 != NULL && elm2 != NULL) {
@@ -123,8 +123,8 @@ int linked_list_cmp(const struct linked_list_st *obj1, const struct linked_list_
 }
 
 // Cmp Methods
-int linked_list_is_null(const struct linked_list_st *res) {
-    return (res == NULL || res->size == 0);
+int8_t linked_list_is_null(const struct linked_list_st *res) {
+    return (int8_t) (res == NULL || res->size == 0);
 }
 
 // Data Methods
@@ -256,17 +256,18 @@ struct object_st *linked_list_back(struct linked_list_st *res) {
 }
 
 // TLV Methods
-int linked_list_set_tlv(struct linked_list_st *res, const struct string_st *tlv) {
+int8_t linked_list_set_tlv(struct linked_list_st *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
     linked_list_clear(res);
-    int result = tlv_get_tag(tlv);
-    if (result < 0) return result;
-    if (result != TLV_LINKED_LIST) return ERR_TLV_TAG;
+    int32_t tag = tlv_get_tag(tlv);
+    if (tag < 0) return (int8_t) tag;
+    if (tag != TLV_LINKED_LIST) return ERR_TLV_TAG;
 
     struct object_st *obj = NULL, *obj_ = NULL;
     struct string_st _tlv, _tlv_data;
     string_data_init(&_tlv_data);
     string_data_init(&_tlv);
+    int8_t result;
     result = tlv_get_value(tlv, &_tlv);
 
     for (; _tlv.size && result == 0;) {
