@@ -1,8 +1,23 @@
-//
-// Created by stive on 8/31/23.
-//
+#ifndef RESTORE_STACK_H
+#define RESTORE_STACK_H
 
-#ifndef SAKAAR_RESTORE_STACK_H
-#define SAKAAR_RESTORE_STACK_H
+#include "struct.h"
 
-#endif //SAKAAR_RESTORE_STACK_H
+struct restore_stack_st {
+    size_t size;
+    struct restore_stack_elm_st *front;
+};
+
+struct restore_stack_st *restore_stack_new();
+void restore_stack_free(struct restore_stack_st *);
+
+void restore_stack_clear(struct restore_stack_st *);
+
+// Data Methods
+void restore_stack_data_init(struct restore_stack_st *);
+void restore_stack_data_free(struct restore_stack_st *);
+
+void restore_stack_pop_front(struct restore_stack_st *res);
+void restore_stack_new_front(struct restore_stack_st *res);
+
+#endif //RESTORE_STACK_H
