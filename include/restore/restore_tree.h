@@ -8,8 +8,10 @@ struct restore_tree_st {
     struct restore_list_st nodes;
     size_t height;
 
-    struct integer_st block_id;
     struct string_st hash;
+
+    struct restore_block_st *block;
+    struct restore_stack_st *stack;
 };
 
 struct restore_tree_st *restore_tree_new();

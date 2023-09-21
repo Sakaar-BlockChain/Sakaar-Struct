@@ -25,9 +25,7 @@ void restore_list_data_free(struct restore_list_st *);
 
 // Cmp Methods
 void restore_list_resize(struct restore_list_st *, size_t);
-void restore_list_find(const struct restore_list_st *, const struct hash_time_st *, struct restore_stack_st *, size_t, size_t *, size_t *);
-size_t restore_list_swap(const struct restore_list_st *, struct hash_time_st *, struct restore_stack_st *, size_t);
-size_t restore_list_append(struct restore_list_st *, const struct hash_time_st *, struct restore_stack_st *, size_t);
+void restore_list_find(const struct restore_list_st *, struct restore_stack_st *, const struct hash_time_st *, size_t, size_t *, size_t *);
 
 // TLV Methods
 int8_t restore_list_set_tlv(struct restore_list_st *, const struct string_st *);

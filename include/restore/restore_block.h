@@ -6,9 +6,10 @@
 
 struct restore_block_st {
     struct restore_list_st nodes;
+    size_t block_id;
 
-    struct integer_st block_id;
-    struct string_st hash;
+    struct restore_list_elm_st *elm;
+    struct restore_stack_st *stack;
 };
 
 struct restore_block_st *restore_block_new();

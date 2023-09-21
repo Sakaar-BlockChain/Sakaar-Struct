@@ -18,10 +18,6 @@ void restore_list_elm_copy(struct restore_list_elm_st *, const struct restore_li
 void restore_list_elm_clear(struct restore_list_elm_st *);
 int8_t restore_list_elm_cmp(const struct restore_list_elm_st *, const struct restore_list_elm_st *);
 
-// Data Methods
-void restore_list_elm_data_init(struct restore_list_elm_st *);
-void restore_list_elm_data_free(struct restore_list_elm_st *);
-
 // TLV Methods
 int8_t restore_list_elm_set_tlv(struct restore_list_elm_st *, const struct string_st *);
 void restore_list_elm_get_tlv(const struct restore_list_elm_st *, struct string_st *);

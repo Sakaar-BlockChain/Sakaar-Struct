@@ -33,24 +33,6 @@ void restore_stack_clear(struct restore_stack_st *res) {
     res->size = 0;
 }
 
-// Data Methods
-void restore_stack_data_init(struct restore_stack_st *res) {
-    if (res == NULL) return;
-    res->front = NULL;
-    res->size = 0;
-}
-void restore_stack_data_free(struct restore_stack_st *res) {
-    if (res == NULL) return;
-
-    struct restore_stack_elm_st *elm = res->front;
-    struct restore_stack_elm_st *next = NULL;
-    while (elm != NULL) {
-        next = elm->next;
-        restore_stack_elm_free(elm);
-        elm = next;
-    }
-}
-
 void restore_stack_pop_front(struct restore_stack_st *res) {
     if (res == NULL || res->size == 0) return;
 

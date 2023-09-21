@@ -13,10 +13,6 @@ void restore_stack_free(struct restore_stack_st *);
 
 void restore_stack_clear(struct restore_stack_st *);
 
-// Data Methods
-void restore_stack_data_init(struct restore_stack_st *);
-void restore_stack_data_free(struct restore_stack_st *);
-
 void restore_stack_pop_front(struct restore_stack_st *res);
 void restore_stack_new_front(struct restore_stack_st *res);
 

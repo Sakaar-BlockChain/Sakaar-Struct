@@ -26,9 +26,6 @@
 #define ERR_FILE_WRITE      (-0x23)
 #define ERR_FILE_REMOVE     (-0x24)
 
-#define ERR_RESTORE_NEXT    (-0x31)
-#define ERR_RESTORE_NOTHING (-0x31)
-
 #define CMP_LESS            (-1)
 #define CMP_GRET            1
 #define CMP_EQ              0

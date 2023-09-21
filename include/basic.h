@@ -15,6 +15,7 @@
 #include "basic/hash_time_list.h"
 #include "basic/packet_list.h"
 #include "basic/pre_transaction.h"
+#include "basic/pre_transaction_list.h"
 #include "basic/transaction.h"
 #include "basic/transaction_list.h"
 #include "basic/smartcontract.h"
@@ -54,6 +55,7 @@
 #define HASH_TIME_LIST_OP   (struct object_op) {METHOD_NEW &hash_time_list_new, METHOD_FREE &hash_time_list_free, METHOD_SET &hash_time_list_set, METHOD_SET &hash_time_list_copy, NULL, NULL, METHOD_CLEAR &hash_time_list_clear, METHOD_CMP &hash_time_list_cmp}
 #define PACKET_LIST_OP      (struct object_op) {METHOD_NEW &packet_list_new, METHOD_FREE &packet_list_free, METHOD_SET &packet_list_set, METHOD_SET &packet_list_copy, NULL, NULL, METHOD_CLEAR &packet_list_clear, METHOD_CMP &packet_list_cmp}
 #define PRE_TRANSACTION_OP  (struct object_op) {METHOD_NEW &pre_transaction_new, METHOD_FREE &pre_transaction_free, METHOD_SET &pre_transaction_set, METHOD_SET &pre_transaction_copy, NULL, NULL, METHOD_CLEAR &pre_transaction_clear, METHOD_CMP &pre_transaction_cmp}
+#define PRE_TRANS_LIST_OP   (struct object_op) {METHOD_NEW &pre_transaction_list_new, METHOD_FREE &pre_transaction_list_free, METHOD_SET &pre_transaction_list_set, METHOD_SET &pre_transaction_list_copy, NULL, NULL, METHOD_CLEAR &pre_transaction_list_clear, METHOD_CMP &pre_transaction_list_cmp}
 #define TRANSACTION_OP      (struct object_op) {METHOD_NEW &transaction_new, METHOD_FREE &transaction_free, METHOD_SET &transaction_set, METHOD_SET &transaction_copy, NULL, NULL, METHOD_CLEAR &transaction_clear, METHOD_CMP &transaction_cmp}
 #define TRANS_LIST_OP       (struct object_op) {METHOD_NEW &transaction_list_new, METHOD_FREE &transaction_list_free, METHOD_SET &transaction_list_set, METHOD_SET &transaction_list_copy, NULL, NULL, METHOD_CLEAR &transaction_list_clear, METHOD_CMP &transaction_list_cmp}
 #define SMARTCONTRACT_OP    STRING_OP
@@ -74,6 +76,7 @@ extern struct object_type hash_time_type;
 extern struct object_type hash_time_list_type;
 extern struct object_type packet_list_type;
 extern struct object_type pre_transaction_type;
+extern struct object_type pre_transaction_list_type;
 extern struct object_type transaction_type;
 extern struct object_type transaction_list_type;
 extern struct object_type smartcontract_type;
@@ -94,6 +97,7 @@ extern struct object_type wallet_smart_type;
 #define HASH_TIME_LIST_TYPE     &hash_time_list_type
 #define PACKET_LIST_TYPE        &packet_list_type
 #define PRE_TRANSACTION_TYPE    &pre_transaction_type
+#define PRE_TRANS_LIST_TYPE     &pre_transaction_list_type
 #define TRANSACTION_TYPE        &transaction_type
 #define TRANS_LIST_TYPE         &transaction_list_type
 #define SMARTCONTRACT_TYPE      &smartcontract_type

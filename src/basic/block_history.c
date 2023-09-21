@@ -12,7 +12,7 @@ struct block_history *block_history_new() {
     string_data_init(&res->address_outside);
     string_data_init(&res->smart_contract);
     integer_data_init(&res->benefit);
-    integer_data_init(&res->result);
+    res->result = 0;
     return res;
 }
 void block_history_free(struct block_history *res) {
@@ -22,7 +22,6 @@ void block_history_free(struct block_history *res) {
     string_data_free(&res->address_outside);
     string_data_free(&res->smart_contract);
     integer_data_free(&res->benefit);
-    integer_data_free(&res->result);
     free(res);
 }
 
@@ -34,7 +33,7 @@ void block_history_set(struct block_history *res, const struct block_history *a)
     string_set(&res->address_outside, &a->address_outside);
     string_set(&res->smart_contract, &a->smart_contract);
     integer_set(&res->benefit, &a->benefit);
-    integer_set(&res->result, &a->result);
+    res->result = a->result;
 }
 void block_history_copy(struct block_history *res, const struct block_history *a) {
     if (res == NULL) return;
@@ -45,7 +44,7 @@ void block_history_copy(struct block_history *res, const struct block_history *a
     string_copy(&res->address_outside, &a->address_outside);
     string_copy(&res->smart_contract, &a->smart_contract);
     integer_copy(&res->benefit, &a->benefit);
-    integer_copy(&res->result, &a->result);
+    res->result = a->result;
 }
 
 void block_history_clear(struct block_history *res) {
@@ -55,7 +54,7 @@ void block_history_clear(struct block_history *res) {
     string_clear(&res->address_outside);
     string_clear(&res->smart_contract);
     integer_clear(&res->benefit);
-    integer_clear(&res->result);
+    res->result = 0;
 }
 int8_t block_history_cmp(const struct block_history *obj1, const struct block_history *obj2) {
     if (obj1 == NULL || obj2 == NULL || hash_time_cmp(&obj1->hash_time, &obj2->hash_time)) return CMP_NEQ;
@@ -70,7 +69,7 @@ void block_history_data_init(struct block_history *res) {
     string_data_init(&res->address_outside);
     string_data_init(&res->smart_contract);
     integer_data_init(&res->benefit);
-    integer_data_init(&res->result);
+    res->result = 0;
 }
 void block_history_data_free(struct block_history *res) {
     if (res == NULL) return;
@@ -79,7 +78,6 @@ void block_history_data_free(struct block_history *res) {
     string_data_free(&res->address_outside);
     string_data_free(&res->smart_contract);
     integer_data_free(&res->benefit);
-    integer_data_free(&res->result);
 }
 
 // TLV Methods
@@ -94,6 +92,7 @@ int8_t block_history_set_tlv(struct block_history *res, const struct string_st *
     string_data_init(&_tlv_data);
     string_data_init(&_tlv);
     int8_t result;
+    size_t sub;
     if ((result = tlv_get_value(tlv, &_tlv))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
@@ -112,7 +111,8 @@ int8_t block_history_set_tlv(struct block_history *res, const struct string_st *
     if ((result = integer_set_tlv(&res->benefit, &_tlv_data))) goto end;
 
     if ((result = tlv_get_next_tlv(&_tlv, &_tlv_data))) goto end;
-    if ((result = integer_set_tlv(&res->result, &_tlv_data))) goto end;
+    if ((result = size_set_tlv(&sub, &_tlv_data))) goto end;
+    res->result = (int8_t) sub;
     end:
     string_data_free(&_tlv);
     string_data_free(&_tlv_data);
@@ -138,7 +138,7 @@ void block_history_get_tlv(const struct block_history *block, struct string_st *
     integer_get_tlv(&block->benefit, &_tlv_data);
     string_concat(res, &_tlv_data);
 
-    integer_get_tlv(&block->result, &_tlv_data);
+    size_get_tlv(block->result, &_tlv_data);
     string_concat(res, &_tlv_data);
 
     tlv_set_string(res, TLV_BLOCK_HISTORY, res);
@@ -175,7 +175,7 @@ struct object_st *block_history_attrib
     }
     else if (str->size == 6 & memcmp(str->data, "result", 6) == 0) {
         object_set_type(res, INTEGER_TYPE);
-        integer_set(res->data, &block->result);
+        integer_set_ui(res->data, block->result);
     }
     else {
         object_free(res);

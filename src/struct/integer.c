@@ -6,6 +6,15 @@ struct object_convert integer_convert = {METHOD_CONVERT &integer__bool, METHOD_C
 struct object_type integer_type = {INTEGER_OP, &integer_tlv, NULL, &integer_convert, &integer_math};
 
 
+void size_get_str(size_t res, struct string_st *str) {
+    if (str == NULL) return;
+    string_clear(str);
+
+    char buffer[256] = "";
+    snprintf(buffer, 256, "%zd", res);
+    string_set_str(str, buffer, strlen(buffer));
+}
+
 int8_t size_set_tlv(size_t *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
     *res = 0;

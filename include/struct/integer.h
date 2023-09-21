@@ -54,6 +54,7 @@ signed integer_get_si(const struct integer_st *);
 void integer_set_str_(struct integer_st *, const char *, size_t);
 void integer_set_str(struct integer_st *, const struct string_st *);
 void integer_get_str(const struct integer_st *, struct string_st *);
+void size_get_str(size_t res, struct string_st *str);
 void integer_set_time(struct integer_st *);
 
 void integer_set_str_dec_(struct integer_st *, const char *, size_t);

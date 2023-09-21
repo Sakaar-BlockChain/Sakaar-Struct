@@ -11,7 +11,7 @@ struct block_history {
     struct integer_st benefit;
     struct string_st address_outside;
     struct string_st smart_contract;
-    struct integer_st result;
+    int8_t result;
 };
 // Standard operations
 struct block_history *block_history_new();

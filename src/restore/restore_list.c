@@ -83,12 +83,14 @@ void restore_list_resize(struct restore_list_st *res, size_t size) {
     }
     res->size = size;
 }
-void restore_list_find(const struct restore_list_st *nodes, const struct hash_time_st *hash_time, struct restore_stack_st *stack, size_t height, size_t *pos, size_t *pos_list) {
-    if (nodes == NULL || height == 0) return;
+void restore_list_find(const struct restore_list_st *nodes, struct restore_stack_st *stack, const struct hash_time_st *hash_time, size_t height, size_t *pos, size_t *pos_line) {
     restore_stack_clear(stack);
-    size_t _pos = *pos = 0;
-    size_t _pos_list = *pos_list = 0;
-    if (hash_time_is_null(hash_time)) return;
+    if (pos != NULL) *pos = 0;
+    if (pos_line != NULL) *pos_line = 0;
+    if (hash_time_is_null(hash_time) || nodes == NULL || height == 0) return;
+
+    size_t _pos = 0;
+    size_t _pos_line = 0;
 
     struct restore_stack_elm_st *elm = NULL;
     size_t part_size;
@@ -105,7 +107,7 @@ void restore_list_find(const struct restore_list_st *nodes, const struct hash_ti
                !hash_time_is_null(&nodes->data[_pos + part_size - 1]->hash_time) &&
                hash_time_cmp(&nodes->data[_pos + part_size - 1]->hash_time, hash_time) < 0) {
             _pos += part_size;
-            _pos_list += part_size - sub_size;
+            _pos_line += part_size - sub_size;
             if (stack != NULL) {
                 string_concat(&elm->hash, &nodes->data[_pos - 1]->hash);
                 elm->count++;
@@ -115,97 +117,8 @@ void restore_list_find(const struct restore_list_st *nodes, const struct hash_ti
         height--;
     } while (part_size != 1);
 
-    *pos = _pos;
-    *pos_list = _pos_list;
-}
-size_t restore_list_swap(const struct restore_list_st *nodes, struct hash_time_st *next, struct restore_stack_st *stack, size_t position) {
-    if (nodes == NULL || stack == NULL) return 0;
-    if (position >= nodes->size) return position;
-
-    struct restore_stack_elm_st *elm = stack->front;
-    struct hash_time_st temp;
-    size_t height = 0;
-
-    hash_time_data_init(&temp);
-
-    {
-        hash_time_set(&temp, next);
-        hash_time_set(next, &nodes->data[position]->hash_time);
-
-        hash_time_set(&nodes->data[position]->hash_time, &temp);
-        string_set(&nodes->data[position++]->hash, &temp.hash);
-
-        string_concat(&elm->hash, &nodes->data[position - 1]->hash);
-        elm->count++;
-
-        while (position < nodes->size) {
-            if (elm->count == RESTORE_BLOCK_CHILD) {
-                while (position < nodes->size && elm->count == RESTORE_BLOCK_CHILD) {
-                    hash_time_set(&nodes->data[position]->hash_time, &nodes->data[position - 1]->hash_time);
-                    string_set(&nodes->data[position++]->hash, &elm->hash);
-//                    sha256_code._code(&nodes->data[size++]->hash, &elm->hash);
-
-                    restore_stack_pop_front(stack);
-                    elm = stack->front;
-
-                    string_concat(&elm->hash, &nodes->data[position - 1]->hash);
-                    elm->count++;
-                    height++;
-                }
-
-                do {
-                    restore_stack_new_front(stack);
-                    elm = stack->front;
-
-                    height--;
-                } while (height);
-            } else {
-                hash_time_set(&temp, next);
-                hash_time_set(next, &nodes->data[position]->hash_time);
-
-                hash_time_set(&nodes->data[position]->hash_time, &temp);
-                string_set(&nodes->data[position++]->hash, &temp.hash);
-
-                string_concat(&elm->hash, &nodes->data[position - 1]->hash);
-                elm->count++;
-            }
-        }
-    }
-
-    hash_time_data_free(&temp);
-    return position;
-}
-size_t restore_list_append(struct restore_list_st *nodes, const struct hash_time_st *next, struct restore_stack_st *stack, size_t position) {
-    if (nodes == NULL || stack == NULL) return 0;
-
-    struct restore_stack_elm_st *elm = stack->front;
-    size_t height = 0;
-
-    restore_list_resize(nodes, position + 1);
-    hash_time_set(&nodes->data[position]->hash_time, next);
-    string_set(&nodes->data[position++]->hash, &next->hash);
-
-    string_concat(&elm->hash, &nodes->data[position - 1]->hash);
-    elm->count++;
-
-    while (elm != NULL && elm->count++ == RESTORE_BLOCK_CHILD) {
-        restore_list_resize(nodes, position + 1);
-
-        hash_time_set(&nodes->data[position]->hash_time, &nodes->data[position - 1]->hash_time);
-        string_set(&nodes->data[position++]->hash, &elm->hash);
-//            sha256_code._code(&nodes->data[position++]->hash, &elm->hash);
-
-        restore_stack_pop_front(stack);
-        elm = stack->front;
-
-        if (elm != NULL) {
-            string_concat(&elm->hash, &nodes->data[position - 1]->hash);
-            elm->count++;
-        }
-        height++;
-    }
-
-    return position;
+    if (pos != NULL) *pos = _pos;
+    if (pos_line != NULL) *pos_line = _pos_line;
 }
 
 

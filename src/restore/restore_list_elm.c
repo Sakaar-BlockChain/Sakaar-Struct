@@ -36,18 +36,6 @@ int8_t restore_list_elm_cmp(const struct restore_list_elm_st *obj1, const struct
     return CMP_EQ;
 }
 
-// Data Methods
-void restore_list_elm_data_init(struct restore_list_elm_st *res) {
-    if (res == NULL) return;
-    hash_time_data_init(&res->hash_time);
-    string_data_init(&res->hash);
-}
-void restore_list_elm_data_free(struct restore_list_elm_st *res) {
-    if (res == NULL) return;
-    hash_time_data_free(&res->hash_time);
-    string_data_free(&res->hash);
-}
-
 // TLV Methods
 int8_t restore_list_elm_set_tlv(struct restore_list_elm_st *res, const struct string_st *tlv) {
     if (res == NULL) return ERR_DATA_NULL;
